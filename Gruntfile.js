@@ -4,36 +4,46 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
 
   grunt.initConfig({
+    watch: {
+      test: {
+        files: ['src/**/*.js', 'test/spec/**/*.js'],
+        tasks: ['test']
+      }
+    },
+
     jshint: {
       options: {
         jshintrc: true,
         reporter: require('jshint-stylish')
       },
+      gruntfile: ['Gruntfile.js'],
       src: ['src/**/*.js'],
       spec: ['test/spec/**/*.js']
     },
 
     karma: {
       specWatch: {
-        configFile: "karma.conf.js"
+        configFile: 'karma.conf.js'
       },
       spec: {
-        configFile: "karma.conf.js",
+        configFile: 'karma.conf.js',
         singleRun: true,
         autoWatch: false
       },
     }
   });
 
-  grunt.registerTask("test", function (target) {
-    if (target === 'watch') {
-      target = 'specWatch';
-    } else {
-      target = 'spec';
-    }
+  grunt.registerTask('test', [
+    'jshint',
+    'karma:spec'
+  ]);
+
+  grunt.registerTask('dev', function() {
+    grunt.config.set(['jshint', 'options', 'force'], true);
+
     grunt.task.run([
-      "jshint",
-      "karma:" + target
+      'test',
+      'watch'
     ]);
   });
 };
