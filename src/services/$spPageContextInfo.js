@@ -1,12 +1,12 @@
 /**
  * @ngdoc object
  * @name ExpertsInside.SharePoint.$spPageContextInfo
- * @requires $window
+ * @requires $window, $rootScope
  *
  * @description
  * Wraps the global '_spPageContextInfo' object in an angular service
  *
- * @return {object} $spPageContextInfo Copy of the global '_spPageContextInfo' object
+ * @return {Object} $spPageContextInfo Copy of the global '_spPageContextInfo' object
  */
 angular.module('ExpertsInside.SharePoint')
   .factory('$spPageContextInfo', function($rootScope, $window) {
