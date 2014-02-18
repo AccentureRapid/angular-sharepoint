@@ -18,6 +18,7 @@ module.exports = function(config) {
     files: [
       'test/components/angular/angular.js',
       'test/components/angular-mocks/angular-mocks.js',
+      'src/sharepoint.js',
       'src/**/*.js',
       'test/spec/**/*_spec.js'
     ],
