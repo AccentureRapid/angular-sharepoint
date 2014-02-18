@@ -30,6 +30,24 @@ module.exports = function(grunt) {
         singleRun: true,
         autoWatch: false
       },
+    },
+
+    ngdocs: {
+      api: {
+        src: ['src/**/*.js'],
+        title: 'API Documentation'
+      }
+    },
+
+    connect: {
+      docs: {
+        options: {
+          port: 9002,
+          base: 'docs',
+          open: true,
+          keepalive: true
+        }
+      }
     }
   });
 
@@ -46,4 +64,6 @@ module.exports = function(grunt) {
       'watch'
     ]);
   });
+
+  grunt.registerTask('docs', ['ngdocs', 'connect:docs']);
 };
