@@ -1,0 +1,48 @@
+{
+  "name": "angular-sharepoint",
+  "version": "0.0.1",
+  "description": "SharePoint REST API wrapper for AngularJS",
+  "main": "src/sharepoint.js",
+  "homepage": "https://github.com/ExpertsInside/angular-sharepoint",
+  "bugs": "https://github.com/ExpertsInside/angular-sharepoint/issues",
+  "author": {
+    "name": "Kevin Mees",
+    "email": "km@expertsinside.com",
+    "url": "https://github.com/kmees"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ExpertsInside/angular-sharepoint.git"
+  },
+  "dependencies": {
+    "grunt": "~0.4.2",
+    "karma-chrome-launcher": "~0.1.2",
+    "karma": "~0.10.9",
+    "grunt-karma": "~0.6.2",
+    "bower": "~1.2.8",
+    "karma-coffee-preprocessor": "~0.1.3",
+    "karma-firefox-launcher": "~0.1.3",
+    "karma-jasmine": "~0.1.5",
+    "karma-html2js-preprocessor": "~0.1.0",
+    "karma-phantomjs-launcher": "~0.1.2",
+    "karma-requirejs": "~0.2.1",
+    "karma-script-launcher": "~0.1.0",
+    "karma-mocha": "~0.1.1",
+    "karma-sinon-chai": "~0.1.4",
+    "requirejs": "~2.1.11"
+  },
+  "devDependencies": {
+    "mocha": "~1.17.1",
+    "grunt-contrib-jshint": "~0.8.0",
+    "load-grunt-tasks": "~0.3.0",
+    "jshint-stylish": "~0.1.5"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "engines": {
+    "node": ">=0.8.0",
+    "npm": ">=1.2.10"
+  },
+  "license": "MIT"
+}
