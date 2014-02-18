@@ -14,14 +14,26 @@ module.exports = function(grunt) {
     },
 
     karma: {
-      spec: {
+      specWatch: {
         configFile: "karma.conf.js"
       },
-      specSingle: {
+      spec: {
         configFile: "karma.conf.js",
         singleRun: true,
         autoWatch: false
-      }
+      },
     }
+  });
+
+  grunt.registerTask("test", function (target) {
+    if (target === 'watch') {
+      target = 'specWatch';
+    } else {
+      target = 'spec';
+    }
+    grunt.task.run([
+      "jshint",
+      "karma:" + target
+    ]);
   });
 };
