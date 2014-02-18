@@ -2,6 +2,8 @@
 // Generated on Mon Feb 17 2014 15:49:12 GMT+0100 (CET)
 
 module.exports = function(config) {
+  'use strict';
+
   config.set({
 
     // base path, that will be used to resolve files and exclude
@@ -44,7 +46,7 @@ module.exports = function(config) {
 
 
     // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: false,
+    autoWatch: true,
 
 
     // Start these browsers, currently available:
@@ -64,6 +66,6 @@ module.exports = function(config) {
 
     // Continuous Integration mode
     // if true, it capture browsers, run tests and exit
-    singleRun: true
+    singleRun: false
   });
 };

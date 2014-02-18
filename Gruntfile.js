@@ -11,6 +11,17 @@ module.exports = function(grunt) {
       },
       src: ['src/**/*.js'],
       spec: ['test/spec/**/*.js']
+    },
+
+    karma: {
+      spec: {
+        configFile: "karma.conf.js"
+      },
+      specSingle: {
+        configFile: "karma.conf.js",
+        singleRun: true,
+        autoWatch: false
+      }
     }
   });
 };
