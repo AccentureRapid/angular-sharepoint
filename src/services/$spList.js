@@ -1,7 +1,9 @@
+var $spListMinErr = angular.$$minErr('$spList');
+
 /**
  * @ngdoc service
  * @name ExpertsInside.SharePoint.$spList
- * @requires $http, $q, $spPageContextInfo
+ * @requires $spPageContextInfo
  *
  * @description
  * A factory which creates a list object that lets you interact with SharePoint Lists via the
@@ -13,15 +15,58 @@
  * @return {Object} A list "class" object with the default set of resource actions
  */
 angular.module('ExpertsInside.SharePoint')
-  .factory('$spList', function(/* $http, */ /* $q, */ /* $spPageContextInfo */) {
+  .factory('$spList', function($spPageContextInfo, $http) {
     'use strict';
 
-    function List() {
+    function List(name, defaults) {
+      this.name = name;
+      this.defaults = defaults;
     }
 
-    function listFactory() {
-      return new List();
+    List.prototype = {
+      $baseUrl: function() {
+        return $spPageContextInfo.webServerRelativeUrl + "/_api/web/lists/getByTitle('" + this.name + "')";
+      },
+      $buildHttpConfig: function(method, args) {
+        var baseUrl = this.$baseUrl();
+        var httpConfig = {
+          method: method,
+          url: baseUrl,
+          headers: {
+            accept: 'application/json;odata=verbose'
+          },
+          transformResponse: function (data) {
+            var response = JSON.parse(data).d;
+            if (angular.isDefined(response.results)) {
+              response = response.results;
+            }
+            return response;
+          }
+        };
+
+        switch(method) {
+        case 'get':
+          httpConfig.url = baseUrl + '/items(' + args.id + ')';
+          break;
+        }
+        return httpConfig;
+      },
+      get: function(id, options) {
+        if (angular.isUndefined(id)) {
+          throw $spListMinErr('badargs', 'id is required.');
+        }
+        options = angular.extend({id: id}, options);
+
+        var httpConfig = this.$buildHttpConfig('get', options);
+
+        return $http(httpConfig);
+      }
+    };
+
+    function listFactory(name) {
+      return new List(name);
     }
+    listFactory.List = List;
 
     return listFactory;
   });
