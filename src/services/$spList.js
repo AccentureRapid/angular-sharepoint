@@ -1,5 +1,3 @@
-var $spListMinErr = angular.$$minErr('$spList');
-
 /**
  * @ngdoc service
  * @name ExpertsInside.SharePoint.$spList
@@ -17,6 +15,7 @@ var $spListMinErr = angular.$$minErr('$spList');
 angular.module('ExpertsInside.SharePoint')
   .factory('$spList', function($spPageContextInfo, $http) {
     'use strict';
+    var $spListMinErr = angular.$$minErr('$spList');
 
     function List(name, defaults) {
       this.name = name;
