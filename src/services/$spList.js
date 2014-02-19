@@ -52,6 +52,10 @@ angular.module('ExpertsInside.SharePoint')
           httpConfig.url = baseUrl + '/items(' + args + ')';
           httpConfig.method = 'GET';
           break;
+        case 'query':
+          httpConfig.url = baseUrl + '/items';
+          httpConfig.method = 'GET';
+          break;
         }
         return httpConfig;
       },
@@ -86,7 +90,15 @@ angular.module('ExpertsInside.SharePoint')
         var httpConfig = this.$buildHttpConfig('get', params, id);
 
         return $http(httpConfig);
-      }
+      },
+      query: function(params) {
+        params = this.$normalizeParams(params);
+
+        var httpConfig = this.$buildHttpConfig('query', params);
+        console.log(httpConfig);
+
+        return $http(httpConfig);
+      },
     };
 
     function listFactory(name) {

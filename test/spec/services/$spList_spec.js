@@ -67,8 +67,6 @@ describe('ExpertsInside.SharePoint', function() {
       });
 
       describe('#get(id, params)', function() {
-        var itemJSON;
-
         beforeEach(function() {
           $httpBackend.whenGET(/\/testApp\/_api\/web\/lists\/getByTitle\('Test'\)\/items\(1\)/, {
             accept: 'application/json;odata=verbose'
@@ -118,6 +116,64 @@ describe('ExpertsInside.SharePoint', function() {
           expect(function() {
             list.get();
           }).to.throw(Error, '[$spList:badargs] id is required.');
+        });
+      });
+
+      describe('#get(id, params)', function() {
+        beforeEach(function() {
+          $httpBackend.whenGET(/\/testApp\/_api\/web\/lists\/getByTitle\('Test'\)\/items/, {
+            accept: 'application/json;odata=verbose'
+          }).respond(JSON.stringify({
+            d: {
+              results: [
+                {Id: 1},
+                {Id: 2},
+                {Id: 3}
+              ]
+            }
+          }));
+        });
+        afterEach(function() {
+          $httpBackend.verifyNoOutstandingExpectation();
+          $httpBackend.verifyNoOutstandingRequest();
+        });
+
+        it('creates REST call that fetches all items', function() {
+          $httpBackend.expectGET("/testApp/_api/web/lists/getByTitle('Test')/items", {
+            accept: 'application/json;odata=verbose'
+          });
+
+          list.query();
+
+          $httpBackend.flush();
+        });
+
+        it('creates REST with query *params* that queries the list for the items', function() {
+          var params = {
+            $select: 'foo,bar',
+            $orderby: 'foo',
+            $top: 2,
+            $skip: 3,
+            $expand: 'baz',
+            $filter: 'foo eq 1'
+          };
+          var queryParams = "?$expand=baz&$filter=foo+eq+1&$orderby=foo&$select=foo,bar&$skip=3&$top=2";
+          $httpBackend.expectGET("/testApp/_api/web/lists/getByTitle('Test')/items" + queryParams, {
+            accept: 'application/json;odata=verbose'
+          });
+
+          list.query(params);
+
+          $httpBackend.flush();
+        });
+
+        it('returns an http promise that resolves with the fetched items', function(done) {
+          list.query().success(function(items) {
+            expect(items).to.have.lengthOf(3);
+            done();
+          });
+
+          $httpBackend.flush();
         });
       });
     });
