@@ -27,7 +27,8 @@ module.exports = function(grunt) {
 
     karma: {
       specWatch: {
-        configFile: 'karma.conf.js'
+        configFile: 'karma.conf.js',
+        browsers: ['Chrome']
       },
       spec: {
         configFile: 'karma.conf.js',
@@ -108,6 +109,8 @@ module.exports = function(grunt) {
       'watch'
     ]);
   });
+
+  grunt.registerTask('debug', ['karma:specWatch']);
 
   grunt.registerTask('docs', ['ngdocs', 'connect:docs']);
 
