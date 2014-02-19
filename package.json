@@ -38,7 +38,11 @@
     "jshint-stylish": "~0.1.5",
     "grunt-contrib-watch": "~0.5.3",
     "grunt-ngdocs": "~0.2.1",
-    "grunt-contrib-connect": "~0.6.0"
+    "grunt-contrib-connect": "~0.6.0",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-uglify": "~0.3.2",
+    "grunt-ngmin": "0.0.3",
+    "grunt-contrib-clean": "~0.5.0"
   },
   "scripts": {
     "test": "grunt test"

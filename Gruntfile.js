@@ -8,6 +8,10 @@ module.exports = function(grunt) {
       test: {
         files: ['src/**/*.js', 'test/spec/**/*.js'],
         tasks: ['test']
+      },
+      docs: {
+        files: ['src/**/*.js'],
+        tasks: ['ngdocs']
       }
     },
 
@@ -48,6 +52,43 @@ module.exports = function(grunt) {
           keepalive: true
         }
       }
+    },
+
+    ngmin: {
+      dist: {
+        expand: true,
+        cwd: 'src',
+        src: ['**/*.js'],
+        dest: '.tmp'
+      }
+    },
+
+    clean: {
+      dist: [
+        'dist/*.{js,map}'
+      ],
+      tmp: ['.tmp']
+    },
+
+    concat: {
+      dist: {
+        src: [
+          '.tmp/sharepoint.js',
+          '.tmp/services/*.js'
+        ],
+        dest: 'dist/angular-sharepoint.js'
+      }
+    },
+
+    uglify: {
+      dist: {
+        options: {
+          sourceMap: true
+        },
+        files: {
+          'dist/angular-sharepoint.min.js': ['dist/angular-sharepoint.js']
+        }
+      }
     }
   });
 
@@ -66,4 +107,12 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('docs', ['ngdocs', 'connect:docs']);
+
+  grunt.registerTask('build', [
+    'clean:tmp',
+    'clean:dist',
+    'ngmin:dist',
+    'concat:dist',
+    'uglify:dist'
+  ]);
 };
