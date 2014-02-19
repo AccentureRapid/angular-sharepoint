@@ -14,7 +14,8 @@
         "beforeEach": false,
         "after": false,
         "afterEach": false,
-        "expect": false
+        "expect": false,
+        "sinon": true
     },
 
     "bitwise"       : true,
