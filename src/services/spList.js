@@ -67,6 +67,9 @@ angular.module('ExpertsInside.SharePoint')
               key = '$' + key;
               params[key] = value;
             }
+            if (angular.isArray(value)) {
+              params[key] = value.join(',');
+            }
             if (validParamKeys.indexOf(key) === -1) {
               $log.warn('Invalid param key: ' + key);
               delete params[key];

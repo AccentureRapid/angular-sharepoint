@@ -150,7 +150,7 @@ describe('ExpertsInside.SharePoint', function() {
 
         it('creates REST with query *params* that queries the list for the items', function() {
           var params = {
-            $select: 'foo,bar',
+            $select: ['foo','bar'],
             $orderby: 'foo',
             $top: 2,
             $skip: 3,
