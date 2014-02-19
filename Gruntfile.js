@@ -38,8 +38,11 @@ module.exports = function(grunt) {
 
     ngdocs: {
       api: {
-        src: ['src/**/*.js'],
-        title: 'API Documentation'
+        src: [
+          'src/sharepoint.js',
+          'src/**/*.js'
+        ],
+        title: 'API Reference'
       }
     },
 
