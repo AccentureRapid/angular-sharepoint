@@ -13,14 +13,18 @@
  * @return {Object} A list "class" object with the default set of resource actions
  */
 angular.module('ExpertsInside.SharePoint')
-  .factory('$spList', function($spPageContextInfo, $http, $log) {
+  .factory('$spList', function($spPageContextInfo, $http, $log, $q) {
     'use strict';
     var $spListMinErr = angular.$$minErr('$spList');
     var validParamKeys = ['$select', '$filter', '$orderby', '$top', '$skip', '$expand'];
 
     function List(name, defaults) {
+      if (!name) {
+        throw $spListMinErr('badargs', 'name cannot be blank.');
+      }
+
       this.name = name;
-      this.defaults = defaults;
+      this.defaults = angular.extend({}, defaults);
     }
 
     List.prototype = {
@@ -60,6 +64,7 @@ angular.module('ExpertsInside.SharePoint')
         return httpConfig;
       },
       $normalizeParams: function(params) {
+        params = angular.extend({}, params); //make a copy
         if (angular.isDefined(params)) {
           angular.forEach(params, function(value, key) {
             if(key.indexOf('$') !== 0) {
@@ -84,6 +89,15 @@ angular.module('ExpertsInside.SharePoint')
 
         return params;
       },
+      $createResult: function(emptyObject, httpConfig) {
+        var result = emptyObject;
+        result.$promise = $http(httpConfig).success(function(data) {
+          angular.extend(result, data);
+          return result;
+        });
+
+        return result;
+      },
       get: function(id, params) {
         if (angular.isUndefined(id)) {
           throw $spListMinErr('badargs', 'id is required.');
@@ -92,20 +106,41 @@ angular.module('ExpertsInside.SharePoint')
 
         var httpConfig = this.$buildHttpConfig('get', params, id);
 
-        return $http(httpConfig);
+        return this.$createResult({Id: id}, httpConfig);
       },
       query: function(params) {
         params = this.$normalizeParams(params);
 
         var httpConfig = this.$buildHttpConfig('query', params);
-        console.log(httpConfig);
 
-        return $http(httpConfig);
+        return this.$createResult([], httpConfig);
       },
+      create: function(data, type) {
+        if (angular.isString(data)) {
+          type = data;
+          data = {};
+        }
+        type = type || this.defaults.itemType;
+        if (!type) {
+          throw $spListMinErr('badargs', 'Cannot create an item without a valid type.' +
+                              ' Either set the default item type on the list or pass the type as the second argument.');
+        }
+        var itemDefaults = {
+          __metadata: {
+            type: type
+          }
+        };
+        var item = angular.extend({}, itemDefaults, data);
+        var deferred = $q.defer();
+        deferred.resolve(item);
+        item.$promise = deferred.promise;
+
+        return item;
+      }
     };
 
-    function listFactory(name) {
-      return new List(name);
+    function listFactory(name, defaults) {
+      return new List(name, defaults);
     }
     listFactory.List = List;
 

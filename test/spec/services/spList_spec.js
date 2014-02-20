@@ -1,7 +1,7 @@
 describe('ExpertsInside.SharePoint', function() {
   'use strict';
 
-  describe('Service: $spList', function() {
+  describe('Service: $spList(name, defaults)', function() {
     var $spPageContextInfo,
         $spList,
         $httpBackend;
@@ -20,14 +20,26 @@ describe('ExpertsInside.SharePoint', function() {
 
     it('is a factory function for list objects', function() {
       expect($spList).to.be.a('function');
-      expect($spList()).to.be.instanceOf($spList.List);
+      expect($spList('Test')).to.be.instanceOf($spList.List);
+    });
+
+    it('throws when no *name* is given', function() {
+      expect(function() { $spList(); }).to.throw(Error, '[$spList:badargs] name cannot be blank.');
+    });
+
+    it('defaults *defaults* to empty object', function() {
+      var list = $spList('Test');
+
+      expect(list.defaults).to.be.eql({});
     });
 
     describe('List', function() {
       var list;
 
       beforeEach(function() {
-        list = $spList('Test');
+        list = $spList('Test', {
+          itemType: 'SP.TestListItem'
+        });
       });
 
       it('#$baseUrl()', function() {
@@ -64,6 +76,20 @@ describe('ExpertsInside.SharePoint', function() {
 
           $log.warn.restore();
         }));
+
+        it('transforms arrays into strings', function() {
+          var normalized = list.$normalizeParams({$select: ['foo', 'bar']});
+
+          expect(normalized).to.be.eql({$select: 'foo,bar'});
+        });
+
+        it('does not modify the input', function() {
+          var params = {select: 'foo'};
+
+          list.$normalizeParams(params);
+
+          expect(params).to.be.eql({select: 'foo'});
+        });
       });
 
       describe('#get(id, params)', function() {
@@ -103,8 +129,19 @@ describe('ExpertsInside.SharePoint', function() {
           $httpBackend.flush();
         });
 
-        it('returns an http promise that resolves with the fetched item', function(done) {
-          list.get(1).success(function(item) {
+        it('returns an object with an Id and $promise property', function() {
+          var item = list.get(1);
+
+          expect(item).to.have.property('$promise');
+          expect(item).to.have.property('Id', 1);
+
+          $httpBackend.flush();
+        });
+
+        it('extends the returned object with the data from the REST response when it resolves', function(done) {
+          var item = list.get(1);
+
+          item.$promise.then(function() {
             expect(item.Id).to.be.equal(1);
             done();
           });
@@ -167,13 +204,65 @@ describe('ExpertsInside.SharePoint', function() {
           $httpBackend.flush();
         });
 
-        it('returns an http promise that resolves with the fetched items', function(done) {
-          list.query().success(function(items) {
-            expect(items).to.have.lengthOf(3);
+        it('returns an empty array with a $promise property', function() {
+          var result = list.query();
+
+          expect(result).to.have.property('$promise');
+
+          $httpBackend.flush();
+        });
+
+        it('fills the empty array with the data return by the REST request when it resolves', function(done) {
+          var result = list.query();
+          result.$promise.then(function() {
+            expect(result).to.have.lengthOf(3);
             done();
           });
 
           $httpBackend.flush();
+        });
+      });
+
+      describe('#create(data, type)', function() {
+        it('defaults *type* to the default item type set on the list', function() {
+          var item = list.create();
+
+          expect(item).to.have.deep.property('__metadata.type', 'SP.TestListItem');
+        });
+
+        it('accepts *type* as single parameter', function() {
+          var item = list.create('SP.OtherTestListItem');
+
+          expect(item).to.have.deep.property('__metadata.type', 'SP.OtherTestListItem');
+        });
+
+        it('throws an error when *type* is undefined and no default item type is set on the list', function() {
+          list.defaults.itemType = undefined;
+
+          expect(function() { list.create({}, undefined); }).to.throw(Error, /badargs/);
+        });
+
+        it('extends created item with *data*', function() {
+          var item = list.create({foo: 'bar'});
+
+          expect(item.foo).to.be.equal('bar');
+        });
+
+        it('adds $promise property to created item', function() {
+          expect(list.create()).to.have.property('$promise');
+        });
+
+        it('resolves the $promise immediately', function(done) {
+          inject(function($rootScope) {
+            var immediate = false;
+            list.create().$promise.then(function() {
+              immediate = true;
+              done();
+            });
+            $rootScope.$digest();
+
+            expect(immediate).to.be.true;
+          });
         });
       });
     });
