@@ -28,17 +28,41 @@ angular.module('ExpertsInside.SharePoint')
       this.defaults = angular.extend({
         itemType: 'SP.Data.' + upcaseName + 'ListItem'
       }, defaults);
+      this.queries = {};
     }
 
     List.prototype = {
       $baseUrl: function() {
         return $spPageContextInfo.webServerRelativeUrl + "/_api/web/lists/getByTitle('" + this.name + "')";
       },
+      $appendQueryString: function(baseUrl, params) {
+        var url = baseUrl;
+
+        if (params) {
+          var parts = [];
+          var keys = [];
+          for(var key in params) {
+            if (params.hasOwnProperty(key)) {
+              keys.push(key);
+            }
+          }
+          keys = keys.sort();
+          angular.forEach(keys, function(key) {
+            var value = params[key];
+            if (value === null || angular.isUndefined(value)) { return; }
+            if (angular.isArray(value)) { value = value.join(','); }
+            if (angular.isObject(value)) { value = angular.toJson(value); }
+
+            parts.push(key + '=' + value);
+          });
+          url += ((url.indexOf('?') === -1) ? '?' : '&') + parts.join('&');
+        }
+
+        return url;
+      },
       $buildHttpConfig: function(action, params, args) {
-        var baseUrl = this.$baseUrl();
+        var url = this.$baseUrl();
         var httpConfig = {
-          url: baseUrl,
-          params: params,
           headers: {
             accept: 'application/json;odata=verbose'
           },
@@ -56,15 +80,15 @@ angular.module('ExpertsInside.SharePoint')
 
         switch(action) {
         case 'get':
-          httpConfig.url = baseUrl + '/items(' + args + ')';
+          url += '/items(' + args + ')';
           httpConfig.method = 'GET';
           break;
         case 'query':
-          httpConfig.url = baseUrl + '/items';
+          url += '/items';
           httpConfig.method = 'GET';
           break;
         case 'create':
-          httpConfig.url = baseUrl + '/items';
+          url += '/items';
           httpConfig.method = 'POST';
           angular.extend(httpConfig.headers, {
             'X-RequestDigest': $spRequestDigest(),
@@ -72,7 +96,7 @@ angular.module('ExpertsInside.SharePoint')
           });
           break;
         case 'save':
-          httpConfig.url = args.__metdata.uri;
+          url = args.__metdata.uri;
           httpConfig.method = 'POST';
           angular.extend(httpConfig.headers, {
             'X-HTTP-Method': 'MERGE',
@@ -83,6 +107,7 @@ angular.module('ExpertsInside.SharePoint')
 
           break;
         }
+        httpConfig.url = this.$appendQueryString(url, params);
         return httpConfig;
       },
       $normalizeParams: function(params) {
@@ -93,9 +118,6 @@ angular.module('ExpertsInside.SharePoint')
               delete params[key];
               key = '$' + key;
               params[key] = value;
-            }
-            if (angular.isArray(value)) {
-              params[key] = value.join(',');
             }
             if (validParamKeys.indexOf(key) === -1) {
               $log.warn('Invalid param key: ' + key);
@@ -160,6 +182,14 @@ angular.module('ExpertsInside.SharePoint')
         var httpConfig = this.$buildHttpConfig('save', undefined, item);
 
         return this.$createResult([], httpConfig);
+      },
+      addNamedQuery: function(name, createParams) {
+        var me = this;
+        this.queries[name] = function() {
+          var params = createParams.apply(me, arguments);
+          return me.query(params);
+        };
+        return me;
       }
     };
 
@@ -170,3 +200,17 @@ angular.module('ExpertsInside.SharePoint')
 
     return listFactory;
   });
+
+      // getDishesByGroupAndCategory: function(group, category, mode) {
+      //   var deferred;
+      //   deferred = $q.defer();
+      //   $http(spfy({
+      //     url: "/web/lists/getByTitle('Dishes')/items?$top=4000&$select=Id,Title,mhmaCategoryId,mhmaSortNumber,mhmaGroupId,mhmaPrice,mhmaIsDefault,mhmaIsArchived&$filter=(mhmaGroup eq " + group.Id + ") and (mhmaCategory eq " + category.Id + ") and (mhmaIsArchived eq " + mode.value + ")",
+      //     method: 'GET'
+      //   })).success(function(data) {
+      //     return deferred.resolve(data);
+      //   }).error(function(error) {
+      //     return deferred.reject();
+      //   });
+      //   return deferred.promise;
+      // },

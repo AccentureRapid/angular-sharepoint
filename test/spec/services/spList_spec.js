@@ -78,12 +78,6 @@ describe('ExpertsInside.SharePoint', function() {
           $log.warn.restore();
         }));
 
-        it('transforms arrays into strings', function() {
-          var normalized = list.$normalizeParams({$select: ['foo', 'bar']});
-
-          expect(normalized).to.be.eql({$select: 'foo,bar'});
-        });
-
         it('does not modify the input', function() {
           var params = {select: 'foo'};
 
@@ -196,7 +190,7 @@ describe('ExpertsInside.SharePoint', function() {
             $expand: 'baz',
             $filter: 'foo eq 1'
           };
-          var queryParams = "?$expand=baz&$filter=foo+eq+1&$orderby=foo&$select=foo,bar&$skip=3&$sort=bar&$top=2";
+          var queryParams = "?$expand=baz&$filter=foo eq 1&$orderby=foo&$select=foo,bar&$skip=3&$sort=bar&$top=2";
           $httpBackend.expectGET("/testApp/_api/web/lists/getByTitle('Test')/items" + queryParams, {
             accept: 'application/json;odata=verbose'
           });
