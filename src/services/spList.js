@@ -16,7 +16,7 @@ angular.module('ExpertsInside.SharePoint')
   .factory('$spList', function($spPageContextInfo, $spRequestDigest, $http, $log) {
     'use strict';
     var $spListMinErr = angular.$$minErr('$spList');
-    var validParamKeys = ['$select', '$filter', '$orderby', '$top', '$skip', '$expand'];
+    var validParamKeys = ['$select', '$filter', '$orderby', '$top', '$skip', '$expand', '$sort'];
 
     function List(name, defaults) {
       if (!name) {

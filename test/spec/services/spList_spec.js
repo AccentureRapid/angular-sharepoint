@@ -190,12 +190,13 @@ describe('ExpertsInside.SharePoint', function() {
           var params = {
             $select: ['foo','bar'],
             $orderby: 'foo',
+            $sort: 'bar',
             $top: 2,
             $skip: 3,
             $expand: 'baz',
             $filter: 'foo eq 1'
           };
-          var queryParams = "?$expand=baz&$filter=foo+eq+1&$orderby=foo&$select=foo,bar&$skip=3&$top=2";
+          var queryParams = "?$expand=baz&$filter=foo+eq+1&$orderby=foo&$select=foo,bar&$skip=3&$sort=bar&$top=2";
           $httpBackend.expectGET("/testApp/_api/web/lists/getByTitle('Test')/items" + queryParams, {
             accept: 'application/json;odata=verbose'
           });
