@@ -13,7 +13,7 @@
  * @return {Object} A list "class" object with the default set of resource actions
  */
 angular.module('ExpertsInside.SharePoint')
-  .factory('$spList', function($spPageContextInfo, $http, $log, $q) {
+  .factory('$spList', function($spPageContextInfo, $spRequestDigest, $http, $log) {
     'use strict';
     var $spListMinErr = angular.$$minErr('$spList');
     var validParamKeys = ['$select', '$filter', '$orderby', '$top', '$skip', '$expand'];
@@ -23,8 +23,11 @@ angular.module('ExpertsInside.SharePoint')
         throw $spListMinErr('badargs', 'name cannot be blank.');
       }
 
-      this.name = name;
-      this.defaults = angular.extend({}, defaults);
+      this.name = name.toString();
+      var upcaseName = this.name.charAt(0).toUpperCase() + this.name.slice(1);
+      this.defaults = angular.extend({
+        itemType: 'SP.Data.' + upcaseName + 'ListItem'
+      }, defaults);
     }
 
     List.prototype = {
@@ -59,6 +62,25 @@ angular.module('ExpertsInside.SharePoint')
         case 'query':
           httpConfig.url = baseUrl + '/items';
           httpConfig.method = 'GET';
+          break;
+        case 'create':
+          httpConfig.url = baseUrl + '/items';
+          httpConfig.method = 'POST';
+          angular.extend(httpConfig.headers, {
+            'X-RequestDigest': $spRequestDigest(),
+            'content-type': 'application/json;odata=verbose'
+          });
+          break;
+        case 'save':
+          httpConfig.url = args.__metdata.uri;
+          httpConfig.method = 'POST';
+          angular.extend(httpConfig.headers, {
+            'X-HTTP-Method': 'MERGE',
+            'X-RequestDigest': $spRequestDigest(),
+            'IF-MATCH': args.__metadata.etag || '*',
+            'content-type': 'application/json;odata=verbose'
+          });
+
           break;
         }
         return httpConfig;
@@ -115,15 +137,11 @@ angular.module('ExpertsInside.SharePoint')
 
         return this.$createResult([], httpConfig);
       },
-      create: function(data, type) {
-        if (angular.isString(data)) {
-          type = data;
-          data = {};
-        }
-        type = type || this.defaults.itemType;
+      create: function(data) {
+        var type = this.defaults.itemType;
         if (!type) {
           throw $spListMinErr('badargs', 'Cannot create an item without a valid type.' +
-                              ' Either set the default item type on the list or pass the type as the second argument.');
+                              'Please set the default item type on the list (list.defaults.itemType).');
         }
         var itemDefaults = {
           __metadata: {
@@ -131,11 +149,17 @@ angular.module('ExpertsInside.SharePoint')
           }
         };
         var item = angular.extend({}, itemDefaults, data);
-        var deferred = $q.defer();
-        deferred.resolve(item);
-        item.$promise = deferred.promise;
+        var httpConfig = this.$buildHttpConfig('create', undefined, item);
 
-        return item;
+        return this.$createResult(item, httpConfig);
+      },
+      save: function(item) {
+        if (angular.isUndefined(item.__metadata)) {
+          throw "o";
+        }
+        var httpConfig = this.$buildHttpConfig('save', undefined, item);
+
+        return this.$createResult([], httpConfig);
       }
     };
 

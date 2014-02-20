@@ -7,6 +7,7 @@ describe('ExpertsInside.SharePoint', function() {
         $httpBackend;
 
     beforeEach(module('ExpertsInside.SharePoint'));
+    beforeEach(module('spRequestDigestMock'));
     beforeEach(inject(function(_$spList_, _$spPageContextInfo_, _$httpBackend_) {
       $spList = _$spList_;
       $spPageContextInfo = _$spPageContextInfo_;
@@ -27,10 +28,10 @@ describe('ExpertsInside.SharePoint', function() {
       expect(function() { $spList(); }).to.throw(Error, '[$spList:badargs] name cannot be blank.');
     });
 
-    it('defaults *defaults* to empty object', function() {
-      var list = $spList('Test');
+    it('defaults *defaults* to an object with a single itemType property that gets infered from the list name', function() {
+      var list = $spList('test');
 
-      expect(list.defaults).to.be.eql({});
+      expect(list.defaults).to.be.eql({itemType: 'SP.Data.TestListItem'});
     });
 
     describe('List', function() {
@@ -223,17 +224,30 @@ describe('ExpertsInside.SharePoint', function() {
         });
       });
 
-      describe('#create(data, type)', function() {
-        it('defaults *type* to the default item type set on the list', function() {
+      describe('#create(data)', function() {
+        beforeEach(inject(function($spRequestDigest) {
+          $httpBackend.whenPOST(/\/testApp\/_api\/web\/lists\/getByTitle\('Test'\)\/items/, {
+            accept: 'application/json;odata=verbose',
+            'X-RequestDigest': $spRequestDigest(),
+            'content-type': 'application/json;odata=verbose'
+          }).respond(JSON.stringify({
+            d: {
+              __metadata: {
+                id: '95A2B4AC-7A2B-4EAC-ADAC-F8D2B828559A',
+                uri: "https://TestDomain.sharepoint.com/sites/dev/TestApp/_api/Web/Lists('Test')/Items(2)",
+                etag: "1"
+              }
+            }
+          }));
+        }));
+        afterEach(function() {
+          $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('sets metadata type to the default item type set on the list', function() {
           var item = list.create();
 
           expect(item).to.have.deep.property('__metadata.type', 'SP.TestListItem');
-        });
-
-        it('accepts *type* as single parameter', function() {
-          var item = list.create('SP.OtherTestListItem');
-
-          expect(item).to.have.deep.property('__metadata.type', 'SP.OtherTestListItem');
         });
 
         it('throws an error when *type* is undefined and no default item type is set on the list', function() {
@@ -252,17 +266,20 @@ describe('ExpertsInside.SharePoint', function() {
           expect(list.create()).to.have.property('$promise');
         });
 
-        it('resolves the $promise immediately', function(done) {
-          inject(function($rootScope) {
-            var immediate = false;
-            list.create().$promise.then(function() {
-              immediate = true;
-              done();
+        it('extends the created object with the data return by the REST request when it resolves', function(done) {
+          var item = list.create();
+          item.$promise.then(function() {
+            console.log(item.__metadata);
+            expect(item.__metadata).to.be.eql({
+              id: '95A2B4AC-7A2B-4EAC-ADAC-F8D2B828559A',
+              uri: "https://TestDomain.sharepoint.com/sites/dev/TestApp/_api/Web/Lists('Test')/Items(2)",
+              etag: "1"
             });
-            $rootScope.$digest();
-
-            expect(immediate).to.be.true;
+            done();
           });
+
+          $httpBackend.flush();
+          $httpBackend.verifyNoOutstandingRequest();
         });
       });
     });
