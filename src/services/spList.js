@@ -67,7 +67,10 @@ angular.module('ExpertsInside.SharePoint')
             accept: 'application/json;odata=verbose'
           },
           transformResponse: function (data) {
-            var response = JSON.parse(data);
+            var response = {};
+            if (data !== '') {
+              response = JSON.parse(data);
+            }
             if (angular.isDefined(response.d)) {
               response = response.d;
             }
@@ -92,17 +95,29 @@ angular.module('ExpertsInside.SharePoint')
           httpConfig.method = 'POST';
           angular.extend(httpConfig.headers, {
             'X-RequestDigest': $spRequestDigest(),
-            'content-type': 'application/json;odata=verbose'
+            'Content-Type': 'application/json;odata=verbose'
           });
+          httpConfig.data = angular.toJson(args);
           break;
         case 'save':
-          url = args.__metdata.uri;
+          url = args.__metadata.uri;
           httpConfig.method = 'POST';
           angular.extend(httpConfig.headers, {
+            'Content-Type': 'application/json;odata=verbose',
             'X-HTTP-Method': 'MERGE',
             'X-RequestDigest': $spRequestDigest(),
+            'IF-MATCH': args.__metadata.etag || '*'
+          });
+          httpConfig.data = angular.toJson(args);
+
+          break;
+        case 'delete':
+          url = args.__metadata.uri;
+          httpConfig.method = 'POST';
+          angular.extend(httpConfig.headers, {
+            'X-HTTP-Method': 'DELETE',
+            'X-RequestDigest': $spRequestDigest(),
             'IF-MATCH': args.__metadata.etag || '*',
-            'content-type': 'application/json;odata=verbose'
           });
 
           break;
@@ -177,11 +192,19 @@ angular.module('ExpertsInside.SharePoint')
       },
       save: function(item) {
         if (angular.isUndefined(item.__metadata)) {
-          throw "o";
+          throw $spListMinErr('badargs', 'Item must have __metadata property.');
         }
         var httpConfig = this.$buildHttpConfig('save', undefined, item);
 
-        return this.$createResult([], httpConfig);
+        return this.$createResult(item, httpConfig);
+      },
+      delete: function(item) {
+        if (angular.isUndefined(item.__metadata)) {
+          throw $spListMinErr('badargs', 'Item must have __metadata property.');
+        }
+        var httpConfig = this.$buildHttpConfig('delete', undefined, item);
+
+        return this.$createResult(item, httpConfig);
       },
       addNamedQuery: function(name, createParams) {
         var me = this;
@@ -200,17 +223,3 @@ angular.module('ExpertsInside.SharePoint')
 
     return listFactory;
   });
-
-      // getDishesByGroupAndCategory: function(group, category, mode) {
-      //   var deferred;
-      //   deferred = $q.defer();
-      //   $http(spfy({
-      //     url: "/web/lists/getByTitle('Dishes')/items?$top=4000&$select=Id,Title,mhmaCategoryId,mhmaSortNumber,mhmaGroupId,mhmaPrice,mhmaIsDefault,mhmaIsArchived&$filter=(mhmaGroup eq " + group.Id + ") and (mhmaCategory eq " + category.Id + ") and (mhmaIsArchived eq " + mode.value + ")",
-      //     method: 'GET'
-      //   })).success(function(data) {
-      //     return deferred.resolve(data);
-      //   }).error(function(error) {
-      //     return deferred.reject();
-      //   });
-      //   return deferred.promise;
-      // },

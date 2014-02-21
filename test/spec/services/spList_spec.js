@@ -4,13 +4,15 @@ describe('ExpertsInside.SharePoint', function() {
   describe('Service: $spList(name, defaults)', function() {
     var $spPageContextInfo,
         $spList,
+        $spRequestDigest,
         $httpBackend;
 
     beforeEach(module('ExpertsInside.SharePoint'));
     beforeEach(module('spRequestDigestMock'));
-    beforeEach(inject(function(_$spList_, _$spPageContextInfo_, _$httpBackend_) {
+    beforeEach(inject(function(_$spList_, _$spPageContextInfo_, _$spRequestDigest_, _$httpBackend_) {
       $spList = _$spList_;
       $spPageContextInfo = _$spPageContextInfo_;
+      $spRequestDigest = _$spRequestDigest_;
       $httpBackend = _$httpBackend_;
       $spPageContextInfo.webServerRelativeUrl = '/testApp';
     }));
@@ -220,11 +222,11 @@ describe('ExpertsInside.SharePoint', function() {
       });
 
       describe('#create(data)', function() {
-        beforeEach(inject(function($spRequestDigest) {
-          $httpBackend.whenPOST(/\/testApp\/_api\/web\/lists\/getByTitle\('Test'\)\/items/, {
+        beforeEach(function() {
+          $httpBackend.whenPOST(/\/testApp\/_api\/web\/lists\/getByTitle\('Test'\)\/items/, /.*/, {
             accept: 'application/json;odata=verbose',
             'X-RequestDigest': $spRequestDigest(),
-            'content-type': 'application/json;odata=verbose'
+            'Content-Type': 'application/json;odata=verbose'
           }).respond(JSON.stringify({
             d: {
               __metadata: {
@@ -234,7 +236,7 @@ describe('ExpertsInside.SharePoint', function() {
               }
             }
           }));
-        }));
+        });
         afterEach(function() {
           $httpBackend.verifyNoOutstandingExpectation();
         });
@@ -262,9 +264,18 @@ describe('ExpertsInside.SharePoint', function() {
         });
 
         it('extends the created object with the data return by the REST request when it resolves', function(done) {
-          var item = list.create();
+          var data = {foo: 'bar'};
+          $httpBackend.expectPOST("/testApp/_api/web/lists/getByTitle('Test')/items", angular.extend(data, {
+            __metadata: { type: 'SP.Data.TestListItem' }
+          }), {
+            accept: 'application/json;odata=verbose',
+            'X-RequestDigest': $spRequestDigest(),
+            'Content-Type': 'application/json;odata=verbose'
+          });
+
+          var item = list.create(data);
+
           item.$promise.then(function() {
-            console.log(item.__metadata);
             expect(item.__metadata).to.be.eql({
               id: '95A2B4AC-7A2B-4EAC-ADAC-F8D2B828559A',
               uri: "https://TestDomain.sharepoint.com/sites/dev/TestApp/_api/Web/Lists('Test')/Items(2)",
