@@ -31,29 +31,21 @@ describe('ExpertsInside.SharePoint', function() {
       });
     });
 
-    describe('#appendQueryString(url, params)', function() {
-      var url;
-
-      beforeEach(function() { url = 'http://my.app'; });
-
-      it('returns the unchanged *url* when *params* is null', function() {
-        expect($spRest.appendQueryString(url, null)).to.be.eql(url);
+    describe('#buildQueryString(url, params)', function() {
+      it('returns an empty string when *params* is null', function() {
+        expect($spRest.buildQueryString(null)).to.be.eql('');
       });
 
-      it('returns the unchanged *url* when *params* is undefined', function() {
-        expect($spRest.appendQueryString(url)).to.be.eql(url);
+      it('returns an empty string when *params* is undefined', function() {
+        expect($spRest.buildQueryString()).to.be.eql('');
       });
 
-      it('creates a sorted query string from *params* and appends it to the *url*', function() {
-        expect($spRest.appendQueryString(url, {foo: 1, bar: 2})).to.be.eql(url+'?bar=2&foo=1');
+      it('creates a sorted query string from *params*', function() {
+        expect($spRest.buildQueryString({foo: 1, bar: 2})).to.be.eql('bar=2&foo=1');
       });
 
-      it('handles arrays as values in *params*', function() {
-        expect($spRest.appendQueryString(url, {foo: [1,2]})).to.be.eql(url+'?foo=1,2');
-      });
-
-      it('correctly appends it to an existing query string in *url*', function() {
-        expect($spRest.appendQueryString(url + '?bar', {foo: 1})).to.be.eql(url+'?bar&foo=1');
+      it('handles array values in *params*', function() {
+        expect($spRest.buildQueryString({foo: [1,2]})).to.be.eql('foo=1,2');
       });
     });
 
@@ -96,6 +88,23 @@ describe('ExpertsInside.SharePoint', function() {
         $spRest.normalizeParams(params);
 
         expect(params).to.be.eql({select: 'foo'});
+      });
+    });
+
+    describe('$appendQueryString(url, params', function() {
+      var url;
+      beforeEach(function() { url = 'http://my.app'; });
+
+      it('returns the original *url* when *params* leads to an empty query string', function () {
+        expect($spRest.appendQueryString(url, {})).to.be.eql(url);
+      });
+
+      it('normalizes the params and adds it to the url', function () {
+        expect($spRest.appendQueryString(url, {select: 'foo'})).to.be.eql(url + '?$select=foo');
+      });
+
+      it('correctly appends the query string to an url which already has one', function () {
+        expect($spRest.appendQueryString(url + '?bar', {select: 'foo'})).to.be.eql(url + '?bar&$select=foo');
       });
     });
   });

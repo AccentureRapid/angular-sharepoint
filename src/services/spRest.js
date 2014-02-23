@@ -18,7 +18,7 @@ angular.module('ExpertsInside.SharePoint')
       return keys.sort();
     }
 
-    return {
+    var $spRest = {
       transformResponse: function (json) {
         var response = {};
         if (angular.isDefined(json) && json !== null && json !== '') {
@@ -32,7 +32,7 @@ angular.module('ExpertsInside.SharePoint')
         }
         return response;
       },
-      appendQueryString: function(url, params) {
+      buildQueryString: function(params) {
         var parts = [];
         var keys = getKeysSorted(params);
 
@@ -45,10 +45,8 @@ angular.module('ExpertsInside.SharePoint')
           parts.push(key + '=' + value);
         });
         var queryString = parts.join('&');
-        if (queryString !== '') {
-          url += ((url.indexOf('?') === -1) ? '?' : '&') + queryString;
-        }
-        return url;
+
+        return queryString;
       },
       normalizeParams: function(params) {
         params = angular.extend({}, params); //make a copy
@@ -73,5 +71,17 @@ angular.module('ExpertsInside.SharePoint')
 
         return params;
       },
+      appendQueryString: function(url, params) {
+        params = $spRest.normalizeParams(params);
+        var queryString = $spRest.buildQueryString(params);
+
+        if (queryString !== '') {
+          url += ((url.indexOf('?') === -1) ? '?' : '&') + queryString;
+        }
+
+        return url;
+      }
     };
+
+    return $spRest;
   });

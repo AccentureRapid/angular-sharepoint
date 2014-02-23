@@ -88,15 +88,11 @@ angular.module('ExpertsInside.SharePoint')
         if (angular.isUndefined(id)) {
           throw $spListMinErr('badargs', 'id is required.');
         }
-        params = $spRest.normalizeParams(params);
-
         var httpConfig = this.$buildHttpConfig('get', params, id);
 
         return this.$createResult({Id: id}, httpConfig);
       },
       query: function(params) {
-        params = $spRest.normalizeParams(params);
-
         var httpConfig = this.$buildHttpConfig('query', params);
 
         return this.$createResult([], httpConfig);
