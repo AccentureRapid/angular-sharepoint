@@ -13,10 +13,9 @@
  * @return {Object} A list "class" object with the default set of resource actions
  */
 angular.module('ExpertsInside.SharePoint')
-  .factory('$spList', function($spRest, $http, $log) {
+  .factory('$spList', function($spRest, $http) {
     'use strict';
     var $spListMinErr = angular.$$minErr('$spList');
-    var validParamKeys = ['$select', '$filter', '$orderby', '$top', '$skip', '$expand', '$sort'];
 
     function List(name, defaults) {
       if (!name) {
@@ -76,29 +75,6 @@ angular.module('ExpertsInside.SharePoint')
 
         return httpConfig;
       },
-      $normalizeParams: function(params) {
-        params = angular.extend({}, params); //make a copy
-        if (angular.isDefined(params)) {
-          angular.forEach(params, function(value, key) {
-            if(key.indexOf('$') !== 0) {
-              delete params[key];
-              key = '$' + key;
-              params[key] = value;
-            }
-            if (validParamKeys.indexOf(key) === -1) {
-              $log.warn('Invalid param key: ' + key);
-              delete params[key];
-            }
-          });
-        }
-        // cannot use angular.equals(params, {}) to check for empty object,
-        // because angular.equals ignores properties prefixed with $
-        if (params === null || JSON.stringify(params) === '{}') {
-          params = undefined;
-        }
-
-        return params;
-      },
       $createResult: function(emptyObject, httpConfig) {
         var result = emptyObject;
         result.$promise = $http(httpConfig).success(function(data) {
@@ -112,16 +88,14 @@ angular.module('ExpertsInside.SharePoint')
         if (angular.isUndefined(id)) {
           throw $spListMinErr('badargs', 'id is required.');
         }
-        params = this.$normalizeParams(params);
+        params = $spRest.normalizeParams(params);
 
         var httpConfig = this.$buildHttpConfig('get', params, id);
-        console.log(httpConfig);
-        console.log(httpConfig);
 
         return this.$createResult({Id: id}, httpConfig);
       },
       query: function(params) {
-        params = this.$normalizeParams(params);
+        params = $spRest.normalizeParams(params);
 
         var httpConfig = this.$buildHttpConfig('query', params);
 
