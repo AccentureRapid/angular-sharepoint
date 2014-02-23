@@ -50,7 +50,7 @@ describe('ExpertsInside.SharePoint', function() {
       });
 
       it('#$baseUrl()', function() {
-        expect(list.$baseUrl()).to.be.equal("/testApp/_api/web/lists/getByTitle('Test')");
+        expect(list.$baseUrl()).to.be.equal("web/lists/getByTitle('Test')");
       });
 
       describe('#$normalizeParams(params)', function() {
@@ -96,7 +96,7 @@ describe('ExpertsInside.SharePoint', function() {
       describe('#get(id, params)', function() {
         beforeEach(function() {
           $httpBackend.whenGET(/\/testApp\/_api\/web\/lists\/getByTitle\('Test'\)\/items\(1\)/, {
-            accept: 'application/json;odata=verbose'
+            Accept: 'application/json;odata=verbose'
           }).respond(JSON.stringify({
             d: {
               Id: 1
@@ -110,7 +110,7 @@ describe('ExpertsInside.SharePoint', function() {
 
         it('creates REST call that fetches the item with the given *id*', function() {
           $httpBackend.expectGET("/testApp/_api/web/lists/getByTitle('Test')/items(1)", {
-            accept: 'application/json;odata=verbose'
+            Accept: 'application/json;odata=verbose'
           });
 
           list.get(1);
@@ -120,7 +120,7 @@ describe('ExpertsInside.SharePoint', function() {
 
         it('creates REST with query *params* that fetches the item with the given *id*', function() {
           $httpBackend.expectGET("/testApp/_api/web/lists/getByTitle('Test')/items(1)?$select=foo", {
-            accept: 'application/json;odata=verbose'
+            Accept: 'application/json;odata=verbose'
           });
 
           list.get(1, {
@@ -157,10 +157,10 @@ describe('ExpertsInside.SharePoint', function() {
         });
       });
 
-      describe('#get(id, params)', function() {
+      describe('#query(id, params)', function() {
         beforeEach(function() {
           $httpBackend.whenGET(/\/testApp\/_api\/web\/lists\/getByTitle\('Test'\)\/items/, {
-            accept: 'application/json;odata=verbose'
+            Accept: 'application/json;odata=verbose'
           }).respond(JSON.stringify({
             d: {
               results: [
@@ -178,7 +178,7 @@ describe('ExpertsInside.SharePoint', function() {
 
         it('creates REST call that fetches all items', function() {
           $httpBackend.expectGET("/testApp/_api/web/lists/getByTitle('Test')/items", {
-            accept: 'application/json;odata=verbose'
+            Accept: 'application/json;odata=verbose'
           });
 
           list.query();
@@ -198,7 +198,7 @@ describe('ExpertsInside.SharePoint', function() {
           };
           var queryParams = "?$expand=baz&$filter=foo eq 1&$orderby=foo&$select=foo,bar&$skip=3&$sort=bar&$top=2";
           $httpBackend.expectGET("/testApp/_api/web/lists/getByTitle('Test')/items" + queryParams, {
-            accept: 'application/json;odata=verbose'
+            Accept: 'application/json;odata=verbose'
           });
 
           list.query(params);
@@ -228,7 +228,7 @@ describe('ExpertsInside.SharePoint', function() {
       describe('#create(data)', function() {
         beforeEach(function() {
           $httpBackend.whenPOST(/\/testApp\/_api\/web\/lists\/getByTitle\('Test'\)\/items/, /.*/, {
-            accept: 'application/json;odata=verbose',
+            Accept: 'application/json;odata=verbose',
             'X-RequestDigest': requestDigest,
             'Content-Type': 'application/json;odata=verbose'
           }).respond(JSON.stringify({
@@ -272,7 +272,7 @@ describe('ExpertsInside.SharePoint', function() {
           $httpBackend.expectPOST("/testApp/_api/web/lists/getByTitle('Test')/items", angular.extend(data, {
             __metadata: { type: 'SP.Data.TestListItem' }
           }), {
-            accept: 'application/json;odata=verbose',
+            Accept: 'application/json;odata=verbose',
             'X-RequestDigest': requestDigest,
             'Content-Type': 'application/json;odata=verbose'
           });
