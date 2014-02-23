@@ -1,6 +1,4 @@
 describe('ExpertsInside.SharePoint', function() {
-  'use strict';
-
   describe('Service: $spRequestDigest', function() {
     var $spRequestDigest,
         $window;

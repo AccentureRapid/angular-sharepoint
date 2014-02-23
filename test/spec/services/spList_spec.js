@@ -1,6 +1,4 @@
 describe('ExpertsInside.SharePoint', function() {
-  'use strict';
-
   describe('Service: $spList(name, defaults)', function() {
     var $spPageContextInfo,
         $spList,
