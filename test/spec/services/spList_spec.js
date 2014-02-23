@@ -3,17 +3,23 @@ describe('ExpertsInside.SharePoint', function() {
     var $spPageContextInfo,
         $spList,
         $spRequestDigest,
-        $httpBackend;
+        $httpBackend,
+        requestDigest,
+        appWebUrl;
 
     beforeEach(module('ExpertsInside.SharePoint'));
-    beforeEach(module('spRequestDigestMock'));
-    beforeEach(inject(function(_$spList_, _$spPageContextInfo_, _$spRequestDigest_, _$httpBackend_) {
+    beforeEach(inject(function(_$spList_, _$spPageContextInfo_, _$httpBackend_) {
       $spList = _$spList_;
       $spPageContextInfo = _$spPageContextInfo_;
-      $spRequestDigest = _$spRequestDigest_;
       $httpBackend = _$httpBackend_;
-      $spPageContextInfo.webServerRelativeUrl = '/testApp';
+
+      sinon.stub(ShareCoffee.Commons, 'getFormDigest').returns(requestDigest = 'requestDigest');
+      sinon.stub(ShareCoffee.Commons, 'getAppWebUrl').returns(appWebUrl = '/testApp');
     }));
+    afterEach(function() {
+      ShareCoffee.Commons.getFormDigest.restore();
+      ShareCoffee.Commons.getAppWebUrl.restore();
+    });
 
     it('is defined', function() {
       expect($spList).not.to.be.undefined;
@@ -223,7 +229,7 @@ describe('ExpertsInside.SharePoint', function() {
         beforeEach(function() {
           $httpBackend.whenPOST(/\/testApp\/_api\/web\/lists\/getByTitle\('Test'\)\/items/, /.*/, {
             accept: 'application/json;odata=verbose',
-            'X-RequestDigest': $spRequestDigest(),
+            'X-RequestDigest': requestDigest,
             'Content-Type': 'application/json;odata=verbose'
           }).respond(JSON.stringify({
             d: {
@@ -267,7 +273,7 @@ describe('ExpertsInside.SharePoint', function() {
             __metadata: { type: 'SP.Data.TestListItem' }
           }), {
             accept: 'application/json;odata=verbose',
-            'X-RequestDigest': $spRequestDigest(),
+            'X-RequestDigest': requestDigest,
             'Content-Type': 'application/json;odata=verbose'
           });
 
