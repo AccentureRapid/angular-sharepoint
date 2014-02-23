@@ -35,31 +35,6 @@ angular.module('ExpertsInside.SharePoint')
       $baseUrl: function() {
         return "web/lists/getByTitle('" + this.name + "')";
       },
-      $appendQueryString: function(baseUrl, params) {
-        var url = baseUrl;
-
-        if (params) {
-          var parts = [];
-          var keys = [];
-          for(var key in params) {
-            if (params.hasOwnProperty(key)) {
-              keys.push(key);
-            }
-          }
-          keys = keys.sort();
-          angular.forEach(keys, function(key) {
-            var value = params[key];
-            if (value === null || angular.isUndefined(value)) { return; }
-            if (angular.isArray(value)) { value = value.join(','); }
-            if (angular.isObject(value)) { value = angular.toJson(value); }
-
-            parts.push(key + '=' + value);
-          });
-          url += ((url.indexOf('?') === -1) ? '?' : '&') + parts.join('&');
-        }
-
-        return url;
-      },
       $buildHttpConfig: function(action, params, args) {
         var baseUrl = this.$baseUrl(),
             httpConfig;
@@ -96,7 +71,7 @@ angular.module('ExpertsInside.SharePoint')
           break;
         }
 
-        httpConfig.url = this.$appendQueryString(httpConfig.url, params);
+        httpConfig.url = $spRest.appendQueryString(httpConfig.url, params);
         httpConfig.transformResponse = $spRest.transformResponse;
 
         return httpConfig;
