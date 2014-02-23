@@ -1,6 +1,8 @@
 angular.module('ExpertsInside.SharePoint')
-  .factory('$spRest', function() {
+  .factory('$spRest', function($log) {
     'use strict';
+
+    var validParamKeys = ['$select', '$filter', '$orderby', '$top', '$skip', '$expand', '$sort'];
 
     function getKeysSorted(obj) {
       var keys = [];
@@ -47,6 +49,29 @@ angular.module('ExpertsInside.SharePoint')
           url += ((url.indexOf('?') === -1) ? '?' : '&') + queryString;
         }
         return url;
+      },
+      normalizeParams: function(params) {
+        params = angular.extend({}, params); //make a copy
+        if (angular.isDefined(params)) {
+          angular.forEach(params, function(value, key) {
+            if(key.indexOf('$') !== 0) {
+              delete params[key];
+              key = '$' + key;
+              params[key] = value;
+            }
+            if (validParamKeys.indexOf(key) === -1) {
+              $log.warn('Invalid param key: ' + key);
+              delete params[key];
+            }
+          });
+        }
+        // cannot use angular.equals(params, {}) to check for empty object,
+        // because angular.equals ignores properties prefixed with $
+        if (params === null || JSON.stringify(params) === '{}') {
+          params = undefined;
+        }
+
+        return params;
       },
     };
   });

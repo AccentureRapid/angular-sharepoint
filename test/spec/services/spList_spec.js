@@ -53,45 +53,6 @@ describe('ExpertsInside.SharePoint', function() {
         expect(list.$baseUrl()).to.be.equal("web/lists/getByTitle('Test')");
       });
 
-      describe('#$normalizeParams(params)', function() {
-
-        it('prefixes keys with $ when needed', function() {
-          var normalized = list.$normalizeParams({
-            select: 'bar'
-          });
-
-          expect(normalized).to.be.eql({ $select: 'bar' });
-        });
-
-        it('replaces empty or null params with undefined', function() {
-          expect(list.$normalizeParams({})).to.be.undefined;
-          expect(list.$normalizeParams(null)).to.be.undefined;
-        });
-
-        it('removes invalid param keys', function() {
-          var normalized = list.$normalizeParams({foo: 'bar'});
-
-          expect(normalized).to.be.equal(undefined);
-        });
-
-        it('warns about invalid param keys', inject(function($log) {
-          sinon.spy($log, 'warn');
-
-          list.$normalizeParams({foo: 'bar'});
-
-          expect($log.warn).to.have.been.calledWith('Invalid param key: $foo');
-
-          $log.warn.restore();
-        }));
-
-        it('does not modify the input', function() {
-          var params = {select: 'foo'};
-
-          list.$normalizeParams(params);
-
-          expect(params).to.be.eql({select: 'foo'});
-        });
-      });
 
       describe('#get(id, params)', function() {
         beforeEach(function() {

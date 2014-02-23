@@ -56,5 +56,47 @@ describe('ExpertsInside.SharePoint', function() {
         expect($spRest.appendQueryString(url + '?bar', {foo: 1})).to.be.eql(url+'?bar&foo=1');
       });
     });
+
+    describe('#normalizeParams(params)', function() {
+      it('prefixes keys with $ when needed', function() {
+        var normalized = $spRest.normalizeParams({
+          select: 'bar'
+        });
+
+        expect(normalized).to.be.eql({ $select: 'bar' });
+      });
+
+      it('replaces empty params with undefined', function() {
+        expect($spRest.normalizeParams({})).to.be.undefined;
+      });
+
+      it('replaces null params with undefined', function() {
+        expect($spRest.normalizeParams(null)).to.be.undefined;
+      });
+
+      it('removes invalid param keys', function() {
+        var normalized = $spRest.normalizeParams({foo: 'bar'});
+
+        expect(normalized).to.be.equal(undefined);
+      });
+
+      it('warns about invalid param keys', inject(function($log) {
+        sinon.spy($log, 'warn');
+
+        $spRest.normalizeParams({foo: 'bar'});
+
+        expect($log.warn).to.have.been.calledWith('Invalid param key: $foo');
+
+        $log.warn.restore();
+      }));
+
+      it('does not modify the input', function() {
+        var params = {select: 'foo'};
+
+        $spRest.normalizeParams(params);
+
+        expect(params).to.be.eql({select: 'foo'});
+      });
+    });
   });
 });
