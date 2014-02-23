@@ -33,7 +33,20 @@ angular.module('ExpertsInside.SharePoint')
 
     List.prototype = {
       $baseUrl: function() {
-        return ShareCoffee.Commons.getApiRootUrl() + "web/lists/getByTitle('" + this.name + "')";
+        return "web/lists/getByTitle('" + this.name + "')";
+      },
+      $transformResponse: function (data) {
+        var response = {};
+        if (data !== '') {
+          response = JSON.parse(data);
+        }
+        if (angular.isDefined(response.d)) {
+          response = response.d;
+        }
+        if (angular.isDefined(response.results)) {
+          response = response.results;
+        }
+        return response;
       },
       $appendQueryString: function(baseUrl, params) {
         var url = baseUrl;
@@ -61,68 +74,44 @@ angular.module('ExpertsInside.SharePoint')
         return url;
       },
       $buildHttpConfig: function(action, params, args) {
-        var url = this.$baseUrl();
-        var httpConfig = {
-          headers: {
-            accept: 'application/json;odata=verbose'
-          },
-          transformResponse: function (data) {
-            var response = {};
-            if (data !== '') {
-              response = JSON.parse(data);
-            }
-            if (angular.isDefined(response.d)) {
-              response = response.d;
-            }
-            if (angular.isDefined(response.results)) {
-              response = response.results;
-            }
-            return response;
-          }
-        };
+        var baseUrl = this.$baseUrl(),
+            httpConfig;
 
         switch(action) {
         case 'get':
-          url += '/items(' + args + ')';
-          httpConfig.method = 'GET';
+          httpConfig = ShareCoffee.REST.build.read.for.angularJS({
+            url: baseUrl + '/items(' + args + ')'
+          });
           break;
         case 'query':
-          url += '/items';
-          httpConfig.method = 'GET';
+          httpConfig = ShareCoffee.REST.build.read.for.angularJS({
+            url: baseUrl + '/items'
+          });
           break;
         case 'create':
-          url += '/items';
-          httpConfig.method = 'POST';
-          angular.extend(httpConfig.headers, {
-            'X-RequestDigest': ShareCoffee.Commons.getFormDigest(),
-            'Content-Type': 'application/json;odata=verbose'
+          httpConfig = ShareCoffee.REST.build.create.for.angularJS({
+            url: baseUrl + '/items',
+            payload: args
           });
-          httpConfig.data = angular.toJson(args);
           break;
         case 'save':
-          url = args.__metadata.uri;
-          httpConfig.method = 'POST';
-          angular.extend(httpConfig.headers, {
-            'Content-Type': 'application/json;odata=verbose',
-            'X-HTTP-Method': 'MERGE',
-            'X-RequestDigest': ShareCoffee.Commons.getFormDigest(),
-            'IF-MATCH': args.__metadata.etag || '*'
+          httpConfig = ShareCoffee.REST.build.update.for.angularJS({
+            url: baseUrl,
+            payload: args
           });
-          httpConfig.data = angular.toJson(args);
-
+          httpConfig.url = args.__metadata.uri; // ShareCoffe doesnt work with absolute urls atm
           break;
         case 'delete':
-          url = args.__metadata.uri;
-          httpConfig.method = 'POST';
-          angular.extend(httpConfig.headers, {
-            'X-HTTP-Method': 'DELETE',
-            'X-RequestDigest': ShareCoffee.Commons.getFormDigest(),
-            'IF-MATCH': args.__metadata.etag || '*',
+          httpConfig = ShareCoffee.REST.build.update.for.angularJS({
+            url: baseUrl,
           });
-
+          httpConfig.url = args.__metadata.uri;
           break;
         }
-        httpConfig.url = this.$appendQueryString(url, params);
+
+        httpConfig.url = this.$appendQueryString(httpConfig.url, params);
+        httpConfig.transformResponse = this.$transformResponse;
+
         return httpConfig;
       },
       $normalizeParams: function(params) {
@@ -164,6 +153,8 @@ angular.module('ExpertsInside.SharePoint')
         params = this.$normalizeParams(params);
 
         var httpConfig = this.$buildHttpConfig('get', params, id);
+        console.log(httpConfig);
+        console.log(httpConfig);
 
         return this.$createResult({Id: id}, httpConfig);
       },
