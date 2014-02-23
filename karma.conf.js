@@ -18,6 +18,7 @@ module.exports = function(config) {
     files: [
       'test/components/angular/angular.js',
       'test/components/angular-mocks/angular-mocks.js',
+      'test/components/ShareCoffee/dist/ShareCoffee.js',
       'src/sharepoint.js',
       'src/**/*.js',
       'test/mocks/**/*_mock.js',
