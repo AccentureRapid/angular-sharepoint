@@ -1,7 +1,7 @@
 /**
  * @ngdoc service
  * @name ExpertsInside.SharePoint.$spList
- * @requires $spPageContextInfo
+ * @requires $spRest
  *
  * @description
  * A factory which creates a list object that lets you interact with SharePoint Lists via the
@@ -13,7 +13,7 @@
  * @return {Object} A list "class" object with the default set of resource actions
  */
 angular.module('ExpertsInside.SharePoint')
-  .factory('$spList', function($http, $log) {
+  .factory('$spList', function($spRest, $http, $log) {
     'use strict';
     var $spListMinErr = angular.$$minErr('$spList');
     var validParamKeys = ['$select', '$filter', '$orderby', '$top', '$skip', '$expand', '$sort'];
@@ -34,19 +34,6 @@ angular.module('ExpertsInside.SharePoint')
     List.prototype = {
       $baseUrl: function() {
         return "web/lists/getByTitle('" + this.name + "')";
-      },
-      $transformResponse: function (data) {
-        var response = {};
-        if (data !== '') {
-          response = JSON.parse(data);
-        }
-        if (angular.isDefined(response.d)) {
-          response = response.d;
-        }
-        if (angular.isDefined(response.results)) {
-          response = response.results;
-        }
-        return response;
       },
       $appendQueryString: function(baseUrl, params) {
         var url = baseUrl;
@@ -110,7 +97,7 @@ angular.module('ExpertsInside.SharePoint')
         }
 
         httpConfig.url = this.$appendQueryString(httpConfig.url, params);
-        httpConfig.transformResponse = this.$transformResponse;
+        httpConfig.transformResponse = $spRest.transformResponse;
 
         return httpConfig;
       },
