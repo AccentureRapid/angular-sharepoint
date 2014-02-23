@@ -30,5 +30,31 @@ describe('ExpertsInside.SharePoint', function() {
         expect($spRest.transformResponse(json)).to.be.eql(arr);
       });
     });
+
+    describe('#appendQueryString(url, params)', function() {
+      var url;
+
+      beforeEach(function() { url = 'http://my.app'; });
+
+      it('returns the unchanged *url* when *params* is null', function() {
+        expect($spRest.appendQueryString(url, null)).to.be.eql(url);
+      });
+
+      it('returns the unchanged *url* when *params* is undefined', function() {
+        expect($spRest.appendQueryString(url)).to.be.eql(url);
+      });
+
+      it('creates a sorted query string from *params* and appends it to the *url*', function() {
+        expect($spRest.appendQueryString(url, {foo: 1, bar: 2})).to.be.eql(url+'?bar=2&foo=1');
+      });
+
+      it('handles arrays as values in *params*', function() {
+        expect($spRest.appendQueryString(url, {foo: [1,2]})).to.be.eql(url+'?foo=1,2');
+      });
+
+      it('correctly appends it to an existing query string in *url*', function() {
+        expect($spRest.appendQueryString(url + '?bar', {foo: 1})).to.be.eql(url+'?bar&foo=1');
+      });
+    });
   });
 });
