@@ -13,7 +13,7 @@
  * @return {Object} A list "class" object with the default set of resource actions
  */
 angular.module('ExpertsInside.SharePoint')
-  .factory('$spList', function($spPageContextInfo, $spRequestDigest, $http, $log) {
+  .factory('$spList', function($http, $log) {
     'use strict';
     var $spListMinErr = angular.$$minErr('$spList');
     var validParamKeys = ['$select', '$filter', '$orderby', '$top', '$skip', '$expand', '$sort'];
@@ -33,7 +33,7 @@ angular.module('ExpertsInside.SharePoint')
 
     List.prototype = {
       $baseUrl: function() {
-        return $spPageContextInfo.webServerRelativeUrl + "/_api/web/lists/getByTitle('" + this.name + "')";
+        return ShareCoffee.Commons.getApiRootUrl() + "web/lists/getByTitle('" + this.name + "')";
       },
       $appendQueryString: function(baseUrl, params) {
         var url = baseUrl;
@@ -94,7 +94,7 @@ angular.module('ExpertsInside.SharePoint')
           url += '/items';
           httpConfig.method = 'POST';
           angular.extend(httpConfig.headers, {
-            'X-RequestDigest': $spRequestDigest(),
+            'X-RequestDigest': ShareCoffee.Commons.getFormDigest(),
             'Content-Type': 'application/json;odata=verbose'
           });
           httpConfig.data = angular.toJson(args);
@@ -105,7 +105,7 @@ angular.module('ExpertsInside.SharePoint')
           angular.extend(httpConfig.headers, {
             'Content-Type': 'application/json;odata=verbose',
             'X-HTTP-Method': 'MERGE',
-            'X-RequestDigest': $spRequestDigest(),
+            'X-RequestDigest': ShareCoffee.Commons.getFormDigest(),
             'IF-MATCH': args.__metadata.etag || '*'
           });
           httpConfig.data = angular.toJson(args);
@@ -116,7 +116,7 @@ angular.module('ExpertsInside.SharePoint')
           httpConfig.method = 'POST';
           angular.extend(httpConfig.headers, {
             'X-HTTP-Method': 'DELETE',
-            'X-RequestDigest': $spRequestDigest(),
+            'X-RequestDigest': ShareCoffee.Commons.getFormDigest(),
             'IF-MATCH': args.__metadata.etag || '*',
           });
 
