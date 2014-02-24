@@ -52,18 +52,18 @@ angular.module('ExpertsInside.SharePoint')
         case 'create':
           httpConfig = ShareCoffee.REST.build.create.for.angularJS({
             url: baseUrl + '/items',
-            payload: args
+            payload: angular.toJson(args)
           });
           break;
         case 'save':
           httpConfig = ShareCoffee.REST.build.update.for.angularJS({
             url: baseUrl,
-            payload: args
+            payload: angular.toJson(args)
           });
           httpConfig.url = args.__metadata.uri; // ShareCoffe doesnt work with absolute urls atm
           break;
         case 'delete':
-          httpConfig = ShareCoffee.REST.build.update.for.angularJS({
+          httpConfig = ShareCoffee.REST.build.delete.for.angularJS({
             url: baseUrl,
           });
           httpConfig.url = args.__metadata.uri;
