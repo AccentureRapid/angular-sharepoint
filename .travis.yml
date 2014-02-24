@@ -7,3 +7,7 @@ before_install:
   - bower install
 git:
   submodules: false
+branches:
+  only:
+    - master
+    - development
