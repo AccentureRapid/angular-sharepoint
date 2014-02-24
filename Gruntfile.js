@@ -106,7 +106,7 @@ module.exports = function(grunt) {
 
     grunt.task.run([
       'test',
-      'watch'
+      'watch:test'
     ]);
   });
 

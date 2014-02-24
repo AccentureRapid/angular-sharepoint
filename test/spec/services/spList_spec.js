@@ -1,21 +1,25 @@
 describe('ExpertsInside.SharePoint', function() {
-  'use strict';
-
   describe('Service: $spList(name, defaults)', function() {
     var $spPageContextInfo,
         $spList,
         $spRequestDigest,
-        $httpBackend;
+        $httpBackend,
+        requestDigest,
+        appWebUrl;
 
     beforeEach(module('ExpertsInside.SharePoint'));
-    beforeEach(module('spRequestDigestMock'));
-    beforeEach(inject(function(_$spList_, _$spPageContextInfo_, _$spRequestDigest_, _$httpBackend_) {
+    beforeEach(inject(function(_$spList_, _$spPageContextInfo_, _$httpBackend_) {
       $spList = _$spList_;
       $spPageContextInfo = _$spPageContextInfo_;
-      $spRequestDigest = _$spRequestDigest_;
       $httpBackend = _$httpBackend_;
-      $spPageContextInfo.webServerRelativeUrl = '/testApp';
+
+      sinon.stub(ShareCoffee.Commons, 'getFormDigest').returns(requestDigest = 'requestDigest');
+      sinon.stub(ShareCoffee.Commons, 'getAppWebUrl').returns(appWebUrl = '/testApp');
     }));
+    afterEach(function() {
+      ShareCoffee.Commons.getFormDigest.restore();
+      ShareCoffee.Commons.getAppWebUrl.restore();
+    });
 
     it('is defined', function() {
       expect($spList).not.to.be.undefined;
@@ -46,53 +50,14 @@ describe('ExpertsInside.SharePoint', function() {
       });
 
       it('#$baseUrl()', function() {
-        expect(list.$baseUrl()).to.be.equal("/testApp/_api/web/lists/getByTitle('Test')");
+        expect(list.$baseUrl()).to.be.equal("web/lists/getByTitle('Test')");
       });
 
-      describe('#$normalizeParams(params)', function() {
-
-        it('prefixes keys with $ when needed', function() {
-          var normalized = list.$normalizeParams({
-            select: 'bar'
-          });
-
-          expect(normalized).to.be.eql({ $select: 'bar' });
-        });
-
-        it('replaces empty or null params with undefined', function() {
-          expect(list.$normalizeParams({})).to.be.undefined;
-          expect(list.$normalizeParams(null)).to.be.undefined;
-        });
-
-        it('removes invalid param keys', function() {
-          var normalized = list.$normalizeParams({foo: 'bar'});
-
-          expect(normalized).to.be.equal(undefined);
-        });
-
-        it('warns about invalid param keys', inject(function($log) {
-          sinon.spy($log, 'warn');
-
-          list.$normalizeParams({foo: 'bar'});
-
-          expect($log.warn).to.have.been.calledWith('Invalid param key: $foo');
-
-          $log.warn.restore();
-        }));
-
-        it('does not modify the input', function() {
-          var params = {select: 'foo'};
-
-          list.$normalizeParams(params);
-
-          expect(params).to.be.eql({select: 'foo'});
-        });
-      });
 
       describe('#get(id, params)', function() {
         beforeEach(function() {
           $httpBackend.whenGET(/\/testApp\/_api\/web\/lists\/getByTitle\('Test'\)\/items\(1\)/, {
-            accept: 'application/json;odata=verbose'
+            Accept: 'application/json;odata=verbose'
           }).respond(JSON.stringify({
             d: {
               Id: 1
@@ -106,7 +71,7 @@ describe('ExpertsInside.SharePoint', function() {
 
         it('creates REST call that fetches the item with the given *id*', function() {
           $httpBackend.expectGET("/testApp/_api/web/lists/getByTitle('Test')/items(1)", {
-            accept: 'application/json;odata=verbose'
+            Accept: 'application/json;odata=verbose'
           });
 
           list.get(1);
@@ -116,7 +81,7 @@ describe('ExpertsInside.SharePoint', function() {
 
         it('creates REST with query *params* that fetches the item with the given *id*', function() {
           $httpBackend.expectGET("/testApp/_api/web/lists/getByTitle('Test')/items(1)?$select=foo", {
-            accept: 'application/json;odata=verbose'
+            Accept: 'application/json;odata=verbose'
           });
 
           list.get(1, {
@@ -153,10 +118,10 @@ describe('ExpertsInside.SharePoint', function() {
         });
       });
 
-      describe('#get(id, params)', function() {
+      describe('#query(id, params)', function() {
         beforeEach(function() {
           $httpBackend.whenGET(/\/testApp\/_api\/web\/lists\/getByTitle\('Test'\)\/items/, {
-            accept: 'application/json;odata=verbose'
+            Accept: 'application/json;odata=verbose'
           }).respond(JSON.stringify({
             d: {
               results: [
@@ -174,7 +139,7 @@ describe('ExpertsInside.SharePoint', function() {
 
         it('creates REST call that fetches all items', function() {
           $httpBackend.expectGET("/testApp/_api/web/lists/getByTitle('Test')/items", {
-            accept: 'application/json;odata=verbose'
+            Accept: 'application/json;odata=verbose'
           });
 
           list.query();
@@ -194,7 +159,7 @@ describe('ExpertsInside.SharePoint', function() {
           };
           var queryParams = "?$expand=baz&$filter=foo eq 1&$orderby=foo&$select=foo,bar&$skip=3&$sort=bar&$top=2";
           $httpBackend.expectGET("/testApp/_api/web/lists/getByTitle('Test')/items" + queryParams, {
-            accept: 'application/json;odata=verbose'
+            Accept: 'application/json;odata=verbose'
           });
 
           list.query(params);
@@ -224,8 +189,8 @@ describe('ExpertsInside.SharePoint', function() {
       describe('#create(data)', function() {
         beforeEach(function() {
           $httpBackend.whenPOST(/\/testApp\/_api\/web\/lists\/getByTitle\('Test'\)\/items/, /.*/, {
-            accept: 'application/json;odata=verbose',
-            'X-RequestDigest': $spRequestDigest(),
+            Accept: 'application/json;odata=verbose',
+            'X-RequestDigest': requestDigest,
             'Content-Type': 'application/json;odata=verbose'
           }).respond(JSON.stringify({
             d: {
@@ -268,8 +233,8 @@ describe('ExpertsInside.SharePoint', function() {
           $httpBackend.expectPOST("/testApp/_api/web/lists/getByTitle('Test')/items", angular.extend(data, {
             __metadata: { type: 'SP.Data.TestListItem' }
           }), {
-            accept: 'application/json;odata=verbose',
-            'X-RequestDigest': $spRequestDigest(),
+            Accept: 'application/json;odata=verbose',
+            'X-RequestDigest': requestDigest,
             'Content-Type': 'application/json;odata=verbose'
           });
 

@@ -1,7 +1,7 @@
 /**
  * @ngdoc service
  * @name ExpertsInside.SharePoint.$spList
- * @requires $spPageContextInfo
+ * @requires $spRest
  *
  * @description
  * A factory which creates a list object that lets you interact with SharePoint Lists via the
@@ -13,10 +13,9 @@
  * @return {Object} A list "class" object with the default set of resource actions
  */
 angular.module('ExpertsInside.SharePoint')
-  .factory('$spList', function($spPageContextInfo, $spRequestDigest, $http, $log) {
+  .factory('$spList', function($spRest, $http) {
     'use strict';
     var $spListMinErr = angular.$$minErr('$spList');
-    var validParamKeys = ['$select', '$filter', '$orderby', '$top', '$skip', '$expand', '$sort'];
 
     function List(name, defaults) {
       if (!name) {
@@ -33,120 +32,48 @@ angular.module('ExpertsInside.SharePoint')
 
     List.prototype = {
       $baseUrl: function() {
-        return $spPageContextInfo.webServerRelativeUrl + "/_api/web/lists/getByTitle('" + this.name + "')";
-      },
-      $appendQueryString: function(baseUrl, params) {
-        var url = baseUrl;
-
-        if (params) {
-          var parts = [];
-          var keys = [];
-          for(var key in params) {
-            if (params.hasOwnProperty(key)) {
-              keys.push(key);
-            }
-          }
-          keys = keys.sort();
-          angular.forEach(keys, function(key) {
-            var value = params[key];
-            if (value === null || angular.isUndefined(value)) { return; }
-            if (angular.isArray(value)) { value = value.join(','); }
-            if (angular.isObject(value)) { value = angular.toJson(value); }
-
-            parts.push(key + '=' + value);
-          });
-          url += ((url.indexOf('?') === -1) ? '?' : '&') + parts.join('&');
-        }
-
-        return url;
+        return "web/lists/getByTitle('" + this.name + "')";
       },
       $buildHttpConfig: function(action, params, args) {
-        var url = this.$baseUrl();
-        var httpConfig = {
-          headers: {
-            accept: 'application/json;odata=verbose'
-          },
-          transformResponse: function (data) {
-            var response = {};
-            if (data !== '') {
-              response = JSON.parse(data);
-            }
-            if (angular.isDefined(response.d)) {
-              response = response.d;
-            }
-            if (angular.isDefined(response.results)) {
-              response = response.results;
-            }
-            return response;
-          }
-        };
+        var baseUrl = this.$baseUrl(),
+            httpConfig;
 
         switch(action) {
         case 'get':
-          url += '/items(' + args + ')';
-          httpConfig.method = 'GET';
+          httpConfig = ShareCoffee.REST.build.read.for.angularJS({
+            url: baseUrl + '/items(' + args + ')'
+          });
           break;
         case 'query':
-          url += '/items';
-          httpConfig.method = 'GET';
+          httpConfig = ShareCoffee.REST.build.read.for.angularJS({
+            url: baseUrl + '/items'
+          });
           break;
         case 'create':
-          url += '/items';
-          httpConfig.method = 'POST';
-          angular.extend(httpConfig.headers, {
-            'X-RequestDigest': $spRequestDigest(),
-            'Content-Type': 'application/json;odata=verbose'
+          httpConfig = ShareCoffee.REST.build.create.for.angularJS({
+            url: baseUrl + '/items',
+            payload: args
           });
-          httpConfig.data = angular.toJson(args);
           break;
         case 'save':
-          url = args.__metadata.uri;
-          httpConfig.method = 'POST';
-          angular.extend(httpConfig.headers, {
-            'Content-Type': 'application/json;odata=verbose',
-            'X-HTTP-Method': 'MERGE',
-            'X-RequestDigest': $spRequestDigest(),
-            'IF-MATCH': args.__metadata.etag || '*'
+          httpConfig = ShareCoffee.REST.build.update.for.angularJS({
+            url: baseUrl,
+            payload: args
           });
-          httpConfig.data = angular.toJson(args);
-
+          httpConfig.url = args.__metadata.uri; // ShareCoffe doesnt work with absolute urls atm
           break;
         case 'delete':
-          url = args.__metadata.uri;
-          httpConfig.method = 'POST';
-          angular.extend(httpConfig.headers, {
-            'X-HTTP-Method': 'DELETE',
-            'X-RequestDigest': $spRequestDigest(),
-            'IF-MATCH': args.__metadata.etag || '*',
+          httpConfig = ShareCoffee.REST.build.update.for.angularJS({
+            url: baseUrl,
           });
-
+          httpConfig.url = args.__metadata.uri;
           break;
         }
-        httpConfig.url = this.$appendQueryString(url, params);
-        return httpConfig;
-      },
-      $normalizeParams: function(params) {
-        params = angular.extend({}, params); //make a copy
-        if (angular.isDefined(params)) {
-          angular.forEach(params, function(value, key) {
-            if(key.indexOf('$') !== 0) {
-              delete params[key];
-              key = '$' + key;
-              params[key] = value;
-            }
-            if (validParamKeys.indexOf(key) === -1) {
-              $log.warn('Invalid param key: ' + key);
-              delete params[key];
-            }
-          });
-        }
-        // cannot use angular.equals(params, {}) to check for empty object,
-        // because angular.equals ignores properties prefixed with $
-        if (params === null || JSON.stringify(params) === '{}') {
-          params = undefined;
-        }
 
-        return params;
+        httpConfig.url = $spRest.appendQueryString(httpConfig.url, params);
+        httpConfig.transformResponse = $spRest.transformResponse;
+
+        return httpConfig;
       },
       $createResult: function(emptyObject, httpConfig) {
         var result = emptyObject;
@@ -161,15 +88,11 @@ angular.module('ExpertsInside.SharePoint')
         if (angular.isUndefined(id)) {
           throw $spListMinErr('badargs', 'id is required.');
         }
-        params = this.$normalizeParams(params);
-
         var httpConfig = this.$buildHttpConfig('get', params, id);
 
         return this.$createResult({Id: id}, httpConfig);
       },
       query: function(params) {
-        params = this.$normalizeParams(params);
-
         var httpConfig = this.$buildHttpConfig('query', params);
 
         return this.$createResult([], httpConfig);

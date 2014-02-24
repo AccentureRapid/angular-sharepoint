@@ -3,6 +3,7 @@
     "maxerr"        : 100,
     "globals"     : {
         "angular": false,
+        "ShareCoffee": true,
         "module": false,
         "inject": false,
         "_": false,
@@ -31,7 +32,7 @@
     "plusplus"      : true,
     "regexp"        : false,
     "undef"         : true,
-    "strict"        : true,
+    "strict"      : false,
     "trailing"      : true,
 
     "asi"           : false,
