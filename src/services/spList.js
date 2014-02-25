@@ -17,16 +17,16 @@ angular.module('ExpertsInside.SharePoint')
     'use strict';
     var $spListMinErr = angular.$$minErr('$spList');
 
-    function List(name, defaults) {
+    function List(name) {
       if (!name) {
         throw $spListMinErr('badargs', 'name cannot be blank.');
       }
 
       this.name = name.toString();
       var upcaseName = this.name.charAt(0).toUpperCase() + this.name.slice(1);
-      this.defaults = angular.extend({
+      this.settings = {
         itemType: 'SP.Data.' + upcaseName + 'ListItem'
-      }, defaults);
+      };
       this.queries = {};
     }
 
@@ -98,14 +98,13 @@ angular.module('ExpertsInside.SharePoint')
         return this.$createResult([], httpConfig);
       },
       create: function(data) {
-        var type = this.defaults.itemType;
-        if (!type) {
+        if (!this.settings.itemType) {
           throw $spListMinErr('badargs', 'Cannot create an item without a valid type.' +
-                              'Please set the default item type on the list (list.defaults.itemType).');
+                              'Please set the default item type on the list (list.settings.itemType).');
         }
         var itemDefaults = {
           __metadata: {
-            type: type
+            type: this.settings.itemType
           }
         };
         var item = angular.extend({}, itemDefaults, data);
@@ -139,8 +138,11 @@ angular.module('ExpertsInside.SharePoint')
       }
     };
 
-    function listFactory(name, defaults) {
-      return new List(name, defaults);
+    function listFactory(name, options) {
+      if (!angular.isObject(options)) {
+        options = {};
+      }
+      return new List(name, options);
     }
     listFactory.List = List;
 

@@ -1,5 +1,5 @@
 describe('ExpertsInside.SharePoint', function() {
-  describe('Service: $spList(name, defaults)', function() {
+  describe('Service: $spList(name, options)', function() {
     var $spPageContextInfo,
         $spList,
         $spRequestDigest,
@@ -34,10 +34,10 @@ describe('ExpertsInside.SharePoint', function() {
       expect(function() { $spList(); }).to.throw(Error, '[$spList:badargs] name cannot be blank.');
     });
 
-    it('defaults *defaults* to an object with a single itemType property that gets infered from the list name', function() {
+    it('defaults *settings* to an object with a single itemType property that gets infered from the list name', function() {
       var list = $spList('test');
 
-      expect(list.defaults).to.be.eql({itemType: 'SP.Data.TestListItem'});
+      expect(list.settings).to.be.eql({itemType: 'SP.Data.TestListItem'});
     });
 
     describe('List', function() {
@@ -45,7 +45,7 @@ describe('ExpertsInside.SharePoint', function() {
 
       beforeEach(function() {
         list = $spList('Test', {
-          itemType: 'SP.TestListItem'
+          itemType: 'SP.Data.TestListItem'
         });
       });
 
@@ -209,11 +209,11 @@ describe('ExpertsInside.SharePoint', function() {
         it('sets metadata type to the default item type set on the list', function() {
           var item = list.create();
 
-          expect(item).to.have.deep.property('__metadata.type', 'SP.TestListItem');
+          expect(item).to.have.deep.property('__metadata.type', 'SP.Data.TestListItem');
         });
 
         it('throws an error when *type* is undefined and no default item type is set on the list', function() {
-          list.defaults.itemType = undefined;
+          list.settings.itemType = undefined;
 
           expect(function() { list.create({}, undefined); }).to.throw(Error, /badargs/);
         });
