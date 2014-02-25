@@ -34,18 +34,24 @@ describe('ExpertsInside.SharePoint', function() {
       expect(function() { $spList(); }).to.throw(Error, '[$spList:badargs] name cannot be blank.');
     });
 
-    it('defaults *settings* to an object with a single itemType property that gets infered from the list name', function() {
-      var list = $spList('test');
-
-      expect(list.settings).to.be.eql({itemType: 'SP.Data.TestListItem'});
-    });
-
     describe('List', function() {
       var list;
 
       beforeEach(function() {
         list = $spList('Test', {
           itemType: 'SP.Data.TestListItem'
+        });
+      });
+
+      describe('.ctor(name)', function() {
+        it('sets the *name* on the list', function() {
+          expect($spList('test')).to.have.property('name', 'test');
+        });
+
+        it('defaults *settings* to an object with a single itemType property that gets infered from the list name', function() {
+          var list = $spList('test');
+
+          expect(list.settings).to.be.eql({itemType: 'SP.Data.TestListItem'});
         });
       });
 
