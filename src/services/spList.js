@@ -17,22 +17,35 @@ angular.module('ExpertsInside.SharePoint')
     'use strict';
     var $spListMinErr = angular.$$minErr('$spList');
 
-    function List(name, defaults) {
+    function List(name, options) {
       if (!name) {
         throw $spListMinErr('badargs', 'name cannot be blank.');
+      }
+      if(!angular.isObject(options)) {
+        options = {};
       }
 
       this.name = name.toString();
       var upcaseName = this.name.charAt(0).toUpperCase() + this.name.slice(1);
-      this.defaults = angular.extend({
-        itemType: 'SP.Data.' + upcaseName + 'ListItem'
-      }, defaults);
+      this.settings = {
+        itemType: 'SP.Data.' + upcaseName + 'ListItem',
+        readOnlyFields: angular.extend([
+          'Author', 'Editor', 'Created', 'Modified'
+        ], options.readOnlyFields)
+      };
       this.queries = {};
     }
 
     List.prototype = {
       $baseUrl: function() {
         return "web/lists/getByTitle('" + this.name + "')";
+      },
+      $createPayload: function(data) {
+        var payload = angular.extend({}, data);
+        angular.forEach(this.settings.readOnlyFields, function(readOnlyField) {
+          delete payload[readOnlyField];
+        });
+        return payload;
       },
       $buildHttpConfig: function(action, params, args) {
         var baseUrl = this.$baseUrl(),
@@ -52,13 +65,13 @@ angular.module('ExpertsInside.SharePoint')
         case 'create':
           httpConfig = ShareCoffee.REST.build.create.for.angularJS({
             url: baseUrl + '/items',
-            payload: angular.toJson(args)
+            payload: angular.toJson(this.$createPayload(args))
           });
           break;
         case 'save':
           httpConfig = ShareCoffee.REST.build.update.for.angularJS({
             url: baseUrl,
-            payload: angular.toJson(args)
+            payload: angular.toJson(this.$createPayload(args))
           });
           httpConfig.url = args.__metadata.uri; // ShareCoffe doesnt work with absolute urls atm
           break;
@@ -98,10 +111,10 @@ angular.module('ExpertsInside.SharePoint')
         return this.$createResult([], httpConfig);
       },
       create: function(data) {
-        var type = this.defaults.itemType;
+        var type = this.settings.itemType;
         if (!type) {
           throw $spListMinErr('badargs', 'Cannot create an item without a valid type.' +
-                              'Please set the default item type on the list (list.defaults.itemType).');
+                              'Please set the default item type on the list (list.settings.itemType).');
         }
         var itemDefaults = {
           __metadata: {
@@ -139,8 +152,8 @@ angular.module('ExpertsInside.SharePoint')
       }
     };
 
-    function listFactory(name, defaults) {
-      return new List(name, defaults);
+    function listFactory(name, options) {
+      return new List(name, options);
     }
     listFactory.List = List;
 

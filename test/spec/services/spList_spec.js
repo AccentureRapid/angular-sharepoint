@@ -1,5 +1,5 @@
 describe('ExpertsInside.SharePoint', function() {
-  describe('Service: $spList(name, defaults)', function() {
+  describe('Service: $spList(name, options)', function() {
     var $spPageContextInfo,
         $spList,
         $spRequestDigest,
@@ -34,10 +34,15 @@ describe('ExpertsInside.SharePoint', function() {
       expect(function() { $spList(); }).to.throw(Error, '[$spList:badargs] name cannot be blank.');
     });
 
-    it('defaults *defaults* to an object with a single itemType property that gets infered from the list name', function() {
+    it('defaults *settings* to an object with a single itemType property that gets infered from the list name', function() {
       var list = $spList('test');
 
-      expect(list.defaults).to.be.eql({itemType: 'SP.Data.TestListItem'});
+      expect(list.settings).to.be.eql({
+        itemType: 'SP.Data.TestListItem',
+        readOnlyFields: [
+          'Author', 'Editor', 'Created', 'Modified'
+        ]
+      });
     });
 
     describe('List', function() {
@@ -45,7 +50,30 @@ describe('ExpertsInside.SharePoint', function() {
 
       beforeEach(function() {
         list = $spList('Test', {
-          itemType: 'SP.TestListItem'
+          itemType: 'SP.Data.TestListItem'
+        });
+      });
+
+      describe('.ctor(name, options)', function() {
+        it('sets the *name* on the list', function() {
+          expect($spList('test')).to.have.property('name', 'test');
+        });
+
+        it('creates some default settings when *options* is empty', function() {
+          var list = $spList('test');
+
+          expect(list.settings).to.be.eql({
+            itemType: 'SP.Data.TestListItem',
+            readOnlyFields: [ 'Author', 'Editor', 'Created', 'Modified' ]
+          });
+        });
+
+        it('extends readOnlyFields with option', function() {
+          var list = $spList('test', {
+            readOnlyFields: ['Foo', 'Bar']
+          });
+
+          expect(list.settings.readOnlyFields).to.contain('Foo').and.to.contain('Bar');
         });
       });
 
@@ -53,6 +81,33 @@ describe('ExpertsInside.SharePoint', function() {
         expect(list.$baseUrl()).to.be.equal("web/lists/getByTitle('Test')");
       });
 
+      describe('#$createPayload(data)', function() {
+        it('removes read-only fields from *data*', function() {
+          var list = $spList('test', {
+            readOnlyFields: ['Foo', 'Bar']
+          });
+
+          var payload = list.$createPayload({
+            Foo: 1,
+            Bar: 2,
+            Baz: 3
+          });
+          expect(payload).to.be.eql({
+            Baz: 3
+          });
+        });
+
+        it('does not modify the input *data*', function() {
+          var list = $spList('test', {
+            readOnlyFields: ['Foo']
+          });
+          var data = { Foo: 1 };
+
+          list.$createPayload(data);
+
+          expect(data).to.be.eql({Foo: 1});
+        });
+      });
 
       describe('#get(id, params)', function() {
         beforeEach(function() {
@@ -209,11 +264,11 @@ describe('ExpertsInside.SharePoint', function() {
         it('sets metadata type to the default item type set on the list', function() {
           var item = list.create();
 
-          expect(item).to.have.deep.property('__metadata.type', 'SP.TestListItem');
+          expect(item).to.have.deep.property('__metadata.type', 'SP.Data.TestListItem');
         });
 
         it('throws an error when *type* is undefined and no default item type is set on the list', function() {
-          list.defaults.itemType = undefined;
+          list.settings.itemType = undefined;
 
           expect(function() { list.create({}, undefined); }).to.throw(Error, /badargs/);
         });
