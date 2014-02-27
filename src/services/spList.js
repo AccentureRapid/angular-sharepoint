@@ -68,7 +68,7 @@ angular.module('ExpertsInside.SharePoint')
             payload: angular.toJson(this.$createPayload(args))
           });
           break;
-        case 'save':
+        case 'update':
           httpConfig = ShareCoffee.REST.build.update.for.angularJS({
             url: baseUrl,
             payload: angular.toJson(this.$createPayload(args))
@@ -126,11 +126,11 @@ angular.module('ExpertsInside.SharePoint')
 
         return this.$createResult(item, httpConfig);
       },
-      save: function(item) {
+      update: function(item) {
         if (angular.isUndefined(item.__metadata)) {
           throw $spListMinErr('badargs', 'Item must have __metadata property.');
         }
-        var httpConfig = this.$buildHttpConfig('save', undefined, item);
+        var httpConfig = this.$buildHttpConfig('update', undefined, item);
 
         return this.$createResult(item, httpConfig);
       },
