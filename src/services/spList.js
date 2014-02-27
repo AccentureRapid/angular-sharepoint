@@ -71,7 +71,8 @@ angular.module('ExpertsInside.SharePoint')
         case 'update':
           httpConfig = ShareCoffee.REST.build.update.for.angularJS({
             url: baseUrl,
-            payload: angular.toJson(this.$createPayload(args))
+            payload: angular.toJson(this.$createPayload(args)),
+            eTag: args.__metadata.etag
           });
           httpConfig.url = args.__metadata.uri; // ShareCoffe doesnt work with absolute urls atm
           break;
