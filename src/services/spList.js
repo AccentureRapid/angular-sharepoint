@@ -1,7 +1,7 @@
 /**
  * @ngdoc service
  * @name ExpertsInside.SharePoint.$spList
- * @requires $spRest
+ * @requires ExpertsInside.SharePoint.$spRest
  *
  * @description
  * A factory which creates a list object that lets you interact with SharePoint Lists via the
@@ -9,6 +9,10 @@
  *
  * The returned list object has action methods which provide high-level behaviors without
  * the need to interact with the low level $http service.
+ *
+ * @param {string} name The name of the SharePoint List
+ *
+ * @param {Object=} options Hash
  *
  * @return {Object} A list "class" object with the default set of resource actions
  */

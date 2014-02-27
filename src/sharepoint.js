@@ -1,10 +1,21 @@
 'use strict';
+
 /**
  * @ngdoc overview
  * @name ExpertsInside.SharePoint
  *
  * @description
- * The main module which holds everything together.
+ *
+ * # ExpertsInside.SharePoint
+ *
+ * The `ExpertsInside.SharePoint` module provides a high level abstraction for
+ * the SharePoint 2013 REST API.
+ *
+ *
+ * ## $spList
+ *
+ * Interaction with SharePoint Lists similiar to $ngResource.
+ * See {@link ExpertsInside.SharePoint.$spList `$spList`} for usage.
  */
 angular.module('ExpertsInside.SharePoint', ['ng'])
   .run(function() {
@@ -13,8 +24,7 @@ angular.module('ExpertsInside.SharePoint', ['ng'])
     if (angular.isUndefined(ShareCoffee)) {
       throw sharepointMinErr(
         "noShareCoffee", "angular-sharepoint depends on ShareCoffee to do its job." +
-        "Either include the bundled ShareCoffee + angular-sharepoint file " +
-        "or include ShareCoffe seperately before angular-sharepoint."
+        "Include ShareCoffe seperately before angular-sharepoint."
       );
     }
   });
