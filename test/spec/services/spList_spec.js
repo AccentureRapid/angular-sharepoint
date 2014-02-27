@@ -146,10 +146,11 @@ describe('ExpertsInside.SharePoint', function() {
           $httpBackend.flush();
         });
 
-        it('returns an object with an Id and $promise property', function() {
+        it('returns an object with an Id, $promise and $resolved property', function() {
           var item = list.get(1);
 
           expect(item).to.have.property('$promise');
+          expect(item).to.have.property('$resolved', false);
           expect(item).to.have.property('Id', 1);
 
           $httpBackend.flush();
@@ -160,6 +161,7 @@ describe('ExpertsInside.SharePoint', function() {
 
           item.$promise.then(function() {
             expect(item.Id).to.be.equal(1);
+            expect(item.$resolved).to.be.equal(true);
             done();
           });
 
@@ -270,7 +272,7 @@ describe('ExpertsInside.SharePoint', function() {
         it('throws an error when *type* is undefined and no default item type is set on the list', function() {
           list.settings.itemType = undefined;
 
-          expect(function() { list.create({}, undefined); }).to.throw(Error, /badargs/);
+          expect(function() { list.create({}); }).to.throw(Error, /badargs/);
         });
 
         it('extends created item with *data*', function() {
@@ -303,6 +305,115 @@ describe('ExpertsInside.SharePoint', function() {
             });
             done();
           });
+
+          $httpBackend.flush();
+          $httpBackend.verifyNoOutstandingRequest();
+        });
+      });
+
+      describe('#save(item, options)', function() {
+        beforeEach(function() {
+          sinon.stub(list, 'create');
+          sinon.stub(list, 'update');
+        });
+        afterEach(function() {
+          list.create.restore();
+        });
+
+        it('delgates to #create for new items', function() {
+          var item = {};
+
+          list.save(item);
+
+          expect(list.create).to.have.been.calledWith(item);
+        });
+
+        it('delgates to #update for loaded items', function() {
+          var item = {Id: 1};
+          var options = {force: true};
+
+          list.save(item, options);
+
+          expect(list.update).to.have.been.calledWith(item, options);
+        });
+      });
+
+      describe('#update(item, options)', function() {
+        afterEach(function() {
+          $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('throws an error when *item* does not have a __metadata property', function() {
+          expect(function() { list.update({}); }).to.throw(Error, /badargs/);
+        });
+
+        it('creates a valid SharePoint REST API request', function() {
+          var item = {
+            Id: 2,
+            __metadata: {
+              id: '95A2B4AC-7A2B-4EAC-ADAC-F8D2B828559A',
+              uri: "https://TestDomain.sharepoint.com/sites/dev/TestApp/_api/Web/Lists('Test')/Items(2)",
+              etag: "1"
+            }
+          };
+          $httpBackend.expectPOST(item.__metadata.uri, /.*/, {
+            'Accept': 'application/json;odata=verbose',
+            'X-RequestDigest': requestDigest,
+            'Content-Type': 'application/json;odata=verbose',
+            'X-HTTP-Method' : 'MERGE',
+            'If-Match' : item.__metadata.etag
+          }).respond({});
+
+          var result = list.update(item);
+
+          $httpBackend.flush();
+          $httpBackend.verifyNoOutstandingRequest();
+        });
+
+        it('does not include an etag in the request when *options*.force is true', function() {
+          var item = {
+            Id: 2,
+            __metadata: {
+              uri: "https://TestDomain.sharepoint.com/sites/dev/TestApp/_api/Web/Lists('Test')/Items(2)",
+              etag: '1'
+            }
+          };
+          $httpBackend.expectPOST(item.__metadata.uri, /.*/, function(headers) {
+            return headers['If-Match'] === '*';
+          }).respond({});
+
+          var result = list.update(item, {force: true});
+
+          $httpBackend.flush();
+          $httpBackend.verifyNoOutstandingRequest();
+        });
+      });
+
+      describe('#delete(item)', function() {
+        afterEach(function() {
+          $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('throws an error when *item* does not have a __metadata property', function() {
+          expect(function() { list.delete({}); }).to.throw(Error, /badargs/);
+        });
+
+        it('creates a valid SharePoint REST API request', function() {
+          var item = {
+            Id: 2,
+            __metadata: {
+              id: '95A2B4AC-7A2B-4EAC-ADAC-F8D2B828559A',
+              uri: "https://TestDomain.sharepoint.com/sites/dev/TestApp/_api/Web/Lists('Test')/Items(2)",
+              etag: "1"
+            }
+          };
+          $httpBackend.expectDELETE(item.__metadata.uri, {
+            'Accept': 'application/json;odata=verbose',
+            'X-RequestDigest': requestDigest,
+            'If-Match' : '*'
+          }).respond({});
+
+          var result = list.delete(item);
 
           $httpBackend.flush();
           $httpBackend.verifyNoOutstandingRequest();

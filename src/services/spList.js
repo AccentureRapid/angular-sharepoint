@@ -50,6 +50,9 @@ angular.module('ExpertsInside.SharePoint')
       $buildHttpConfig: function(action, params, args) {
         var baseUrl = this.$baseUrl(),
             httpConfig;
+        if (angular.isUndefined(params)) {
+          params = {};
+        }
 
         switch(action) {
         case 'get':
@@ -68,10 +71,18 @@ angular.module('ExpertsInside.SharePoint')
             payload: angular.toJson(this.$createPayload(args))
           });
           break;
-        case 'save':
+        case 'update':
+          var eTag = args.__metadata.etag;
+
+          if (params.force === true) {
+            eTag = undefined;
+            delete params.force;
+          }
+
           httpConfig = ShareCoffee.REST.build.update.for.angularJS({
             url: baseUrl,
-            payload: angular.toJson(this.$createPayload(args))
+            payload: angular.toJson(this.$createPayload(args)),
+            eTag: eTag
           });
           httpConfig.url = args.__metadata.uri; // ShareCoffe doesnt work with absolute urls atm
           break;
@@ -88,10 +99,14 @@ angular.module('ExpertsInside.SharePoint')
 
         return httpConfig;
       },
-      $createResult: function(emptyObject, httpConfig) {
-        var result = emptyObject;
-        result.$promise = $http(httpConfig).success(function(data) {
-          angular.extend(result, data);
+      $createResult: function(destination, httpConfig) {
+        var result = destination;
+        if (angular.isUndefined(result.$resolved)) {
+          result.$resolved = false;
+        }
+        result.$promise = $http(httpConfig).then(function(response) {
+          angular.extend(result, response.data);
+          result.$resolved = true;
           return result;
         });
 
@@ -126,13 +141,20 @@ angular.module('ExpertsInside.SharePoint')
 
         return this.$createResult(item, httpConfig);
       },
-      save: function(item) {
+      update: function(item, options) {
         if (angular.isUndefined(item.__metadata)) {
           throw $spListMinErr('badargs', 'Item must have __metadata property.');
         }
-        var httpConfig = this.$buildHttpConfig('save', undefined, item);
+        var httpConfig = this.$buildHttpConfig('update', options, item);
 
         return this.$createResult(item, httpConfig);
+      },
+      save: function(item, options) {
+        if (angular.isUndefined(item.Id) || item === null) {
+          return this.create(item);
+        } else {
+          return this.update(item, options);
+        }
       },
       delete: function(item) {
         if (angular.isUndefined(item.__metadata)) {
