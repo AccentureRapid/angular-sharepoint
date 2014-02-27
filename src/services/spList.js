@@ -50,6 +50,9 @@ angular.module('ExpertsInside.SharePoint')
       $buildHttpConfig: function(action, params, args) {
         var baseUrl = this.$baseUrl(),
             httpConfig;
+        if (angular.isUndefined(params)) {
+          params = {};
+        }
 
         switch(action) {
         case 'get':
@@ -71,11 +74,9 @@ angular.module('ExpertsInside.SharePoint')
         case 'update':
           var eTag = args.__metadata.etag;
 
-          if(angular.isDefined(params)) {
-            if (params.force === true) {
-              eTag = undefined;
-              delete params.force;
-            }
+          if (params.force === true) {
+            eTag = undefined;
+            delete params.force;
           }
 
           httpConfig = ShareCoffee.REST.build.update.for.angularJS({
@@ -98,10 +99,14 @@ angular.module('ExpertsInside.SharePoint')
 
         return httpConfig;
       },
-      $createResult: function(emptyObject, httpConfig) {
-        var result = emptyObject;
-        result.$promise = $http(httpConfig).success(function(data) {
-          angular.extend(result, data);
+      $createResult: function(destination, httpConfig) {
+        var result = destination;
+        if (angular.isUndefined(result.$resolved)) {
+          result.$resolved = false;
+        }
+        result.$promise = $http(httpConfig).then(function(response) {
+          angular.extend(result, response.data);
+          result.$resolved = true;
           return result;
         });
 

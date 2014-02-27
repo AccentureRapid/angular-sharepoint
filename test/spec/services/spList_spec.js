@@ -146,10 +146,11 @@ describe('ExpertsInside.SharePoint', function() {
           $httpBackend.flush();
         });
 
-        it('returns an object with an Id and $promise property', function() {
+        it('returns an object with an Id, $promise and $resolved property', function() {
           var item = list.get(1);
 
           expect(item).to.have.property('$promise');
+          expect(item).to.have.property('$resolved', false);
           expect(item).to.have.property('Id', 1);
 
           $httpBackend.flush();
@@ -160,6 +161,7 @@ describe('ExpertsInside.SharePoint', function() {
 
           item.$promise.then(function() {
             expect(item.Id).to.be.equal(1);
+            expect(item.$resolved).to.be.equal(true);
             done();
           });
 
