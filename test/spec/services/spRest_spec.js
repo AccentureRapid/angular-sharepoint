@@ -1,13 +1,23 @@
 describe('ExpertsInside.SharePoint', function() {
   describe('Service: $spRest', function() {
-    var $spRest;
+    var $spRest,
+        apiRootUrl,
+        requestDigest;
 
     beforeEach(module('ExpertsInside.SharePoint'));
     beforeEach(inject(function(_$spRest_) {
       $spRest = _$spRest_;
+      sinon.stub(ShareCoffee.Commons, 'getApiRootUrl')
+        .returns(apiRootUrl = 'https://test.sharepoint.com/sites/test/app/_api/');
+      sinon.stub(ShareCoffee.Commons, 'getFormDigest')
+        .returns(requestDigest = 'requestDigest');
     }));
+    afterEach(function() {
+      ShareCoffee.Commons.getApiRootUrl.restore();
+      ShareCoffee.Commons.getFormDigest.restore();
+    });
 
-    describe('#transformResponse(json)', function() {
+    describe('.transformResponse(json)', function() {
       it('returns an empty object when *json* is undefined', function() {
         expect($spRest.transformResponse(undefined)).to.be.eql({});
       });
@@ -31,7 +41,7 @@ describe('ExpertsInside.SharePoint', function() {
       });
     });
 
-    describe('#buildQueryString(url, params)', function() {
+    describe('.buildQueryString(url, params)', function() {
       it('returns an empty string when *params* is null', function() {
         expect($spRest.buildQueryString(null)).to.be.eql('');
       });
@@ -49,7 +59,7 @@ describe('ExpertsInside.SharePoint', function() {
       });
     });
 
-    describe('#normalizeParams(params)', function() {
+    describe('.normalizeParams(params)', function() {
       it('prefixes keys with $ when needed', function() {
         var normalized = $spRest.normalizeParams({
           select: 'bar'
@@ -91,7 +101,7 @@ describe('ExpertsInside.SharePoint', function() {
       });
     });
 
-    describe('$appendQueryString(url, params', function() {
+    describe('.appendQueryString(url, params', function() {
       var url;
       beforeEach(function() { url = 'http://my.app'; });
 
@@ -105,6 +115,222 @@ describe('ExpertsInside.SharePoint', function() {
 
       it('correctly appends the query string to an url which already has one', function () {
         expect($spRest.appendQueryString(url + '?bar', {select: 'foo'})).to.be.eql(url + '?bar&$select=foo');
+      });
+    });
+
+    describe('.createPayload(item)', function() {
+      it('creates JSON from item', function() {
+        var item = {
+          foo: 1
+        };
+
+        expect($spRest.createPayload(item)).to.be.eql('{"foo":1}');
+      });
+
+      it('removes properties starting with $ from the payload', function() {
+        var item = {
+          foo: 1,
+          $bar: 2
+        };
+
+        expect($spRest.createPayload(item)).to.be.eql('{"foo":1}');
+        expect(item).to.have.property('$bar');
+      });
+
+      it('removes read only properties from the payload', function() {
+        var item = {
+          foo: 1,
+          bar: 2,
+          $settings: {
+            readOnlyFields: ['bar']
+          }
+        };
+
+        expect($spRest.createPayload(item)).to.be.eql('{"foo":1}');
+        expect(item).to.have.property('bar');
+      });
+    });
+
+    describe('.buildHttpConfig(listUrl, action, options)', function() {
+      var listUrl = "web/Lists/getByTitle('Test')";
+
+      it('sets transformResponse on the httpConfig', function() {
+        expect($spRest.buildHttpConfig(listUrl).transformResponse).to.be.equal($spRest.transformResponse);
+      });
+
+      it('creates a query string from *options*.query and adds it to the url', function() {
+        var httpConfig = $spRest.buildHttpConfig(listUrl, null, {query: {select: ['Id', 'Title']}});
+
+        expect(httpConfig.url).to.be.equal(listUrl + '/items?$select=Id,Title');
+      });
+
+      describe('when *action* is "get"', function() {
+        it('sets httpConfig.url to the url of the item', function() {
+          var httpConfig = $spRest.buildHttpConfig(listUrl, 'get', {id: 1});
+
+          expect(httpConfig.url).to.be.equal(apiRootUrl + listUrl + '/items(1)');
+        });
+
+        it('throws when *options*.id is not set', function() {
+          expect(function() { $spRest.buildHttpConfig(listUrl, 'get'); }).to.throw(Error, '[$spRest:options:get]');
+        });
+
+        it('sets correct httpConfig.headers', function() {
+          var httpConfig = $spRest.buildHttpConfig(listUrl, 'get', {id: 1});
+
+          expect(httpConfig.headers).to.be.eql({
+            'Accept': 'application/json;odata=verbose'
+          });
+        });
+      });
+
+      describe('when *action* is "query"', function() {
+        it('sets httpConfig.url to the items root url', function() {
+          var httpConfig = $spRest.buildHttpConfig(listUrl, 'query');
+
+          expect(httpConfig.url).to.be.equal(apiRootUrl + listUrl + '/items');
+        });
+
+        it('sets correct httpConfig.headers', function() {
+          var httpConfig = $spRest.buildHttpConfig(listUrl, 'query');
+
+          expect(httpConfig.headers).to.be.eql({
+            'Accept': 'application/json;odata=verbose'
+          });
+        });
+      });
+
+      describe('when *action* is "create"', function() {
+        it('throws when *options*.item is not set', function() {
+          expect(function() { $spRest.buildHttpConfig(listUrl, 'create'); }).to.throw(Error, '[$spRest:options:create]');
+        });
+
+        it('sets httpConfig.url to the items root url', function() {
+          var httpConfig = $spRest.buildHttpConfig(listUrl, 'create', {item: {}});
+
+          expect(httpConfig.url).to.be.equal(apiRootUrl + listUrl + '/items');
+        });
+
+        it('sets httpConfig.data to the stringified item', function() {
+          sinon.spy($spRest, 'createPayload');
+          var options = {item: {foo: 1}};
+          var httpConfig = $spRest.buildHttpConfig(listUrl, 'create', options);
+
+          expect($spRest.createPayload).to.have.been.calledWith(options.item);
+          expect(httpConfig.data).to.be.equal($spRest.createPayload.returnValues[0]);
+
+          $spRest.createPayload.restore();
+        });
+
+        it('sets correct httpConfig.headers', function() {
+          var httpConfig = $spRest.buildHttpConfig(listUrl, 'create', {item: {}});
+
+          expect(httpConfig.headers).to.be.eql({
+            'Accept': 'application/json;odata=verbose',
+            'Content-Type': 'application/json;odata=verbose',
+            'X-RequestDigest': requestDigest
+          });
+        });
+      });
+
+      describe('when *action* is "update"', function() {
+        var item;
+        beforeEach(function() {
+          item = {
+            Id: 1,
+            __metadata: {
+              type: 'SP.Data.TestListItem',
+              etag: '1',
+              uri: apiRootUrl + listUrl + '/items(1)'
+            }
+          };
+        });
+
+        it('throws when *options*.item is not set', function() {
+          expect(function() { $spRest.buildHttpConfig(listUrl, 'update'); })
+            .to.throw(Error, '[$spRest:options:update]');
+        });
+        it('throws when *options*.item.__metadata is not set', function() {
+          expect(function() { $spRest.buildHttpConfig(listUrl, 'update', {item: {}}); })
+            .to.throw(Error, '[$spRest:options:update]');
+        });
+
+        it('sets correct httpConfig.headers', function() {
+          var httpConfig = $spRest.buildHttpConfig(listUrl, 'update', {item: item});
+
+          expect(httpConfig.headers).to.be.eql({
+            'Accept': 'application/json;odata=verbose',
+            'Content-Type': 'application/json;odata=verbose',
+            'X-RequestDigest': requestDigest,
+            'If-Match': item.__metadata.etag,
+            'X-HTTP-Method': 'MERGE'
+          });
+        });
+
+        it('sets the "If-Match" property in httpConfig.header to "*" when options.force is true', function() {
+          var httpConfig = $spRest.buildHttpConfig(listUrl, 'update', {item: item, force: true});
+
+          expect(httpConfig.headers).to.have.property('If-Match', '*');
+        });
+
+        it('sets httpConfig.data to the stringified item', function() {
+          sinon.spy($spRest, 'createPayload');
+          var options = {item: item};
+          var httpConfig = $spRest.buildHttpConfig(listUrl, 'update', options);
+
+          expect($spRest.createPayload).to.have.been.calledWith(options.item);
+          expect(httpConfig.data).to.be.equal($spRest.createPayload.returnValues[0]);
+
+          $spRest.createPayload.restore();
+        });
+
+        it('sets httpConfig.url to the url of the item', function() {
+          var options = {item: item};
+          var httpConfig = $spRest.buildHttpConfig(listUrl, 'update', options);
+
+          expect(httpConfig.url).to.be.equal(item.__metadata.uri);
+        });
+      });
+
+      describe('when *action* is "delete"', function() {
+        var item;
+        beforeEach(function() {
+          item = {
+            Id: 1,
+            __metadata: {
+              type: 'SP.Data.TestListItem',
+              etag: '1',
+              uri: apiRootUrl + listUrl + '/items(1)'
+            }
+          };
+        });
+
+        it('throws when *options*.item is not set', function() {
+          expect(function() { $spRest.buildHttpConfig(listUrl, 'delete'); })
+            .to.throw(Error, '[$spRest:options:delete]');
+        });
+        it('throws when *options*.item.__metadata is not set', function() {
+          expect(function() { $spRest.buildHttpConfig(listUrl, 'delete', {item: {}}); })
+            .to.throw(Error, '[$spRest:options:delete]');
+        });
+
+        it('sets correct httpConfig.headers', function() {
+          var httpConfig = $spRest.buildHttpConfig(listUrl, 'delete', {item: item});
+
+          expect(httpConfig.headers).to.be.eql({
+            'Accept': 'application/json;odata=verbose',
+            'Content-Type': 'application/json;odata=verbose',
+            'X-RequestDigest': requestDigest,
+            'If-Match': '*'
+          });
+        });
+
+        it('sets httpConfig.url to the url of the item', function() {
+          var options = {item: item};
+          var httpConfig = $spRest.buildHttpConfig(listUrl, 'delete', options);
+
+          expect(httpConfig.url).to.be.equal(item.__metadata.uri);
+        });
       });
     });
   });
