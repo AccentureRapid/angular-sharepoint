@@ -134,6 +134,13 @@ angular.module('ExpertsInside.SharePoint')
 
         return this.$createResult(item, httpConfig);
       },
+      save: function(item) {
+        if (angular.isUndefined(item.Id) || item === null) {
+          return this.create(item);
+        } else {
+          return this.update(item);
+        }
+      },
       delete: function(item) {
         if (angular.isUndefined(item.__metadata)) {
           throw $spListMinErr('badargs', 'Item must have __metadata property.');

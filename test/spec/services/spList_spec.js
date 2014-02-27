@@ -308,6 +308,33 @@ describe('ExpertsInside.SharePoint', function() {
           $httpBackend.verifyNoOutstandingRequest();
         });
       });
+
+      describe('#save(item)', function() {
+        beforeEach(function() {
+          sinon.stub(list, 'create');
+          sinon.stub(list, 'update');
+        });
+        afterEach(function() {
+          list.create.restore();
+          list.update.restore();
+        });
+
+        it('delgates to #create for new items', function() {
+          var item = {};
+
+          list.save(item);
+
+          expect(list.create).to.have.been.calledWith(item);
+        });
+
+        it('delgates to #update for laoded items', function() {
+          var item = {Id: 1};
+
+          list.save(item);
+
+          expect(list.update).to.have.been.calledWith(item);
+        });
+      });
     });
   });
 });
