@@ -270,7 +270,7 @@ describe('ExpertsInside.SharePoint', function() {
         it('throws an error when *type* is undefined and no default item type is set on the list', function() {
           list.settings.itemType = undefined;
 
-          expect(function() { list.create({}, undefined); }).to.throw(Error, /badargs/);
+          expect(function() { list.create({}); }).to.throw(Error, /badargs/);
         });
 
         it('extends created item with *data*', function() {
@@ -316,7 +316,6 @@ describe('ExpertsInside.SharePoint', function() {
         });
         afterEach(function() {
           list.create.restore();
-          list.update.restore();
         });
 
         it('delgates to #create for new items', function() {
@@ -333,6 +332,70 @@ describe('ExpertsInside.SharePoint', function() {
           list.save(item);
 
           expect(list.update).to.have.been.calledWith(item);
+        });
+      });
+
+      describe('#update(item)', function() {
+        afterEach(function() {
+          $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('throws an error when *item* does not have a __metadata property', function() {
+          expect(function() { list.update({}); }).to.throw(Error, /badargs/);
+        });
+
+        it('creates a valid SharePoint REST API request', function() {
+          var item = {
+            Id: 2,
+            __metadata: {
+              id: '95A2B4AC-7A2B-4EAC-ADAC-F8D2B828559A',
+              uri: "https://TestDomain.sharepoint.com/sites/dev/TestApp/_api/Web/Lists('Test')/Items(2)",
+              etag: "1"
+            }
+          };
+          $httpBackend.expectPOST(item.__metadata.uri, /.*/, {
+            'Accept': 'application/json;odata=verbose',
+            'X-RequestDigest': requestDigest,
+            'Content-Type': 'application/json;odata=verbose',
+            'X-HTTP-Method' : 'MERGE',
+            'If-Match' : item.__metadata.etag
+          }).respond({});
+
+          var result = list.update(item);
+
+          $httpBackend.flush();
+          $httpBackend.verifyNoOutstandingRequest();
+        });
+      });
+
+      describe('#delete(item)', function() {
+        afterEach(function() {
+          $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+        it('throws an error when *item* does not have a __metadata property', function() {
+          expect(function() { list.delete({}); }).to.throw(Error, /badargs/);
+        });
+
+        it('creates a valid SharePoint REST API request', function() {
+          var item = {
+            Id: 2,
+            __metadata: {
+              id: '95A2B4AC-7A2B-4EAC-ADAC-F8D2B828559A',
+              uri: "https://TestDomain.sharepoint.com/sites/dev/TestApp/_api/Web/Lists('Test')/Items(2)",
+              etag: "1"
+            }
+          };
+          $httpBackend.expectDELETE(item.__metadata.uri, {
+            'Accept': 'application/json;odata=verbose',
+            'X-RequestDigest': requestDigest,
+            'If-Match' : '*'
+          }).respond({});
+
+          var result = list.delete(item);
+
+          $httpBackend.flush();
+          $httpBackend.verifyNoOutstandingRequest();
         });
       });
     });
