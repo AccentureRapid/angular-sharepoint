@@ -69,10 +69,19 @@ angular.module('ExpertsInside.SharePoint')
           });
           break;
         case 'update':
+          var eTag = args.__metadata.etag;
+
+          if(angular.isDefined(params)) {
+            if (params.force === true) {
+              eTag = undefined;
+              delete params.force;
+            }
+          }
+
           httpConfig = ShareCoffee.REST.build.update.for.angularJS({
             url: baseUrl,
             payload: angular.toJson(this.$createPayload(args)),
-            eTag: args.__metadata.etag
+            eTag: eTag
           });
           httpConfig.url = args.__metadata.uri; // ShareCoffe doesnt work with absolute urls atm
           break;
@@ -127,19 +136,19 @@ angular.module('ExpertsInside.SharePoint')
 
         return this.$createResult(item, httpConfig);
       },
-      update: function(item) {
+      update: function(item, options) {
         if (angular.isUndefined(item.__metadata)) {
           throw $spListMinErr('badargs', 'Item must have __metadata property.');
         }
-        var httpConfig = this.$buildHttpConfig('update', undefined, item);
+        var httpConfig = this.$buildHttpConfig('update', options, item);
 
         return this.$createResult(item, httpConfig);
       },
-      save: function(item) {
+      save: function(item, options) {
         if (angular.isUndefined(item.Id) || item === null) {
           return this.create(item);
         } else {
-          return this.update(item);
+          return this.update(item, options);
         }
       },
       delete: function(item) {

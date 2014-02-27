@@ -309,7 +309,7 @@ describe('ExpertsInside.SharePoint', function() {
         });
       });
 
-      describe('#save(item)', function() {
+      describe('#save(item, options)', function() {
         beforeEach(function() {
           sinon.stub(list, 'create');
           sinon.stub(list, 'update');
@@ -326,16 +326,17 @@ describe('ExpertsInside.SharePoint', function() {
           expect(list.create).to.have.been.calledWith(item);
         });
 
-        it('delgates to #update for laoded items', function() {
+        it('delgates to #update for loaded items', function() {
           var item = {Id: 1};
+          var options = {force: true};
 
-          list.save(item);
+          list.save(item, options);
 
-          expect(list.update).to.have.been.calledWith(item);
+          expect(list.update).to.have.been.calledWith(item, options);
         });
       });
 
-      describe('#update(item)', function() {
+      describe('#update(item, options)', function() {
         afterEach(function() {
           $httpBackend.verifyNoOutstandingExpectation();
         });
@@ -362,6 +363,24 @@ describe('ExpertsInside.SharePoint', function() {
           }).respond({});
 
           var result = list.update(item);
+
+          $httpBackend.flush();
+          $httpBackend.verifyNoOutstandingRequest();
+        });
+
+        it('does not include an etag in the request when *options*.force is true', function() {
+          var item = {
+            Id: 2,
+            __metadata: {
+              uri: "https://TestDomain.sharepoint.com/sites/dev/TestApp/_api/Web/Lists('Test')/Items(2)",
+              etag: '1'
+            }
+          };
+          $httpBackend.expectPOST(item.__metadata.uri, /.*/, function(headers) {
+            return headers['If-Match'] === '*';
+          }).respond({});
+
+          var result = list.update(item, {force: true});
 
           $httpBackend.flush();
           $httpBackend.verifyNoOutstandingRequest();
