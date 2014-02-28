@@ -17,167 +17,143 @@ angular.module('ExpertsInside.SharePoint')
     'use strict';
     var $spListMinErr = angular.$$minErr('$spList');
 
-    function List(name, options) {
-      if (!name) {
-        throw $spListMinErr('badargs', 'name cannot be blank.');
+    function listFactory(name, options) {
+      if (!angular.isString(name) || name === '') {
+        throw $spListMinErr('badargs', 'name must be a nen-empty string.');
       }
       if(!angular.isObject(options)) {
         options = {};
       }
+      var upcaseName = name.charAt(0).toUpperCase() + name.slice(1);
 
-      this.name = name.toString();
-      var upcaseName = this.name.charAt(0).toUpperCase() + this.name.slice(1);
-      this.settings = {
-        itemType: 'SP.Data.' + upcaseName + 'ListItem',
-        readOnlyFields: angular.extend([
-          'Author', 'Editor', 'Created', 'Modified'
-        ], options.readOnlyFields)
-      };
-      this.queries = {};
-    }
+      function ListItem(data) {
+        angular.extend(this, data);
+      }
 
-    List.prototype = {
-      $baseUrl: function() {
-        return "web/lists/getByTitle('" + this.name + "')";
-      },
-      $createPayload: function(data) {
-        var payload = angular.extend({}, data);
-        angular.forEach(this.settings.readOnlyFields, function(readOnlyField) {
-          delete payload[readOnlyField];
-        });
-        return payload;
-      },
-      $buildHttpConfig: function(action, params, args) {
-        var baseUrl = this.$baseUrl(),
-            httpConfig;
-        if (angular.isUndefined(params)) {
-          params = {};
+      ListItem.$$listName = name;
+      ListItem.$$listRelativeUrl = "web/lists/getByTitle('" + name + "')";
+      ListItem.$decorateResult = function(result, httpConfig) {
+        if (!angular.isArray(result) && !(result instanceof ListItem)) {
+          result = new ListItem(result);
         }
-
-        switch(action) {
-        case 'get':
-          httpConfig = ShareCoffee.REST.build.read.for.angularJS({
-            url: baseUrl + '/items(' + args + ')'
-          });
-          break;
-        case 'query':
-          httpConfig = ShareCoffee.REST.build.read.for.angularJS({
-            url: baseUrl + '/items'
-          });
-          break;
-        case 'create':
-          httpConfig = ShareCoffee.REST.build.create.for.angularJS({
-            url: baseUrl + '/items',
-            payload: angular.toJson(this.$createPayload(args))
-          });
-          break;
-        case 'update':
-          var eTag = args.__metadata.etag;
-
-          if (params.force === true) {
-            eTag = undefined;
-            delete params.force;
-          }
-
-          httpConfig = ShareCoffee.REST.build.update.for.angularJS({
-            url: baseUrl,
-            payload: angular.toJson(this.$createPayload(args)),
-            eTag: eTag
-          });
-          httpConfig.url = args.__metadata.uri; // ShareCoffe doesnt work with absolute urls atm
-          break;
-        case 'delete':
-          httpConfig = ShareCoffee.REST.build.delete.for.angularJS({
-            url: baseUrl,
-          });
-          httpConfig.url = args.__metadata.uri;
-          break;
-        }
-
-        httpConfig.url = $spRest.appendQueryString(httpConfig.url, params);
-        httpConfig.transformResponse = $spRest.transformResponse;
-
-        return httpConfig;
-      },
-      $createResult: function(destination, httpConfig) {
-        var result = destination;
         if (angular.isUndefined(result.$resolved)) {
           result.$resolved = false;
         }
         result.$promise = $http(httpConfig).then(function(response) {
-          angular.extend(result, response.data);
+          var data = response.data;
+
+          if (angular.isArray(result) && angular.isArray(data)) {
+            angular.forEach(data, function(item) {
+              console.log('foo');
+              result.push(new ListItem(item));
+            });
+          } else if (angular.isObject(result)) {
+            if (angular.isArray(data)) {
+              if (data.length === 1) {
+                angular.extend(result, data[0]);
+              } else {
+                throw $spListMinErr('badresponse', 'Expected response to contain an array with one object but got {1}',
+                  data.length);
+              }
+            } else if (angular.isObject(data)) {
+              angular.extend(result, data);
+            }
+          } else {
+            throw $spListMinErr('badresponse', 'Expected response to contain an {0} but got an {1}',
+              angular.isArray(result) ? 'array' : 'object', angular.isArray(data) ? 'array' : 'object');
+          }
           result.$resolved = true;
+
           return result;
         });
 
         return result;
-      },
-      get: function(id, params) {
+      };
+      ListItem.get = function(id, query) {
         if (angular.isUndefined(id)) {
           throw $spListMinErr('badargs', 'id is required.');
         }
-        var httpConfig = this.$buildHttpConfig('get', params, id);
 
-        return this.$createResult({Id: id}, httpConfig);
-      },
-      query: function(params) {
-        var httpConfig = this.$buildHttpConfig('query', params);
-
-        return this.$createResult([], httpConfig);
-      },
-      create: function(data) {
-        var type = this.settings.itemType;
-        if (!type) {
-          throw $spListMinErr('badargs', 'Cannot create an item without a valid type.' +
-                              'Please set the default item type on the list (list.settings.itemType).');
-        }
-        var itemDefaults = {
-          __metadata: {
-            type: type
-          }
+        var result = {
+          Id: id
         };
-        var item = angular.extend({}, itemDefaults, data);
-        var httpConfig = this.$buildHttpConfig('create', undefined, item);
+        var httpConfig = $spRest.buildHttpConfig(ListItem.$$listRelativeUrl, 'get', {id: id, query: query});
 
-        return this.$createResult(item, httpConfig);
-      },
-      update: function(item, options) {
-        if (angular.isUndefined(item.__metadata)) {
-          throw $spListMinErr('badargs', 'Item must have __metadata property.');
+        return ListItem.$decorateResult(result, httpConfig);
+      };
+      ListItem.query = function(query, options) {
+        var result = (angular.isDefined(options) && options.singleResult) ? {} : [];
+        var httpConfig = $spRest.buildHttpConfig(ListItem.$$listRelativeUrl, 'query', {query: query});
+
+        return ListItem.$decorateResult(result, httpConfig);
+      };
+      ListItem.create = function(item) {
+        if (!(angular.isObject(item) && item instanceof ListItem)) {
+          throw $spListMinErr('badargs', 'item must be a ListItem instance.');
         }
-        var httpConfig = this.$buildHttpConfig('update', options, item);
+        var type = item.$settings.itemType;
+        if (!type) {
+          throw $spListMinErr('badargs', 'Cannot create an item without a valid type');
+        }
 
-        return this.$createResult(item, httpConfig);
-      },
-      save: function(item, options) {
+        item.__metadata = {
+          type: type
+        };
+        var httpConfig = $spRest.buildHttpConfig(ListItem.$$listRelativeUrl, 'create', {item: item});
+
+        return ListItem.$decorateResult(item, httpConfig);
+      };
+      ListItem.update = function(item, options) {
+        if (!(angular.isObject(item) && item instanceof ListItem)) {
+          throw $spListMinErr('badargs', 'item must be a ListItem instance.');
+        }
+
+        options = angular.extend({}, options, {item: item});
+        var httpConfig = $spRest.buildHttpConfig(ListItem.$$listRelativeUrl, 'update', options);
+
+        return ListItem.$decorateResult(item, httpConfig);
+      };
+      ListItem.save = function(item, options) {
         if (angular.isUndefined(item.Id) || item === null) {
           return this.create(item);
         } else {
           return this.update(item, options);
         }
-      },
-      delete: function(item) {
-        if (angular.isUndefined(item.__metadata)) {
-          throw $spListMinErr('badargs', 'Item must have __metadata property.');
+      };
+      ListItem.delete = function(item) {
+        if (!(angular.isObject(item) && item instanceof ListItem)) {
+          throw $spListMinErr('badargs', 'item must be a ListItem instance.');
         }
-        var httpConfig = this.$buildHttpConfig('delete', undefined, item);
+        var httpConfig = $spRest.buildHttpConfig(ListItem.$$listRelativeUrl, 'delete', {item: item});
 
-        return this.$createResult(item, httpConfig);
-      },
-      addNamedQuery: function(name, createParams) {
-        var me = this;
-        this.queries[name] = function() {
-          var params = createParams.apply(me, arguments);
-          return me.query(params);
-        };
-        return me;
-      }
-    };
+        return ListItem.$decorateResult(item, httpConfig);
+      };
 
-    function listFactory(name, options) {
-      return new List(name, options);
+      ListItem.prototype = {
+        $settings: {
+          itemType: 'SP.Data.' + upcaseName + 'ListItem',
+          readOnlyFields: angular.extend([
+            'Author', 'Editor', 'Created', 'Modified'
+          ], options.readOnlyFields)
+        },
+        $save: function(options) {
+          return ListItem.save(this, options).$promise;
+        },
+        $delete: function() {
+          return ListItem.delete(this).$promise;
+        }
+        // addNamedQuery: function(name, createParams) {
+        //   var me = this;
+        //   this.queries[name] = function() {
+        //     var params = createParams.apply(me, arguments);
+        //     return me.query(params);
+        //   };
+        //   return me;
+        // }
+      };
+
+      return ListItem;
     }
-    listFactory.List = List;
 
     return listFactory;
   });
