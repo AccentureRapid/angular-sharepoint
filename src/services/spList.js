@@ -44,7 +44,6 @@ angular.module('ExpertsInside.SharePoint')
 
           if (angular.isArray(result) && angular.isArray(data)) {
             angular.forEach(data, function(item) {
-              console.log('foo');
               result.push(new ListItem(item));
             });
           } else if (angular.isObject(result)) {
@@ -87,7 +86,7 @@ angular.module('ExpertsInside.SharePoint')
 
         return ListItem.$decorateResult(result, httpConfig);
       };
-      ListItem.create = function(item) {
+      ListItem.create = function(item, query) {
         if (!(angular.isObject(item) && item instanceof ListItem)) {
           throw $spListMinErr('badargs', 'item must be a ListItem instance.');
         }
@@ -99,7 +98,10 @@ angular.module('ExpertsInside.SharePoint')
         item.__metadata = {
           type: type
         };
-        var httpConfig = $spRest.buildHttpConfig(ListItem.$$listRelativeUrl, 'create', {item: item});
+        var httpConfig = $spRest.buildHttpConfig(ListItem.$$listRelativeUrl, 'create', {
+          item: item,
+          query: query
+        });
 
         return ListItem.$decorateResult(item, httpConfig);
       };

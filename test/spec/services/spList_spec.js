@@ -1,33 +1,3 @@
-// describe('ExpertsInside.SharePoint', function() {
-//   describe('Service: $spList(name, options)', function() {
-//     var apiRootUrl, requestDigest;
-//
-//     beforeEach(module('ExpertsInside.SharePoint'));
-//     beforeEach(function() {
-//       sinon.stub(ShareCoffee.Commons, 'getApiRootUrl')
-//         .returns(apiRootUrl = 'https://test.sharepoint.com/sites/test/app/_api/');
-//       sinon.stub(ShareCoffee.Commons, 'getFormDigest')
-//         .returns(requestDigest = 'requestDigest');
-//     });
-//     afterEach(function() {
-//       ShareCoffee.Commons.getApiRootUrl.restore();
-//       ShareCoffee.Commons.getFormDigest.restore();
-//     });
-//
-//     it('', inject(function($spList) {
-//       var Foo = $spList('Foo');
-//       var foo = new Foo({bar: 'baz'});
-//       foo.qux = '123';
-//       foo.$save().then(function() {
-//         console.log('save success');
-//       }, function() {
-//         console.log('save error');
-//       });
-//       console.log(foo);
-//     }));
-//   });
-// });
-
 describe('ExpertsInside.SharePoint', function() {
   describe('Service: $spList(name, options)', function() {
     var $spList,
