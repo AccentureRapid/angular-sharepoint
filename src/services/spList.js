@@ -69,7 +69,7 @@ angular.module('ExpertsInside.SharePoint')
         return result;
       };
       ListItem.get = function(id, query) {
-        if (angular.isUndefined(id)) {
+        if (angular.isUndefined(id) || id === null) {
           throw $spListMinErr('badargs', 'id is required.');
         }
 
@@ -116,10 +116,11 @@ angular.module('ExpertsInside.SharePoint')
         return ListItem.$decorateResult(item, httpConfig);
       };
       ListItem.save = function(item, options) {
-        if (angular.isUndefined(item.Id) || item === null) {
-          return this.create(item);
-        } else {
+        if (angular.isDefined(item.__metadata) && angular.isDefined(item.__metadata.id)) {
           return this.update(item, options);
+        } else {
+          var query = angular.isObject(options) ? options.query : undefined;
+          return this.create(item, query);
         }
       };
       ListItem.delete = function(item) {

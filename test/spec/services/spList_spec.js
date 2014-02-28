@@ -161,6 +161,203 @@ describe('ExpertsInside.SharePoint', function() {
 
         TestItem.delete.restore();
       });
+
+      describe('.get(id, query)', function() {
+        it('throws when id is not given', function() {
+          expect(function() { TestItem.get(); }).to.throw(Error, ['$spList:badargs']);
+          expect(function() { TestItem.get(null); }).to.throw(Error, ['$spList:badargs']);
+        });
+
+        it('creates a valid get request and returns the result', function() {
+          sinon.spy($spRest, 'buildHttpConfig');
+          sinon.spy(TestItem, '$decorateResult');
+
+          var query = { select: ['Id', 'Title'] };
+          var testItem = TestItem.get(1, query);
+
+          expect($spRest.buildHttpConfig).to.have.been.calledWith(
+            TestItem.$$listRelativeUrl,
+            'get', {
+              id: 1,
+              query: query
+            });
+          expect(TestItem.$decorateResult).to.have.been.calledWith(
+            { Id: 1 },
+            $spRest.buildHttpConfig.firstCall.returnValue
+          );
+          expect(testItem).to.be.equal(TestItem.$decorateResult.firstCall.returnValue);
+
+          $spRest.buildHttpConfig.restore();
+          TestItem.$decorateResult.restore();
+        });
+      });
+
+      describe('.query(query, options)', function() {
+        it('creates a valid query request and returns the result', function() {
+          sinon.spy($spRest, 'buildHttpConfig');
+          sinon.spy(TestItem, '$decorateResult');
+          var query = { select: ['Id', 'Title'] };
+
+          var testItems = TestItem.query(query);
+
+          expect($spRest.buildHttpConfig).to.have.been.calledWith(
+            TestItem.$$listRelativeUrl,
+            'query', {
+              query: query
+            });
+          expect(TestItem.$decorateResult).to.have.been.calledWithMatch(
+            { },
+            $spRest.buildHttpConfig.firstCall.returnValue
+          );
+          expect(testItems).to.be.equal(TestItem.$decorateResult.firstCall.returnValue);
+
+          $spRest.buildHttpConfig.restore();
+          TestItem.$decorateResult.restore();
+        });
+
+        it('returns a single object as result when options.singleResult is true', function() {
+          var query = { select: ['Id', 'Title'] };
+
+          var testItem = TestItem.query(query, { singleResult: true });
+
+          expect(testItem).to.be.instanceOf(Object).and.not.be.instanceOf(Array);
+        });
+      });
+
+      describe('.create(item, query)', function() {
+        it('throws when item is not a ListItem', function() {
+          expect(function() { TestItem.create({}); }).to.throw(Error, ['$spList:badargs']);
+        });
+        it('throws when item does not have a valid type', function() {
+          var testItem = new TestItem();
+          delete testItem.$settings.itemType;
+          expect(function() { TestItem.create(testItem); }).to.throw(Error, ['$spList:badargs']);
+        });
+
+        it('creates a valid create request and returns the result', function() {
+          sinon.spy($spRest, 'buildHttpConfig');
+          sinon.spy(TestItem, '$decorateResult');
+          var testItem = new TestItem({foo: 'bar'});
+          var query = { select: ['Id', 'Title'] };
+
+          var result = TestItem.create(testItem, query);
+
+          expect(testItem.__metadata.type).to.be.equal(testItem.$settings.itemType);
+          expect($spRest.buildHttpConfig).to.have.been.calledWith(
+            TestItem.$$listRelativeUrl,
+            'create', {
+              item: testItem,
+              query: query
+            });
+          expect(TestItem.$decorateResult).to.have.been.calledWith(
+            testItem,
+            $spRest.buildHttpConfig.firstCall.returnValue
+          );
+          expect(result).to.be.equal(TestItem.$decorateResult.firstCall.returnValue);
+
+          $spRest.buildHttpConfig.restore();
+          TestItem.$decorateResult.restore();
+        });
+      });
+
+      describe('.update(item, options)', function() {
+        it('throws when item is not a ListItem', function() {
+          expect(function() { TestItem.create({}); }).to.throw(Error, ['$spList:badargs']);
+        });
+
+        it('creates a valid update request and returns the result', function() {
+          sinon.spy($spRest, 'buildHttpConfig');
+          sinon.spy(TestItem, '$decorateResult');
+          var testItem = new TestItem({
+            Id: 1,
+            foo: 'bar',
+            __metadata: {
+              uri: apiRootUrl + TestItem.$$listRelativeUrl + '/items(1)'
+            }
+          });
+          var options = { force: true };
+          var result = TestItem.update(testItem, options);
+
+          expect($spRest.buildHttpConfig).to.have.been.calledWith(
+            TestItem.$$listRelativeUrl,
+            'update', {
+              item: testItem,
+              force: true
+            });
+          expect(TestItem.$decorateResult).to.have.been.calledWith(
+            testItem,
+            $spRest.buildHttpConfig.firstCall.returnValue
+          );
+          expect(result).to.be.equal(TestItem.$decorateResult.firstCall.returnValue);
+
+          $spRest.buildHttpConfig.restore();
+          TestItem.$decorateResult.restore();
+        });
+      });
+
+      describe('.save(item, options)', function() {
+        beforeEach(function() {
+          sinon.stub(TestItem, 'create');
+          sinon.stub(TestItem, 'update');
+        });
+        afterEach(function() {
+          TestItem.create.restore();
+          TestItem.update.restore();
+        });
+
+        it('delgates to .create for new items', function() {
+          var options = { query: { select: ['Id', 'Title'] } };
+          var item = new TestItem();
+
+          TestItem.save(item, options);
+
+          expect(TestItem.create).to.have.been.calledWith(item, options.query);
+        });
+
+        it('delgates to .update for loaded items', function() {
+          var options = { force: true };
+          var item = new TestItem({
+            __metadata: { id: '1' }
+          });
+
+          TestItem.save(item, options);
+
+          expect(TestItem.update).to.have.been.calledWith(item, options);
+        });
+      });
+
+      describe('.delete(item)', function() {
+        it('throws when item is not a ListItem', function() {
+          expect(function() { TestItem.create({}); }).to.throw(Error, ['$spList:badargs']);
+        });
+
+        it('creates a valid delete request and returns the result', function() {
+          sinon.spy($spRest, 'buildHttpConfig');
+          sinon.spy(TestItem, '$decorateResult');
+          var testItem = new TestItem({
+            Id: 1,
+            foo: 'bar',
+            __metadata: {
+              uri: apiRootUrl + TestItem.$$listRelativeUrl + '/items(1)'
+            }
+          });
+          var result = TestItem.delete(testItem);
+
+          expect($spRest.buildHttpConfig).to.have.been.calledWith(
+            TestItem.$$listRelativeUrl,
+            'delete', {
+              item: testItem
+            });
+          expect(TestItem.$decorateResult).to.have.been.calledWith(
+            testItem,
+            $spRest.buildHttpConfig.firstCall.returnValue
+          );
+          expect(result).to.be.equal(TestItem.$decorateResult.firstCall.returnValue);
+
+          $spRest.buildHttpConfig.restore();
+          TestItem.$decorateResult.restore();
+        });
+      });
     });
   });
 });
