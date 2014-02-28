@@ -126,6 +126,18 @@ describe('ExpertsInside.SharePoint', function() {
 
           expect(function() { $httpBackend.flush(); }).to.throw(Error, '[$spList:badresponse]');
         });
+
+        it('updates the etag of the result on updates', function(done) {
+          var result = TestItem.$decorateResult({foo: 1, __metadata: { etag: '1'}}, httpConfig);
+          $httpBackend.expectGET(httpConfig.url).respond(204, null, { ETag: '2' });
+
+          result.$promise.then(function() {
+            expect(result.__metadata.etag).to.be.equal('2');
+            done();
+          });
+
+          $httpBackend.flush();
+        });
       });
     });
 
