@@ -97,8 +97,8 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('test', [
-    'jshint',
-    'karma:spec'
+    'karma:spec',
+    'jshint'
   ]);
 
   grunt.registerTask('dev', function() {
