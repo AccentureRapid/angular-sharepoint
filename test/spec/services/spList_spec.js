@@ -141,17 +141,66 @@ describe('ExpertsInside.SharePoint', function() {
       });
     });
 
-    describe('the created TestItem class', function() {
-      it('#$settings has some sane defaults', function() {
-        var testItem = new TestItem();
+    it('creates some sane defaults for prototype.$settings', function() {
+      expect(TestItem.prototype.$settings).to.be.eql({
+        itemType: 'SP.Data.TestListItem',
+        queryDefaults: {},
+        readOnlyFields: [
+          'AttachmentFiles',
+          'Attachments',
+          'Author',
+          'AuthorId',
+          'ContentType',
+          'ContentTypeId',
+          'Created',
+          'Editor',
+          'EditorId', 'FieldValuesAsHtml',
+          'FieldValuesAsText',
+          'FieldValuesForEdit',
+          'File',
+          'FileSystemObjectType',
+          'FirstUniqueAncestorSecurableObject',
+          'Folder',
+          'GUID',
+          'Modified',
+          'OData__UIVersionString',
+          'ParentList',
+          'RoleAssignments'
+        ]
+      });
+    });
 
-        expect(testItem.$settings).to.be.eql({
-          itemType: 'SP.Data.TestListItem',
-          readOnlyFields: ['Author', 'Editor', 'Created', 'Modified']
+    it('extends the default read only fields with those passed as *options*', function() {
+      TestItem = $spList('Test', {
+        readOnlyFields: ['TestReadOnlyField']
+      });
+
+      expect(TestItem.prototype.$settings.readOnlyFields).to.contain('TestReadOnlyField')
+        .and.have.length.above(1);
+    });
+
+    it('extends the default query defaults with those passed as *options*', function() {
+      TestItem = $spList('Test', {
+        queryDefaults: {
+          select: ['Id', 'Title']
+        }
+      });
+
+      expect(TestItem.prototype.$settings.queryDefaults).to.be.eql({
+        select: ['Id', 'Title']
+      });
+    });
+
+    describe('the created TestItem class', function() {
+      beforeEach(function() {
+        TestItem = $spList('Test', {
+          queryDefaults: {
+            select: ['Id', 'Title']
+          }
         });
       });
 
-      it('#$save(options) delegates to ListItem.save and returns the promise', function() {
+      it('.save(options) delegates to ListItem.save and returns the promise', function() {
         var testItem = new TestItem();
         var promise = {};
         var options = {};
@@ -163,7 +212,7 @@ describe('ExpertsInside.SharePoint', function() {
         TestItem.save.restore();
       });
 
-      it('#$delete() delegates to ListItem.delete and returns the promise', function() {
+      it('.delete() delegates to ListItem.delete and returns the promise', function() {
         var testItem = new TestItem();
         var promise = {};
         sinon.stub(TestItem, 'delete').returns({$promise: promise});
@@ -208,14 +257,17 @@ describe('ExpertsInside.SharePoint', function() {
         it('creates a valid query request and returns the result', function() {
           sinon.spy($spRest, 'buildHttpConfig');
           sinon.spy(TestItem, '$decorateResult');
-          var query = { select: ['Id', 'Title'] };
+          var query = { expand: ['Foo'] };
 
           var testItems = TestItem.query(query);
 
           expect($spRest.buildHttpConfig).to.have.been.calledWith(
             TestItem.$$listRelativeUrl,
             'query', {
-              query: query
+              query: {
+                select: ['Id', 'Title'],
+                expand: ['Foo']
+              }
             });
           expect(TestItem.$decorateResult).to.have.been.calledWithMatch(
             { },
@@ -250,7 +302,7 @@ describe('ExpertsInside.SharePoint', function() {
           sinon.spy($spRest, 'buildHttpConfig');
           sinon.spy(TestItem, '$decorateResult');
           var testItem = new TestItem({foo: 'bar'});
-          var query = { select: ['Id', 'Title'] };
+          var query = {expand: 'Foo'};
 
           var result = TestItem.create(testItem, query);
 
@@ -259,7 +311,10 @@ describe('ExpertsInside.SharePoint', function() {
             TestItem.$$listRelativeUrl,
             'create', {
               item: testItem,
-              query: query
+              query: {
+                select: ['Id', 'Title'],
+                expand: 'Foo'
+              }
             });
           expect(TestItem.$decorateResult).to.have.been.calledWith(
             testItem,
@@ -294,6 +349,7 @@ describe('ExpertsInside.SharePoint', function() {
             TestItem.$$listRelativeUrl,
             'update', {
               item: testItem,
+              query: { select: ['Id', 'Title'] }, // queryDefaults
               force: true
             });
           expect(TestItem.$decorateResult).to.have.been.calledWith(
