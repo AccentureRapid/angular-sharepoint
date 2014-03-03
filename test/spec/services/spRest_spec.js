@@ -55,7 +55,7 @@ describe('ExpertsInside.SharePoint', function() {
       });
 
       it('handles array values in *params*', function() {
-        expect($spRest.buildQueryString({foo: [1,2]})).to.be.eql('foo=1,2');
+        expect($spRest.buildQueryString({foo: [1,2,2]})).to.be.eql('foo=1,2');
       });
     });
 

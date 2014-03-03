@@ -1,7 +1,14 @@
 angular.module('ExpertsInside.SharePoint')
   .factory('$spRest', function($log) {
     'use strict';
+
     var $spRestMinErr = angular.$$minErr('$spRest');
+    var unique = function(arr) {
+      return arr.reduce(function(r, x) {
+        if (r.indexOf(x) < 0) { r.push(x); }
+        return r;
+      }, []);
+    };
 
     var validParamKeys = ['$select', '$filter', '$orderby', '$top', '$skip', '$expand', '$sort'];
 
@@ -40,7 +47,7 @@ angular.module('ExpertsInside.SharePoint')
         angular.forEach(keys, function(key) {
           var value = params[key];
           if (value === null || angular.isUndefined(value)) { return; }
-          if (angular.isArray(value)) { value = value.join(','); }
+          if (angular.isArray(value)) { value = unique(value).join(','); }
           if (angular.isObject(value)) { value = angular.toJson(value); }
 
           parts.push(key + '=' + value);
