@@ -80,7 +80,6 @@ angular.module('ExpertsInside.SharePoint')
         return params;
       },
       appendQueryString: function(url, params) {
-        params = $spRest.normalizeParams(params);
         var queryString = $spRest.buildQueryString(params);
 
         if (queryString !== '') {
@@ -105,6 +104,7 @@ angular.module('ExpertsInside.SharePoint')
         };
         action = angular.isString(action) ? action.toLowerCase() : '';
         options = angular.isDefined(options) ? options : {};
+        var query = angular.isDefined(options.query) ? $spRest.normalizeParams(options.query) : {};
 
         switch(action) {
         case 'get':
@@ -126,6 +126,8 @@ angular.module('ExpertsInside.SharePoint')
             throw $spRestMinErr('options:create', 'options must have an item');
           }
 
+          delete query.$expand;
+
           httpConfig = ShareCoffee.REST.build.create.for.angularJS({
             url: baseUrl,
             payload: $spRest.createPayload(options.item)
@@ -139,6 +141,7 @@ angular.module('ExpertsInside.SharePoint')
             throw $spRestMinErr('options:update', 'options.item must have __metadata');
           }
 
+          query = {}; // does nothing or breaks things, so we ignore it
           var eTag = !options.force && angular.isDefined(options.item.__metadata) ?
             options.item.__metadata.etag : null;
 
@@ -164,7 +167,7 @@ angular.module('ExpertsInside.SharePoint')
           break;
         }
 
-        httpConfig.url = $spRest.appendQueryString(httpConfig.url, options.query);
+        httpConfig.url = $spRest.appendQueryString(httpConfig.url, query);
         httpConfig.transformResponse = $spRest.transformResponse;
 
         return httpConfig;

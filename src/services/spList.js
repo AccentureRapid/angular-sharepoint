@@ -121,7 +121,6 @@ angular.module('ExpertsInside.SharePoint')
         options = angular.extend({}, options, {
           item: item
         });
-        delete options.query; // does nothing or breaks things, so we ignore it
 
         var httpConfig = $spRest.buildHttpConfig(ListItem.$$listRelativeUrl, 'update', options);
 
