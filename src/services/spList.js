@@ -117,11 +117,11 @@ angular.module('ExpertsInside.SharePoint')
           throw $spListMinErr('badargs', 'item must be a ListItem instance.');
         }
 
-        options = angular.extend({}, {
-          query: item.$settings.queryDefaults
-        }, options, {
+        options = angular.extend({}, options, {
           item: item
         });
+        delete options.query; // does nothing or breaks things, so we ignore it
+
         var httpConfig = $spRest.buildHttpConfig(ListItem.$$listRelativeUrl, 'update', options);
 
         return ListItem.$decorateResult(item, httpConfig);

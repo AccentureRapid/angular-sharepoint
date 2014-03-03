@@ -349,7 +349,6 @@ describe('ExpertsInside.SharePoint', function() {
             TestItem.$$listRelativeUrl,
             'update', {
               item: testItem,
-              query: { select: ['Id', 'Title'] }, // queryDefaults
               force: true
             });
           expect(TestItem.$decorateResult).to.have.been.calledWith(
