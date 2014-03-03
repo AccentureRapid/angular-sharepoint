@@ -87,7 +87,9 @@ angular.module('ExpertsInside.SharePoint')
       };
       ListItem.query = function(query, options) {
         var result = (angular.isDefined(options) && options.singleResult) ? {} : [];
-        var httpConfig = $spRest.buildHttpConfig(ListItem.$$listRelativeUrl, 'query', {query: query});
+        var httpConfig = $spRest.buildHttpConfig(ListItem.$$listRelativeUrl, 'query', {
+          query: angular.extend({}, ListItem.prototype.$settings.queryDefaults, query)
+        });
 
         return ListItem.$decorateResult(result, httpConfig);
       };
@@ -105,7 +107,7 @@ angular.module('ExpertsInside.SharePoint')
         };
         var httpConfig = $spRest.buildHttpConfig(ListItem.$$listRelativeUrl, 'create', {
           item: item,
-          query: query
+          query: angular.extend({}, item.$settings.queryDefaults, query)
         });
 
         return ListItem.$decorateResult(item, httpConfig);
@@ -115,7 +117,11 @@ angular.module('ExpertsInside.SharePoint')
           throw $spListMinErr('badargs', 'item must be a ListItem instance.');
         }
 
-        options = angular.extend({}, options, {item: item});
+        options = angular.extend({}, {
+          query: item.$settings.queryDefaults
+        }, options, {
+          item: item
+        });
         var httpConfig = $spRest.buildHttpConfig(ListItem.$$listRelativeUrl, 'update', options);
 
         return ListItem.$decorateResult(item, httpConfig);
