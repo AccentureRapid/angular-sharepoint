@@ -142,12 +142,53 @@ describe('ExpertsInside.SharePoint', function() {
     });
 
     describe('the created TestItem class', function() {
-      it('#$settings has some sane defaults', function() {
-        var testItem = new TestItem();
-
-        expect(testItem.$settings).to.be.eql({
+      it('prototype.$settings has some sane defaults', function() {
+        expect(TestItem.prototype.$settings).to.be.eql({
           itemType: 'SP.Data.TestListItem',
-          readOnlyFields: ['Author', 'Editor', 'Created', 'Modified']
+          queryDefaults: {},
+          readOnlyFields: [
+            'AttachmentFiles',
+            'Attachments',
+            'Author',
+            'AuthorId',
+            'ContentType',
+            'ContentTypeId',
+            'Created',
+            'Editor',
+            'EditorId', 'FieldValuesAsHtml',
+            'FieldValuesAsText',
+            'FieldValuesForEdit',
+            'File',
+            'FileSystemObjectType',
+            'FirstUniqueAncestorSecurableObject',
+            'Folder',
+            'GUID',
+            'Modified',
+            'OData__UIVersionString',
+            'ParentList',
+            'RoleAssignments'
+          ]
+        });
+      });
+
+      it('extends the default read only fields with those passed as *options*', function() {
+        TestItem = $spList('Test', {
+          readOnlyFields: ['TestReadOnlyField']
+        });
+
+        expect(TestItem.prototype.$settings.readOnlyFields).to.contain('TestReadOnlyField')
+          .and.have.length.above(1);
+      });
+
+      it('extends the default query defaults with those passed as *options*', function() {
+        TestItem = $spList('Test', {
+          queryDefaults: {
+            select: ['Id', 'Title']
+          }
+        });
+
+        expect(TestItem.prototype.$settings.queryDefaults).to.be.eql({
+          select: ['Id', 'Title']
         });
       });
 

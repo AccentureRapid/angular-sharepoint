@@ -141,8 +141,28 @@ angular.module('ExpertsInside.SharePoint')
         $settings: {
           itemType: 'SP.Data.' + upcaseName + 'ListItem',
           readOnlyFields: angular.extend([
-            'Author', 'Editor', 'Created', 'Modified'
-          ], options.readOnlyFields)
+            'AttachmentFiles',
+            'Attachments',
+            'Author',
+            'AuthorId',
+            'ContentType',
+            'ContentTypeId',
+            'Created',
+            'Editor',
+            'EditorId', 'FieldValuesAsHtml',
+            'FieldValuesAsText',
+            'FieldValuesForEdit',
+            'File',
+            'FileSystemObjectType',
+            'FirstUniqueAncestorSecurableObject',
+            'Folder',
+            'GUID',
+            'Modified',
+            'OData__UIVersionString',
+            'ParentList',
+            'RoleAssignments'
+          ], options.readOnlyFields),
+          queryDefaults: angular.extend({}, options.queryDefaults)
         },
         $save: function(options) {
           return ListItem.save(this, options).$promise;
