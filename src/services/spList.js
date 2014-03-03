@@ -142,6 +142,18 @@ angular.module('ExpertsInside.SharePoint')
 
         return ListItem.$decorateResult(item, httpConfig);
       };
+      ListItem.queries = { };
+      ListItem.addNamedQuery = function(name, createQuery, options) {
+        ListItem.queries[name] = function() {
+          var query = angular.extend(
+            {},
+            ListItem.prototype.$settings.queryDefaults,
+            createQuery.apply(ListItem, arguments)
+          );
+          return ListItem.query(query, options);
+        };
+        return ListItem;
+      };
 
       ListItem.prototype = {
         $settings: {
@@ -176,14 +188,6 @@ angular.module('ExpertsInside.SharePoint')
         $delete: function() {
           return ListItem.delete(this).$promise;
         }
-        // addNamedQuery: function(name, createParams) {
-        //   var me = this;
-        //   this.queries[name] = function() {
-        //     var params = createParams.apply(me, arguments);
-        //     return me.query(params);
-        //   };
-        //   return me;
-        // }
       };
 
       return ListItem;
