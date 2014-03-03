@@ -426,6 +426,31 @@ describe('ExpertsInside.SharePoint', function() {
           TestItem.$decorateResult.restore();
         });
       });
+
+      describe('.addNamedQuery(name, createQuery, options)', function() {
+        it('adds a function with the given *name* to TestItem.queries', function() {
+          TestItem.addNamedQuery('foo');
+
+          expect(TestItem.queries.foo).to.be.a('function');
+        });
+
+        it('when executing the added function, the createQuery callback is called and its result passed to TestItem.query, together with options', function() {
+          var options = {singleResult: true};
+          var createQuery = sinon.stub().returns({expand: 'Foo'});
+          sinon.spy(TestItem, 'query');
+          TestItem.addNamedQuery('foo', createQuery, options);
+
+          TestItem.queries.foo('something');
+
+          expect(createQuery).to.have.been.calledWith('something');
+          expect(TestItem.query).to.have.been.calledWith({
+            select: ['Id', 'Title'],
+            expand: 'Foo'
+          }, options);
+
+          TestItem.query.restore();
+        });
+      });
     });
   });
 });
