@@ -5,5 +5,5 @@ components
 .DS_Store
 npm-debug.log
 logs/
-test.sh
+dev.sh
 docs/
