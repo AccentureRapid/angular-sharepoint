@@ -61,6 +61,11 @@ angular.module('ExpertsInside.SharePoint')
             throw $spListMinErr('badresponse', 'Expected response to contain an {0} but got an {1}',
               angular.isArray(result) ? 'array' : 'object', angular.isArray(data) ? 'array' : 'object');
           }
+
+          var responseEtag;
+          if(response.status === 204 && angular.isString(responseEtag = response.headers('ETag'))) {
+            result.__metadata.etag = responseEtag;
+          }
           result.$resolved = true;
 
           return result;
