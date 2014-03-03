@@ -31,6 +31,7 @@ angular.module('ExpertsInside.SharePoint')
       }
 
       ListItem.$$listName = name;
+      ListItem.getListName = function() { return ListItem.$$listName; };
       ListItem.$$listRelativeUrl = "web/lists/getByTitle('" + name + "')";
       ListItem.$decorateResult = function(result, httpConfig) {
         if (!angular.isArray(result) && !(result instanceof ListItem)) {

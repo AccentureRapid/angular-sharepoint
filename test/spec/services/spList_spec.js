@@ -34,8 +34,8 @@ describe('ExpertsInside.SharePoint', function() {
       expect(TestItem.delete).to.be.a('function');
     });
 
-    it('.$$listName is the List name', function() {
-      expect(TestItem).to.have.property('$$listName', 'Test');
+    it('.getListName returns the List name', function() {
+      expect(TestItem.getListName()).to.be.eql('Test');
     });
 
     it('.$$listRelativeUrl is the relative List url', function() {
