@@ -450,6 +450,18 @@ describe('ExpertsInside.SharePoint', function() {
           TestItem.query.restore();
         });
       });
+
+      describe('#$isNew()', function() {
+        it('returns true when the item is in fact new', function() {
+          expect((new TestItem()).$isNew()).to.be.true;
+        });
+        it('returns false when the item was loaded', function() {
+          var item = new TestItem({
+            __metadata: { id: 'something' }
+          });
+          expect(item.$isNew()).to.be.false;
+        });
+      });
     });
   });
 });
