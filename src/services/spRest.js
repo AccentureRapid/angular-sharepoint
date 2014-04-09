@@ -171,7 +171,7 @@ angular.module('ExpertsInside.SharePoint')
         httpConfig.transformResponse = $spRest.transformResponse;
 
         return httpConfig;
-      },
+      }
     };
 
     return $spRest;
