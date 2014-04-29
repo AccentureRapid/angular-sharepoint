@@ -30,16 +30,16 @@ angular.module('ExpertsInside.SharePoint')
           var data = response.data;
 
           if (angular.isObject(data)) {
-            if(!angular.isUndefined(data.query)) {
+            if(angular.isDefined(data.query)) {
               result.$raw = data.query;
               angular.extend(result, $spConvert.searchResult(data.query));
-            } else {
+            } else if (angular.isDefined(data.suggest)) {
               result.$raw = data.suggest;
               angular.extend(result, $spConvert.suggestResult(data.suggest));
             }
-          } else {
-            throw $spSearchMinErr('badresponse', 'Expected result to be an object but got {0}.',
-              typeof(result));
+          }
+          if (angular.isUndefined(result.$raw)) {
+            throw $spSearchMinErr('badresponse', 'Response does not contain a valid search result.');
           }
           result.$resolved = true;
 
