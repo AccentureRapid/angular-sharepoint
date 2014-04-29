@@ -1,6 +1,6 @@
 {
   "name": "angular-sharepoint",
-  "version": "0.1.0",
+  "version": "0.2.0-rc1",
   "description": "SharePoint REST API wrapper for AngularJS",
   "keywords": [
     "angular",
@@ -21,6 +21,7 @@
     "angular": ">=1.2.10",
     "angular-mocks": ">=1.2.10",
     "ShareCoffee": "~0.0.10",
-    "ShareCoffee.Search": "~0.0.2"
+    "ShareCoffee.Search": "~0.0.2",
+    "ShareCoffee.UserProfiles": "*"
   }
 }
