@@ -86,6 +86,24 @@ angular.module('ExpertsInside.SharePoint')
       suggestResult: function(suggestResult) {
         // TODO implement
         return suggestResult;
+      },
+
+      userResult: function(userResult) {
+        assertType("SP.UserProfiles.PersonProperties", userResult);
+
+        var result = {
+          accountName: userResult.AccountName,
+          displayName: userResult.DisplayName,
+          email: userResult.Email,
+          isFollowed: userResult.IsFollowed,
+          personalUrl: userResult.PersonalUrl,
+          pictureUrl: userResult.PictureUrl,
+          profileProperties: $spConvert.spKeyValueArray(userResult.UserProfileProperties),
+          title: userResult.Title,
+          userUrl: userResult.UserUrl
+        };
+
+        return result;
       }
     };
 
