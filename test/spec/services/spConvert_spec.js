@@ -48,8 +48,8 @@ describe('ExpertsInside.SharePoint', function() {
         var result = $spConvert.spKeyValueArray(keyValues);
 
         expect(result).to.be.eql({
-          foo: 1,
-          bar: 2.3
+          Foo: 1,
+          Bar: 2.3
         });
       });
     });
@@ -75,8 +75,8 @@ describe('ExpertsInside.SharePoint', function() {
         var result = $spConvert.spSimpleDataRow(row);
 
         expect(result).to.be.eql({
-          foo: 1,
-          bar: 2.3
+          Foo: 1,
+          Bar: 2.3
         });
       });
     });
@@ -115,11 +115,11 @@ describe('ExpertsInside.SharePoint', function() {
         var result = $spConvert.spSimpleDataTable(table);
 
         expect(result).to.be.eql([{
-          foo: 1,
-          bar: 2.3
+          Foo: 1,
+          Bar: 2.3
         }, {
-          foo: 4,
-          bar: 5.6
+          Foo: 4,
+          Bar: 5.6
         }]);
       });
     });
@@ -176,11 +176,11 @@ describe('ExpertsInside.SharePoint', function() {
 
         var result = $spConvert.searchResult(searchResult);
 
-        console.log(JSON.stringify(result, null, 2));
+        // console.log(JSON.stringify(result, null, 2));
         expect(result).to.be.eql({
           elapsedTime: '123',
           spellingSuggestion: '',
-          properties: { foo: 1 },
+          properties: { Foo: 1 },
           primaryQueryResult: {
             queryId: "dcbbd035-d6e5-47a6-bbda-da0a7f3a49a6",
             queryRuleId: "00000000-0000-0000-0000-000000000000",
@@ -188,11 +188,11 @@ describe('ExpertsInside.SharePoint', function() {
             refinementResults: null,
             specialTermResults: null,
             relevantResults:[{
-              foo: 1,
-              bar: 2.3
+              Foo: 1,
+              Bar: 2.3
             }, {
-              foo: 4,
-              bar: 5.6
+              Foo: 4,
+              Bar: 5.6
             }]
           }
         });
