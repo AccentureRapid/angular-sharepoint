@@ -1,6 +1,6 @@
 {
   "name": "angular-sharepoint",
-  "version": "0.2.0-rc2",
+  "version": "0.2.0",
   "description": "SharePoint REST API wrapper for AngularJS",
   "main": "src/sharepoint.js",
   "homepage": "https://github.com/ExpertsInside/angular-sharepoint",
