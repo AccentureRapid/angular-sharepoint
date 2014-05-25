@@ -53,7 +53,7 @@ NG_DOCS={
     "api": true
   },
   "html5Mode": false,
-  "startPage": "/api",
+  "startPage": "/api/ExpertsInside.SharePoint",
   "scripts": [
     "angular.min.js"
   ]
