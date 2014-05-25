@@ -1,3 +1,12 @@
+/**
+ * @ngdoc service
+ * @name ExpertsInside.SharePoint.$spUser
+ * @requires ExpertsInside.SharePoint.$spRest
+ * @requires ExpertsInside.SharePoint.$spConvert
+ *
+ * @description Load user information via UserProfiles REST API
+ *
+ */
 angular.module('ExpertsInside.SharePoint')
   .factory('$spUser', function($http, $spRest, $spConvert) {
     'use strict';

@@ -1,3 +1,12 @@
+/**
+ * @ngdoc service
+ * @name ExpertsInside.SharePoint.$spSearch
+ * @requires ExpertsInside.SharePoint.$spRest
+ * @requires ExpertsInside.SharePoint.$spConvert
+ *
+ * @description Query the Search via REST API
+ *
+ */
 angular.module('ExpertsInside.SharePoint')
   .factory('$spSearch', function($http, $spRest, $spConvert) {
     'use strict';

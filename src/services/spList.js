@@ -20,15 +20,24 @@
  *   overridden per action. See {@link ExpertsInside.SharePoint.$spList query} for details.
  *
  * @return {Object} A list item "class" object with methods for the default set of resource actions.
- */
-
-/**
  *
- * ## List Item class
+ * # List Item class
+ *
+ * All query parameters accept an object with the REST API query string parameters. Prefixing them with $ is optional.
+ *   - **`$select`**
+ *   - **`$filter`**
+ *   - **`$orderby`**
+ *   - **`$top`**
+ *   - **`$skip`**
+ *   - **`$expand`**
+ *   - **`$sort`**
+ *
+ * ## Methods
  *
  *   - **`get`** - {function(id, query)} - Get a single list item by id.
  *   - **`query`** - {function(query, options)} - Query the list for list items and returns the list
- *     of query results. `options` supports the following properties:
+ *     of query results.
+ *     `options` supports the following properties:
  *       - **`singleResult`** - {boolean} - Returns and empty object instead of an array. Throws an
  *         error when more than one item is returned by the query.
  *   - **`create`** - {function(item, query)} - Creates a new list item. Throws an error when item is
@@ -43,6 +52,40 @@
  *     `options` are passed down to `update` and and `options.query` are passed down to `create`.
  *   - **`delete`** - {function(item)} - Deletes the list item. Throws an error when item is not an
  *     instance of the list item class.
+ *
+ * @example
+ *
+ * # Todo List
+ *
+ * ## Defining the Todo class
+ * ```js
+     var Todo = $spList('Todo', {
+       queryDefaults: ['Id', 'Title', 'Completed']
+     );
+ * ```
+ *
+ * ## Queries
+ *
+ * ```js
+     // We can retrieve all list items from the server.
+     var todos = Todo.query();
+
+    // Or retrieve only the uncompleted todos.
+    var todos = Todo.query({
+      filter: 'Completed eq 0'
+    });
+
+    // Queries that are used in more than one place or those accepting a parameter can be defined 
+    // as a function on the class
+    Todo.addNamedQuery('uncompleted', function() {
+      filter: "Completed eq 0"
+    });
+    var uncompletedTodos = Todo.queries.uncompleted();
+    Todo.addNamedQuery('byTitle', function(title) {
+      filter: "Title eq " + title
+    });
+    var fooTodo = Todo.queries.byTitle('Foo');
+ * ```
  */
 angular.module('ExpertsInside.SharePoint')
   .factory('$spList', function($spRest, $http) {
