@@ -38,6 +38,10 @@ module.exports = function(grunt) {
     },
 
     ngdocs: {
+      options: {
+        html5Mode: false,
+        startPage: '/api'
+      },
       api: {
         src: [
           'src/sharepoint.js',
