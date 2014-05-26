@@ -1,16 +1,91 @@
 /**
  * @ngdoc service
  * @name ExpertsInside.SharePoint.$spList
- * @requires $spRest
+ * @requires ExpertsInside.SharePoint.$spRest
  *
- * @description
- * A factory which creates a list object that lets you interact with SharePoint Lists via the
- * SharePoint REST API
+ * @description A factory which creates a list item resource object that lets you interact with
+ *   SharePoint List Items via the SharePoint REST API.
  *
- * The returned list object has action methods which provide high-level behaviors without
- * the need to interact with the low level $http service.
+ *   The returned list item object has action methods which provide high-level behaviors without
+ *   the need to interact with the low level $http service.
  *
- * @return {Object} A list "class" object with the default set of resource actions
+ * @param {string} name The name of the SharePoint List (case-sensitive).
+ *
+ * @param {Object=} options Hash with custom options for this List. The following options are
+ *   supported:
+ *
+ *   - **`readOnlyFields`** - {Array.{string}=} - Array of field names that will be exlcuded
+ *   from the request when saving an item back to SharePoint
+ *   - **`queryDefaults`** - {Object=} - Default query parameter used by each action. Can be
+ *   overridden per action. See {@link ExpertsInside.SharePoint.$spList query} for details.
+ *
+ * @return {Object} A list item "class" object with methods for the default set of resource actions.
+ *
+ * # List Item class
+ *
+ * All query parameters accept an object with the REST API query string parameters. Prefixing them with $ is optional.
+ *   - **`$select`**
+ *   - **`$filter`**
+ *   - **`$orderby`**
+ *   - **`$top`**
+ *   - **`$skip`**
+ *   - **`$expand`**
+ *   - **`$sort`**
+ *
+ * ## Methods
+ *
+ *   - **`get`** - {function(id, query)} - Get a single list item by id.
+ *   - **`query`** - {function(query, options)} - Query the list for list items and returns the list
+ *     of query results.
+ *     `options` supports the following properties:
+ *       - **`singleResult`** - {boolean} - Returns and empty object instead of an array. Throws an
+ *         error when more than one item is returned by the query.
+ *   - **`create`** - {function(item, query)} - Creates a new list item. Throws an error when item is
+ *     not an instance of the list item class.
+ *   - **`update`** - {function(item, options)} - Updates an existing list item. Throws an error when
+ *     item is not an instance of the list item class. Supported options are:
+ *       - **`query`** - {Object} - Query parameters for the REST call
+ *       - **`force`** - {boolean} - If true, the etag (version) of the item is excluded from the
+ *         request and the server does not check for concurrent changes to the item but just 
+ *         overwrites it. Use with caution.
+ *   - **`save`** - {function(item, options)} - Either creates or updates the item based on its state.
+ *     `options` are passed down to `update` and and `options.query` are passed down to `create`.
+ *   - **`delete`** - {function(item)} - Deletes the list item. Throws an error when item is not an
+ *     instance of the list item class.
+ *
+ * @example
+ *
+ * # Todo List
+ *
+ * ## Defining the Todo class
+ * ```js
+     var Todo = $spList('Todo', {
+       queryDefaults: ['Id', 'Title', 'Completed']
+     );
+ * ```
+ *
+ * ## Queries
+ *
+ * ```js
+     // We can retrieve all list items from the server.
+     var todos = Todo.query();
+
+    // Or retrieve only the uncompleted todos.
+    var todos = Todo.query({
+      filter: 'Completed eq 0'
+    });
+
+    // Queries that are used in more than one place or those accepting a parameter can be defined 
+    // as a function on the class
+    Todo.addNamedQuery('uncompleted', function() {
+      filter: "Completed eq 0"
+    });
+    var uncompletedTodos = Todo.queries.uncompleted();
+    Todo.addNamedQuery('byTitle', function(title) {
+      filter: "Title eq " + title
+    });
+    var fooTodo = Todo.queries.byTitle('Foo');
+ * ```
  */
 angular.module('ExpertsInside.SharePoint')
   .factory('$spList', function($spRest, $http) {
