@@ -40,7 +40,7 @@ module.exports = function(grunt) {
     ngdocs: {
       options: {
         html5Mode: false,
-        startPage: '/api'
+        startPage: '/api/ExpertsInside.SharePoint'
       },
       api: {
         src: [
