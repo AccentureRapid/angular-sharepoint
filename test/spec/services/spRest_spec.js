@@ -231,6 +231,12 @@ describe('ExpertsInside.SharePoint', function() {
             'X-RequestDigest': requestDigest
           });
         });
+
+        it('removes $expand from query properties', function() {
+          var httpConfig = $spRest.buildHttpConfig(listUrl, 'create', {query: { $expand: 'Foo/Id' }, item: {}});
+
+          expect(httpConfig.url).to.not.contain('$expand');
+        });
       });
 
       describe('when *action* is "update"', function() {

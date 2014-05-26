@@ -7,9 +7,9 @@
  * The main module which holds everything together.
  */
 angular.module('ExpertsInside.SharePoint', ['ng'])
-  .run(function($window) {
+  .run(function($window, $log) {
     if (angular.isUndefined($window.ShareCoffee)) {
-      console.error("angular-sharepoint requires ShareCoffee to do its job. " +
+      $log.error("angular-sharepoint requires ShareCoffee to do its job. " +
                     "Please include ShareCoffe.js in your document");
     }
   });

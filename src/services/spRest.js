@@ -126,7 +126,9 @@ angular.module('ExpertsInside.SharePoint')
             throw $spRestMinErr('options:create', 'options must have an item');
           }
 
-          delete query.$expand;
+          if (angular.isDefined(query)) {
+            delete query.$expand;
+          }
 
           httpConfig = ShareCoffee.REST.build.create.for.angularJS({
             url: baseUrl,
