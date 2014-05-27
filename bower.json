@@ -18,9 +18,9 @@
     "tests"
   ],
   "dependencies": {
-    "angular": ">=1.2.10",
-    "angular-mocks": ">=1.2.10",
-    "ShareCoffee": "~0.0.10",
+    "angular": ">=1.2.10 <2",
+    "angular-mocks": ">=1.2.10 <2",
+    "ShareCoffee": "~0.0.13",
     "ShareCoffee.Search": "~0.0.2",
     "ShareCoffee.UserProfiles": "*"
   }
