@@ -104,6 +104,13 @@ angular.module('ExpertsInside.SharePoint')
         };
 
         return result;
+      },
+
+      capitalize: function(str) {
+        if (angular.isUndefined(str) || str === null) {
+          return null;
+        }
+        return str.charAt(0).toUpperCase() + str.slice(1);
       }
     };
 

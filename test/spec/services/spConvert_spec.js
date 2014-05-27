@@ -198,5 +198,15 @@ describe('ExpertsInside.SharePoint', function() {
         });
       });
     });
+
+    describe('.capitalize(str)', function() {
+      it('returns null when *str* in undefined', function () {
+        expect($spConvert.capitalize(null)).to.be.null;
+      });
+
+      it('Upcases the first letter in the *str*', function () {
+        expect($spConvert.capitalize('foo')).to.be.eql('Foo');
+      });
+    });
   });
 });
