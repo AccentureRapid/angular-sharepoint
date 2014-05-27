@@ -32,7 +32,7 @@
     "plusplus"      : true,
     "regexp"        : false,
     "undef"         : true,
-    "strict"      : false,
+    "strict"        : false,
     "trailing"      : true,
 
     "asi"           : false,
