@@ -137,10 +137,6 @@ describe('ExpertsInside.SharePoint', function() {
       });
     });
 
-    it('creates some sane defaults for #$$type', function() {
-      expect(TestItem.prototype.$$type).to.be.eql('SP.Data.TestListItem');
-    });
-
     it('creates some sane defaults for #$$readOnlyFields', function() {
       expect(TestItem.prototype.$$readOnlyFields).to.be.eql([
         'AttachmentFiles',
@@ -194,6 +190,22 @@ describe('ExpertsInside.SharePoint', function() {
             select: ['Id', 'Title']
           }
         });
+      });
+
+      it('.ctor() adds __metadata property to created item', function() {
+        var testItem = new TestItem();
+
+        expect(testItem).to.have.deep.property('__metadata.type', 'SP.Data.TestListItem');
+      });
+
+      it('.ctor() extends created item with passed data', function() {
+        var testItem = new TestItem({
+          foo: 'bar',
+          __metadata: { type: 'SP.Data.CustomListItem' }
+        });
+
+        expect(testItem).to.be.have.property('foo', 'bar');
+        expect(testItem).to.be.have.deep.property('__metadata.type', 'SP.Data.CustomListItem');
       });
 
       it('.save(options) delegates to ListItem.save and returns the promise', function() {
@@ -288,10 +300,14 @@ describe('ExpertsInside.SharePoint', function() {
         it('throws when item is not a ListItem', function() {
           expect(function() { TestItem.create({}); }).to.throw(Error, ['$spList:badargs']);
         });
-        it('throws when item does not have a valid type', function() {
+
+        it('sets __metadata.type to default list item type when not already defined', function() {
           var testItem = new TestItem();
-          testItem.$$type = undefined;
-          expect(function() { TestItem.create(testItem); }).to.throw(Error, ['$spList:badargs']);
+          testItem.__metadata = undefined;
+
+          TestItem.create(testItem);
+
+          expect(testItem).to.have.deep.property('__metadata.type', 'SP.Data.TestListItem');
         });
 
         it('creates a valid create request and returns the result', function() {
@@ -302,7 +318,6 @@ describe('ExpertsInside.SharePoint', function() {
 
           var result = TestItem.create(testItem, query);
 
-          expect(testItem.__metadata.type).to.be.equal(testItem.$$type);
           expect($spRest.buildHttpConfig).to.have.been.calledWith(
             TestItem.$$relativeUrl,
             'create', {

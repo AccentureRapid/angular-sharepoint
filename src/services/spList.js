@@ -101,26 +101,30 @@ angular.module('ExpertsInside.SharePoint')
         listOptions = {};
       }
 
-      var listItemType = $spConvert.capitalize(title
+      var normalizedTitle = $spConvert.capitalize(title
         .replace(/[^A-Za-z0-9 ]/g, '') // remove invalid chars
         .replace(/\s/g, '_x0020_') // replace whitespaces with _x0020_
       );
-      var className = $spConvert.capitalize(listItemType
+      var className = $spConvert.capitalize(normalizedTitle
         .replace(/_x0020/g, '') // remove _x0020_
         .replace(/^\d+/,'') // remove leading digits
        );
+      var listItemType = 'SP.Data.' + normalizedTitle + 'ListItem';
 
       // Constructor function for List dynamically generated List class
       var List = (function() {
         // jshint evil:true
         var script =
-        " (function() {                   " +
-        "   function List(data) {         " +
-        "     angular.extend(this, data); " +
-        "   }                             " +
-        "   return List;                  " +
-        " })();                           ";
-        return eval(script.replace(/List/g, className));
+        " (function() {                     " +
+        "   function {{List}}(data) {       " +
+        "     this.__metadata = {           " +
+        "       type: '" + listItemType + "'" +
+        "     };                            " +
+        "     angular.extend(this, data);   " +
+        "   }                               " +
+        "   return {{List}};                " +
+        " })();                             ";
+        return eval(script.replace(/{{List}}/g, className));
       })();
 
       List.$title = title;
@@ -237,14 +241,10 @@ angular.module('ExpertsInside.SharePoint')
         if (!(angular.isObject(item) && item instanceof List)) {
           throw $spListMinErr('badargs', 'item must be a List instance.');
         }
-        var type = item.$$type;
-        if (!type) {
-          throw $spListMinErr('badargs', 'Cannot create an item without a valid type');
-        }
+        item.__metadata = angular.extend({
+          type: listItemType
+        }, item.__metadata);
 
-        item.__metadata = {
-          type: type
-        };
         var httpConfig = $spRest.buildHttpConfig(List.$$relativeUrl, 'create', {
           item: item,
           query: angular.extend({}, item.$$queryDefaults, query)
@@ -343,7 +343,6 @@ angular.module('ExpertsInside.SharePoint')
       };
 
       List.prototype = {
-        $$type: 'SP.Data.' + listItemType + 'ListItem',
         $$readOnlyFields: angular.extend([
           'AttachmentFiles',
           'Attachments',
