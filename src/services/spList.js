@@ -2,6 +2,7 @@
  * @ngdoc service
  * @name ExpertsInside.SharePoint.$spList
  * @requires ExpertsInside.SharePoint.$spRest
+ * @requires ExpertsInside.SharePoint.$spConvert
  *
  * @description A factory which creates a list item resource object that lets you interact with
  *   SharePoint List Items via the SharePoint REST API.
@@ -16,7 +17,7 @@
  *
  *   - **`readOnlyFields`** - {Array.{string}=} - Array of field names that will be exlcuded
  *   from the request when saving an item back to SharePoint
- *   - **`queryDefaults`** - {Object=} - Default query parameter used by each action. Can be
+ *   - **`query`** - {Object=} - Default query parameter used by each action. Can be
  *   overridden per action. See {@link ExpertsInside.SharePoint.$spList query} for details.
  *
  * @return {Object} A list item "class" object with methods for the default set of resource actions.
@@ -60,7 +61,7 @@
  * ## Defining the Todo class
  * ```js
      var Todo = $spList('Todo', {
-       queryDefaults: ['Id', 'Title', 'Completed']
+       query: ['Id', 'Title', 'Completed']
      );
  * ```
  *
@@ -88,7 +89,7 @@
  * ```
  */
 angular.module('ExpertsInside.SharePoint')
-  .factory('$spList', function($spRest, $http) {
+  .factory('$spList', function($spRest, $http, $spConvert) {
     'use strict';
     var $spListMinErr = angular.$$minErr('$spList');
 
@@ -100,13 +101,16 @@ angular.module('ExpertsInside.SharePoint')
         options = {};
       }
 
-      var listItemType = title.replace(/[^A-Za-z0-9 ]/g, '') // remove invalid chars
-        .replace(/\s/g, '_x0020_'); // replace whitespaces with _x0020_
-      listItemType = title.charAt(0).toUpperCase() + title.slice(1); // Capitalize
-      var className = listItemType.replace(/_x0020/g, '') // remove _x0020_
-        .replace(/^\d+/,''); // remove leading digits
-      className = title.charAt(0).toUpperCase() + title.slice(1); // Capitalize
+      var listItemType = $spConvert.capitalize(title
+        .replace(/[^A-Za-z0-9 ]/g, '') // remove invalid chars
+        .replace(/\s/g, '_x0020_') // replace whitespaces with _x0020_
+      );
+      var className = $spConvert.capitalize(listItemType
+        .replace(/_x0020/g, '') // remove _x0020_
+        .replace(/^\d+/,'') // remove leading digits
+       );
 
+      // Constructor function for List dynamically generated List class
       var List = (function() {
         // jshint evil:true
         var script =
@@ -119,10 +123,20 @@ angular.module('ExpertsInside.SharePoint')
         return eval(script.replace(/List/g, className));
       })();
 
-      List.$$listTitle = title;
-      List.getListTitle = function() { return List.$$listTitle; };
-      List.$$listRelativeUrl = "web/lists/getByTitle('" + title + "')";
-      List.$decorateResult = function(result, httpConfig) {
+      List.$title = title;
+
+      /**
+       * Web relative list url
+       * @private
+       */
+      List.$$relativeUrl = "web/lists/getByTitle('" + title + "')";
+
+
+      /**
+       * Decorate the result with $promise and $resolved
+       * @private
+       */
+      List.$$decorateResult = function(result, httpConfig) {
         if (!angular.isArray(result) && !(result instanceof List)) {
           result = new List(result);
         }
@@ -163,6 +177,17 @@ angular.module('ExpertsInside.SharePoint')
 
         return result;
       };
+
+
+      /**
+       *
+       * @description Get a single list item by id
+       *
+       * @param {Number} id Id of the list item
+       * @param {Object=} query Additional query properties
+       *
+       * @return {Object} List item instance
+       */
       List.get = function(id, query) {
         if (angular.isUndefined(id) || id === null) {
           throw $spListMinErr('badargs', 'id is required.');
@@ -171,23 +196,48 @@ angular.module('ExpertsInside.SharePoint')
         var result = {
           Id: id
         };
-        var httpConfig = $spRest.buildHttpConfig(List.$$listRelativeUrl, 'get', {id: id, query: query});
+        var httpConfig = $spRest.buildHttpConfig(List.$$relativeUrl, 'get', {id: id, query: query});
 
-        return List.$decorateResult(result, httpConfig);
+        return List.$$decorateResult(result, httpConfig);
       };
+
+
+      /**
+       *
+       * @description Query for the list for items
+       *
+       * @param {Object=} query Query properties
+       * @param {Object=} options Additional query options.
+       *   Accepts the following properties:
+       *   - **`singleResult`** - {boolean} - Returns and empty object instead of an array. Throws an
+       *     error when more than one item is returned by the query.
+       *
+       * @return {Array<Object>} Array of list items
+       */
       List.query = function(query, options) {
         var result = (angular.isDefined(options) && options.singleResult) ? {} : [];
-        var httpConfig = $spRest.buildHttpConfig(List.$$listRelativeUrl, 'query', {
-          query: angular.extend({}, List.prototype.$settings.queryDefaults, query)
+        var httpConfig = $spRest.buildHttpConfig(List.$$relativeUrl, 'query', {
+          query: angular.extend({}, List.prototype.$$query, query)
         });
 
-        return List.$decorateResult(result, httpConfig);
+        return List.$$decorateResult(result, httpConfig);
       };
+
+
+      /**
+       *
+       * @description Save a new list item on the server.
+       *
+       * @param {Object=} item Query properties
+       * @param {Object=} options Additional query properties.
+       *
+       * @return {Object} The decorated list item
+       */
       List.create = function(item, query) {
         if (!(angular.isObject(item) && item instanceof List)) {
           throw $spListMinErr('badargs', 'item must be a List instance.');
         }
-        var type = item.$settings.itemType;
+        var type = item.$$type;
         if (!type) {
           throw $spListMinErr('badargs', 'Cannot create an item without a valid type');
         }
@@ -195,13 +245,26 @@ angular.module('ExpertsInside.SharePoint')
         item.__metadata = {
           type: type
         };
-        var httpConfig = $spRest.buildHttpConfig(List.$$listRelativeUrl, 'create', {
+        var httpConfig = $spRest.buildHttpConfig(List.$$relativeUrl, 'create', {
           item: item,
-          query: angular.extend({}, item.$settings.queryDefaults, query)
+          query: angular.extend({}, item.$$query, query)
         });
 
-        return List.$decorateResult(item, httpConfig);
+        return List.$$decorateResult(item, httpConfig);
       };
+
+
+      /**
+       *
+       * @description Update an existing list item on the server.
+       *
+       * @param {Object=} item the list item
+       * @param {Object=} options Additional update properties.
+       *   Accepts the following properties:
+       *   - **`force`** - {boolean} - Overwrite newer versions on the server.
+       *
+       * @return {Object} The decorated list item
+       */
       List.update = function(item, options) {
         if (!(angular.isObject(item) && item instanceof List)) {
           throw $spListMinErr('badargs', 'item must be a List instance.');
@@ -211,10 +274,20 @@ angular.module('ExpertsInside.SharePoint')
           item: item
         });
 
-        var httpConfig = $spRest.buildHttpConfig(List.$$listRelativeUrl, 'update', options);
+        var httpConfig = $spRest.buildHttpConfig(List.$$relativeUrl, 'update', options);
 
-        return List.$decorateResult(item, httpConfig);
+        return List.$$decorateResult(item, httpConfig);
       };
+
+      /**
+       *
+       * @description Update or create a list item on the server.
+       *
+       * @param {Object=} item the list item
+       * @param {Object=} options Options passed to create or update.
+       *
+       * @return {Object} The decorated list item
+       */
       List.save = function(item, options) {
         if (angular.isDefined(item.__metadata) && angular.isDefined(item.__metadata.id)) {
           return this.update(item, options);
@@ -223,20 +296,30 @@ angular.module('ExpertsInside.SharePoint')
           return this.create(item, query);
         }
       };
+
+      /**
+       *
+       * @description Delete a list item on the server.
+       *
+       * @param {Object=} item the list item
+       *
+       * @return {Object} The decorated list item
+       */
       List.delete = function(item) {
         if (!(angular.isObject(item) && item instanceof List)) {
           throw $spListMinErr('badargs', 'item must be a List instance.');
         }
-        var httpConfig = $spRest.buildHttpConfig(List.$$listRelativeUrl, 'delete', {item: item});
+        var httpConfig = $spRest.buildHttpConfig(List.$$relativeUrl, 'delete', {item: item});
 
-        return List.$decorateResult(item, httpConfig);
+        return List.$$decorateResult(item, httpConfig);
       };
+
       List.queries = { };
       List.addNamedQuery = function(name, createQuery, options) {
         List.queries[name] = function() {
           var query = angular.extend(
             {},
-            List.prototype.$settings.queryDefaults,
+            List.prototype.$$query,
             createQuery.apply(List, arguments)
           );
           return List.query(query, options);
@@ -245,32 +328,30 @@ angular.module('ExpertsInside.SharePoint')
       };
 
       List.prototype = {
-        $settings: {
-          itemType: 'SP.Data.' + listItemType + 'ListItem',
-          readOnlyFields: angular.extend([
-            'AttachmentFiles',
-            'Attachments',
-            'Author',
-            'AuthorId',
-            'ContentType',
-            'ContentTypeId',
-            'Created',
-            'Editor',
-            'EditorId', 'FieldValuesAsHtml',
-            'FieldValuesAsText',
-            'FieldValuesForEdit',
-            'File',
-            'FileSystemObjectType',
-            'FirstUniqueAncestorSecurableObject',
-            'Folder',
-            'GUID',
-            'Modified',
-            'OData__UIVersionString',
-            'ParentList',
-            'RoleAssignments'
-          ], options.readOnlyFields),
-          queryDefaults: angular.extend({}, options.queryDefaults)
-        },
+        $$type: 'SP.Data.' + listItemType + 'ListItem',
+        $$readOnlyFields: angular.extend([
+          'AttachmentFiles',
+          'Attachments',
+          'Author',
+          'AuthorId',
+          'ContentType',
+          'ContentTypeId',
+          'Created',
+          'Editor',
+          'EditorId', 'FieldValuesAsHtml',
+          'FieldValuesAsText',
+          'FieldValuesForEdit',
+          'File',
+          'FileSystemObjectType',
+          'FirstUniqueAncestorSecurableObject',
+          'Folder',
+          'GUID',
+          'Modified',
+          'OData__UIVersionString',
+          'ParentList',
+          'RoleAssignments'
+        ], options.readOnlyFields),
+        $$query: angular.extend({}, options.query),
         $save: function(options) {
           return List.save(this, options).$promise;
         },

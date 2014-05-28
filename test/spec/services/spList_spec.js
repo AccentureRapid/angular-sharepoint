@@ -34,16 +34,16 @@ describe('ExpertsInside.SharePoint', function() {
       expect(TestItem.delete).to.be.a('function');
     });
 
-    it('.$$listRelativeUrl is the relative List url', function() {
-      expect(TestItem).to.have.property('$$listRelativeUrl', "web/lists/getByTitle('Test')");
+    it('.$$relativeUrl is the relative List url', function() {
+      expect(TestItem).to.have.property('$$relativeUrl', "web/lists/getByTitle('Test')");
     });
 
-    describe('.$decorateResult(result, httpConfig)', function() {
+    describe('.$$decorateResult(result, httpConfig)', function() {
       var httpConfig;
 
       beforeEach(function() {
         httpConfig = {
-          url: apiRootUrl + TestItem.$$listRelativeUrl,
+          url: apiRootUrl + TestItem.$$relativeUrl,
           method: 'GET'
         };
       });
@@ -51,24 +51,24 @@ describe('ExpertsInside.SharePoint', function() {
       it('creates a ListItem from *result* unless it is already one', function() {
         var testItem = new TestItem();
 
-        expect(TestItem.$decorateResult(testItem, httpConfig)).to.be.equal(testItem);
-        expect(TestItem.$decorateResult({}, httpConfig)).to.be.instanceOf(TestItem);
+        expect(TestItem.$$decorateResult(testItem, httpConfig)).to.be.equal(testItem);
+        expect(TestItem.$$decorateResult({}, httpConfig)).to.be.instanceOf(TestItem);
       });
 
       it('adds $resolved property to the *result* unless it does already have one', function() {
-        expect(TestItem.$decorateResult({}, httpConfig))
+        expect(TestItem.$$decorateResult({}, httpConfig))
           .to.have.property('$resolved', false);
-        expect(TestItem.$decorateResult({$resolved: true}, httpConfig))
+        expect(TestItem.$$decorateResult({$resolved: true}, httpConfig))
           .to.have.property('$resolved', true);
       });
 
       it('adds $promise property to the *result*', function() {
-        expect(TestItem.$decorateResult({}, httpConfig)).to.have.property('$promise');
+        expect(TestItem.$$decorateResult({}, httpConfig)).to.have.property('$promise');
       });
 
       describe('when the result.$promise resolves', function() {
         it('sets result.$resolved to true', function(done) {
-          var result = TestItem.$decorateResult({foo: 1}, httpConfig);
+          var result = TestItem.$$decorateResult({foo: 1}, httpConfig);
           $httpBackend.expectGET(httpConfig.url).respond({});
 
           result.$promise.then(function() {
@@ -80,7 +80,7 @@ describe('ExpertsInside.SharePoint', function() {
         });
 
         it('merges result object with response object', function(done) {
-          var result = TestItem.$decorateResult({foo: 1}, httpConfig);
+          var result = TestItem.$$decorateResult({foo: 1}, httpConfig);
           $httpBackend.expectGET(httpConfig.url).respond({bar: 2});
 
           result.$promise.then(function() {
@@ -92,7 +92,7 @@ describe('ExpertsInside.SharePoint', function() {
         });
 
         it('merges result object with single item in array response', function(done) {
-          var result = TestItem.$decorateResult({foo: 1}, httpConfig);
+          var result = TestItem.$$decorateResult({foo: 1}, httpConfig);
           $httpBackend.expectGET(httpConfig.url).respond([{bar: 2}]);
 
           result.$promise.then(function() {
@@ -104,7 +104,7 @@ describe('ExpertsInside.SharePoint', function() {
         });
 
         it('merges result array with response array by creating a ListItem for each item', function(done) {
-          var result = TestItem.$decorateResult([], httpConfig);
+          var result = TestItem.$$decorateResult([], httpConfig);
           $httpBackend.expectGET(httpConfig.url).respond([{bar: 2}, {bar: 3}]);
 
           result.$promise.then(function() {
@@ -117,14 +117,14 @@ describe('ExpertsInside.SharePoint', function() {
         });
 
         it('throws when trying to merge result object with response array (length > 1)', function() {
-          var result = TestItem.$decorateResult({foo: 1}, httpConfig);
+          var result = TestItem.$$decorateResult({foo: 1}, httpConfig);
           $httpBackend.expectGET(httpConfig.url).respond([{bar: 2}, {bar: 3}]);
 
           expect(function() { $httpBackend.flush(); }).to.throw(Error, '[$spList:badresponse]');
         });
 
         it('updates the etag of the result on updates', function(done) {
-          var result = TestItem.$decorateResult({foo: 1, __metadata: { etag: '1'}}, httpConfig);
+          var result = TestItem.$$decorateResult({foo: 1, __metadata: { etag: '1'}}, httpConfig);
           $httpBackend.expectGET(httpConfig.url).respond(204, null, { ETag: '2' });
 
           result.$promise.then(function() {
@@ -137,33 +137,33 @@ describe('ExpertsInside.SharePoint', function() {
       });
     });
 
-    it('creates some sane defaults for prototype.$settings', function() {
-      expect(TestItem.prototype.$settings).to.be.eql({
-        itemType: 'SP.Data.TestListItem',
-        queryDefaults: {},
-        readOnlyFields: [
-          'AttachmentFiles',
-          'Attachments',
-          'Author',
-          'AuthorId',
-          'ContentType',
-          'ContentTypeId',
-          'Created',
-          'Editor',
-          'EditorId', 'FieldValuesAsHtml',
-          'FieldValuesAsText',
-          'FieldValuesForEdit',
-          'File',
-          'FileSystemObjectType',
-          'FirstUniqueAncestorSecurableObject',
-          'Folder',
-          'GUID',
-          'Modified',
-          'OData__UIVersionString',
-          'ParentList',
-          'RoleAssignments'
-        ]
-      });
+    it('creates some sane defaults for #$$type', function() {
+      expect(TestItem.prototype.$$type).to.be.eql('SP.Data.TestListItem');
+    });
+
+    it('creates some sane defaults for #$$readOnlyFields', function() {
+      expect(TestItem.prototype.$$readOnlyFields).to.be.eql([
+        'AttachmentFiles',
+        'Attachments',
+        'Author',
+        'AuthorId',
+        'ContentType',
+        'ContentTypeId',
+        'Created',
+        'Editor',
+        'EditorId', 'FieldValuesAsHtml',
+        'FieldValuesAsText',
+        'FieldValuesForEdit',
+        'File',
+        'FileSystemObjectType',
+        'FirstUniqueAncestorSecurableObject',
+        'Folder',
+        'GUID',
+        'Modified',
+        'OData__UIVersionString',
+        'ParentList',
+        'RoleAssignments'
+      ]);
     });
 
     it('extends the default read only fields with those passed as *options*', function() {
@@ -171,18 +171,18 @@ describe('ExpertsInside.SharePoint', function() {
         readOnlyFields: ['TestReadOnlyField']
       });
 
-      expect(TestItem.prototype.$settings.readOnlyFields).to.contain('TestReadOnlyField')
+      expect(TestItem.prototype.$$readOnlyFields).to.contain('TestReadOnlyField')
         .and.have.length.above(1);
     });
 
     it('extends the default query defaults with those passed as *options*', function() {
       TestItem = $spList('Test', {
-        queryDefaults: {
+        query: {
           select: ['Id', 'Title']
         }
       });
 
-      expect(TestItem.prototype.$settings.queryDefaults).to.be.eql({
+      expect(TestItem.prototype.$$query).to.be.eql({
         select: ['Id', 'Title']
       });
     });
@@ -190,7 +190,7 @@ describe('ExpertsInside.SharePoint', function() {
     describe('the created TestItem class', function() {
       beforeEach(function() {
         TestItem = $spList('Test', {
-          queryDefaults: {
+          query: {
             select: ['Id', 'Title']
           }
         });
@@ -227,52 +227,52 @@ describe('ExpertsInside.SharePoint', function() {
 
         it('creates a valid get request and returns the result', function() {
           sinon.spy($spRest, 'buildHttpConfig');
-          sinon.spy(TestItem, '$decorateResult');
+          sinon.spy(TestItem, '$$decorateResult');
 
           var query = { select: ['Id', 'Title'] };
           var testItem = TestItem.get(1, query);
 
           expect($spRest.buildHttpConfig).to.have.been.calledWith(
-            TestItem.$$listRelativeUrl,
+            TestItem.$$relativeUrl,
             'get', {
               id: 1,
               query: query
             });
-          expect(TestItem.$decorateResult).to.have.been.calledWith(
+          expect(TestItem.$$decorateResult).to.have.been.calledWith(
             { Id: 1 },
             $spRest.buildHttpConfig.firstCall.returnValue
           );
-          expect(testItem).to.be.equal(TestItem.$decorateResult.firstCall.returnValue);
+          expect(testItem).to.be.equal(TestItem.$$decorateResult.firstCall.returnValue);
 
           $spRest.buildHttpConfig.restore();
-          TestItem.$decorateResult.restore();
+          TestItem.$$decorateResult.restore();
         });
       });
 
       describe('.query(query, options)', function() {
         it('creates a valid query request and returns the result', function() {
           sinon.spy($spRest, 'buildHttpConfig');
-          sinon.spy(TestItem, '$decorateResult');
+          sinon.spy(TestItem, '$$decorateResult');
           var query = { expand: ['Foo'] };
 
           var testItems = TestItem.query(query);
 
           expect($spRest.buildHttpConfig).to.have.been.calledWith(
-            TestItem.$$listRelativeUrl,
+            TestItem.$$relativeUrl,
             'query', {
               query: {
                 select: ['Id', 'Title'],
                 expand: ['Foo']
               }
             });
-          expect(TestItem.$decorateResult).to.have.been.calledWithMatch(
+          expect(TestItem.$$decorateResult).to.have.been.calledWithMatch(
             { },
             $spRest.buildHttpConfig.firstCall.returnValue
           );
-          expect(testItems).to.be.equal(TestItem.$decorateResult.firstCall.returnValue);
+          expect(testItems).to.be.equal(TestItem.$$decorateResult.firstCall.returnValue);
 
           $spRest.buildHttpConfig.restore();
-          TestItem.$decorateResult.restore();
+          TestItem.$$decorateResult.restore();
         });
 
         it('returns a single object as result when options.singleResult is true', function() {
@@ -290,21 +290,21 @@ describe('ExpertsInside.SharePoint', function() {
         });
         it('throws when item does not have a valid type', function() {
           var testItem = new TestItem();
-          delete testItem.$settings.itemType;
+          testItem.$$type = undefined;
           expect(function() { TestItem.create(testItem); }).to.throw(Error, ['$spList:badargs']);
         });
 
         it('creates a valid create request and returns the result', function() {
           sinon.spy($spRest, 'buildHttpConfig');
-          sinon.spy(TestItem, '$decorateResult');
+          sinon.spy(TestItem, '$$decorateResult');
           var testItem = new TestItem({foo: 'bar'});
           var query = {expand: 'Foo'};
 
           var result = TestItem.create(testItem, query);
 
-          expect(testItem.__metadata.type).to.be.equal(testItem.$settings.itemType);
+          expect(testItem.__metadata.type).to.be.equal(testItem.$$type);
           expect($spRest.buildHttpConfig).to.have.been.calledWith(
-            TestItem.$$listRelativeUrl,
+            TestItem.$$relativeUrl,
             'create', {
               item: testItem,
               query: {
@@ -312,14 +312,14 @@ describe('ExpertsInside.SharePoint', function() {
                 expand: 'Foo'
               }
             });
-          expect(TestItem.$decorateResult).to.have.been.calledWith(
+          expect(TestItem.$$decorateResult).to.have.been.calledWith(
             testItem,
             $spRest.buildHttpConfig.firstCall.returnValue
           );
-          expect(result).to.be.equal(TestItem.$decorateResult.firstCall.returnValue);
+          expect(result).to.be.equal(TestItem.$$decorateResult.firstCall.returnValue);
 
           $spRest.buildHttpConfig.restore();
-          TestItem.$decorateResult.restore();
+          TestItem.$$decorateResult.restore();
         });
       });
 
@@ -330,31 +330,31 @@ describe('ExpertsInside.SharePoint', function() {
 
         it('creates a valid update request and returns the result', function() {
           sinon.spy($spRest, 'buildHttpConfig');
-          sinon.spy(TestItem, '$decorateResult');
+          sinon.spy(TestItem, '$$decorateResult');
           var testItem = new TestItem({
             Id: 1,
             foo: 'bar',
             __metadata: {
-              uri: apiRootUrl + TestItem.$$listRelativeUrl + '/items(1)'
+              uri: apiRootUrl + TestItem.$$relativeUrl + '/items(1)'
             }
           });
           var options = { force: true };
           var result = TestItem.update(testItem, options);
 
           expect($spRest.buildHttpConfig).to.have.been.calledWith(
-            TestItem.$$listRelativeUrl,
+            TestItem.$$relativeUrl,
             'update', {
               item: testItem,
               force: true
             });
-          expect(TestItem.$decorateResult).to.have.been.calledWith(
+          expect(TestItem.$$decorateResult).to.have.been.calledWith(
             testItem,
             $spRest.buildHttpConfig.firstCall.returnValue
           );
-          expect(result).to.be.equal(TestItem.$decorateResult.firstCall.returnValue);
+          expect(result).to.be.equal(TestItem.$$decorateResult.firstCall.returnValue);
 
           $spRest.buildHttpConfig.restore();
-          TestItem.$decorateResult.restore();
+          TestItem.$$decorateResult.restore();
         });
       });
 
@@ -396,29 +396,29 @@ describe('ExpertsInside.SharePoint', function() {
 
         it('creates a valid delete request and returns the result', function() {
           sinon.spy($spRest, 'buildHttpConfig');
-          sinon.spy(TestItem, '$decorateResult');
+          sinon.spy(TestItem, '$$decorateResult');
           var testItem = new TestItem({
             Id: 1,
             foo: 'bar',
             __metadata: {
-              uri: apiRootUrl + TestItem.$$listRelativeUrl + '/items(1)'
+              uri: apiRootUrl + TestItem.$$relativeUrl + '/items(1)'
             }
           });
           var result = TestItem.delete(testItem);
 
           expect($spRest.buildHttpConfig).to.have.been.calledWith(
-            TestItem.$$listRelativeUrl,
+            TestItem.$$relativeUrl,
             'delete', {
               item: testItem
             });
-          expect(TestItem.$decorateResult).to.have.been.calledWith(
+          expect(TestItem.$$decorateResult).to.have.been.calledWith(
             testItem,
             $spRest.buildHttpConfig.firstCall.returnValue
           );
-          expect(result).to.be.equal(TestItem.$decorateResult.firstCall.returnValue);
+          expect(result).to.be.equal(TestItem.$$decorateResult.firstCall.returnValue);
 
           $spRest.buildHttpConfig.restore();
-          TestItem.$decorateResult.restore();
+          TestItem.$$decorateResult.restore();
         });
       });
 
