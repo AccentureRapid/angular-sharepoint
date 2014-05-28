@@ -135,6 +135,11 @@ angular.module('ExpertsInside.SharePoint')
        */
       List.$$relativeUrl = "web/lists/getByTitle('" + title + "')";
 
+      /**
+       * Is this List in the host web?
+       * @private
+       */
+      List.$$inHostWeb = !!listOptions.inHostWeb;
 
       /**
        * Decorate the result with $promise and $resolved
@@ -200,7 +205,7 @@ angular.module('ExpertsInside.SharePoint')
         var result = {
           Id: id
         };
-        var httpConfig = $spRest.buildHttpConfig(List.$$relativeUrl, 'get', {id: id, query: query});
+        var httpConfig = $spRest.buildHttpConfig(List, 'get', {id: id, query: query});
 
         return List.$$decorateResult(result, httpConfig);
       };
@@ -220,7 +225,7 @@ angular.module('ExpertsInside.SharePoint')
        */
       List.query = function(query, options) {
         var result = (angular.isDefined(options) && options.singleResult) ? {} : [];
-        var httpConfig = $spRest.buildHttpConfig(List.$$relativeUrl, 'query', {
+        var httpConfig = $spRest.buildHttpConfig(List, 'query', {
           query: angular.extend({}, List.prototype.$$queryDefaults, query)
         });
 
@@ -245,7 +250,7 @@ angular.module('ExpertsInside.SharePoint')
           type: listItemType
         }, item.__metadata);
 
-        var httpConfig = $spRest.buildHttpConfig(List.$$relativeUrl, 'create', {
+        var httpConfig = $spRest.buildHttpConfig(List, 'create', {
           item: item,
           query: angular.extend({}, item.$$queryDefaults, query)
         });
@@ -274,7 +279,7 @@ angular.module('ExpertsInside.SharePoint')
           item: item
         });
 
-        var httpConfig = $spRest.buildHttpConfig(List.$$relativeUrl, 'update', options);
+        var httpConfig = $spRest.buildHttpConfig(List, 'update', options);
 
         return List.$$decorateResult(item, httpConfig);
       };
@@ -309,7 +314,7 @@ angular.module('ExpertsInside.SharePoint')
         if (!(angular.isObject(item) && item instanceof List)) {
           throw $spListMinErr('badargs', 'item must be a List instance.');
         }
-        var httpConfig = $spRest.buildHttpConfig(List.$$relativeUrl, 'delete', {item: item});
+        var httpConfig = $spRest.buildHttpConfig(List, 'delete', {item: item});
 
         return List.$$decorateResult(item, httpConfig);
       };

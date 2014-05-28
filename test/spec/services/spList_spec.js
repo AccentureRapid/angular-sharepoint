@@ -245,7 +245,7 @@ describe('ExpertsInside.SharePoint', function() {
           var testItem = TestItem.get(1, query);
 
           expect($spRest.buildHttpConfig).to.have.been.calledWith(
-            TestItem.$$relativeUrl,
+            TestItem,
             'get', {
               id: 1,
               query: query
@@ -270,7 +270,7 @@ describe('ExpertsInside.SharePoint', function() {
           var testItems = TestItem.query(query);
 
           expect($spRest.buildHttpConfig).to.have.been.calledWith(
-            TestItem.$$relativeUrl,
+            TestItem,
             'query', {
               query: {
                 select: ['Id', 'Title'],
@@ -319,7 +319,7 @@ describe('ExpertsInside.SharePoint', function() {
           var result = TestItem.create(testItem, query);
 
           expect($spRest.buildHttpConfig).to.have.been.calledWith(
-            TestItem.$$relativeUrl,
+            TestItem,
             'create', {
               item: testItem,
               query: {
@@ -357,7 +357,7 @@ describe('ExpertsInside.SharePoint', function() {
           var result = TestItem.update(testItem, options);
 
           expect($spRest.buildHttpConfig).to.have.been.calledWith(
-            TestItem.$$relativeUrl,
+            TestItem,
             'update', {
               item: testItem,
               force: true
@@ -422,7 +422,7 @@ describe('ExpertsInside.SharePoint', function() {
           var result = TestItem.delete(testItem);
 
           expect($spRest.buildHttpConfig).to.have.been.calledWith(
-            TestItem.$$relativeUrl,
+            TestItem,
             'delete', {
               item: testItem
             });

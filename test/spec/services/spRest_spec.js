@@ -151,32 +151,48 @@ describe('ExpertsInside.SharePoint', function() {
       });
     });
 
-    describe('.buildHttpConfig(listUrl, action, options)', function() {
-      var listUrl = "web/Lists/getByTitle('Test')";
+    describe('.buildHttpConfig(list, action, options)', function() {
+      var list, listUrl;
+
+      beforeEach(function() {
+        list = { $$relativeUrl:  "web/Lists/getByTitle('Test')" };
+        listUrl = list.$$relativeUrl;
+      });
 
       it('sets transformResponse on the httpConfig', function() {
-        expect($spRest.buildHttpConfig(listUrl).transformResponse).to.be.equal($spRest.transformResponse);
+        expect($spRest.buildHttpConfig(list).transformResponse).to.be.equal($spRest.transformResponse);
       });
 
       it('creates a query string from *options*.query and adds it to the url', function() {
-        var httpConfig = $spRest.buildHttpConfig(listUrl, null, {query: {select: ['Id', 'Title']}});
+        var httpConfig = $spRest.buildHttpConfig(list, null, {query: {select: ['Id', 'Title']}});
 
         expect(httpConfig.url).to.be.equal(listUrl + '/items?$select=Id,Title');
       });
 
+      it('sets hostWebUrl on the httpConfig when List is in host web', function() {
+        list.$$inHostWeb = true;
+        sinon.stub(ShareCoffee.Commons, 'getHostWebUrl').returns('http://host.web');
+
+        var httpConfig = $spRest.buildHttpConfig(list);
+
+        expect(httpConfig.hostWebUrl).to.be.equal('http://host.web');
+
+        ShareCoffee.Commons.getHostWebUrl.restore();
+      });
+
       describe('when *action* is "get"', function() {
         it('sets httpConfig.url to the url of the item', function() {
-          var httpConfig = $spRest.buildHttpConfig(listUrl, 'get', {id: 1});
+          var httpConfig = $spRest.buildHttpConfig(list, 'get', {id: 1});
 
           expect(httpConfig.url).to.be.equal(apiRootUrl + listUrl + '/items(1)');
         });
 
         it('throws when *options*.id is not set', function() {
-          expect(function() { $spRest.buildHttpConfig(listUrl, 'get'); }).to.throw(Error, '[$spRest:options:get]');
+          expect(function() { $spRest.buildHttpConfig(list, 'get'); }).to.throw(Error, '[$spRest:options:get]');
         });
 
         it('sets correct httpConfig.headers', function() {
-          var httpConfig = $spRest.buildHttpConfig(listUrl, 'get', {id: 1});
+          var httpConfig = $spRest.buildHttpConfig(list, 'get', {id: 1});
 
           expect(httpConfig.headers).to.be.eql({
             'Accept': 'application/json;odata=verbose'
@@ -186,13 +202,13 @@ describe('ExpertsInside.SharePoint', function() {
 
       describe('when *action* is "query"', function() {
         it('sets httpConfig.url to the items root url', function() {
-          var httpConfig = $spRest.buildHttpConfig(listUrl, 'query');
+          var httpConfig = $spRest.buildHttpConfig(list, 'query');
 
           expect(httpConfig.url).to.be.equal(apiRootUrl + listUrl + '/items');
         });
 
         it('sets correct httpConfig.headers', function() {
-          var httpConfig = $spRest.buildHttpConfig(listUrl, 'query');
+          var httpConfig = $spRest.buildHttpConfig(list, 'query');
 
           expect(httpConfig.headers).to.be.eql({
             'Accept': 'application/json;odata=verbose'
@@ -202,11 +218,11 @@ describe('ExpertsInside.SharePoint', function() {
 
       describe('when *action* is "create"', function() {
         it('throws when *options*.item is not set', function() {
-          expect(function() { $spRest.buildHttpConfig(listUrl, 'create'); }).to.throw(Error, '[$spRest:options:create]');
+          expect(function() { $spRest.buildHttpConfig(list, 'create'); }).to.throw(Error, '[$spRest:options:create]');
         });
 
         it('sets httpConfig.url to the items root url', function() {
-          var httpConfig = $spRest.buildHttpConfig(listUrl, 'create', {item: {}});
+          var httpConfig = $spRest.buildHttpConfig(list, 'create', {item: {}});
 
           expect(httpConfig.url).to.be.equal(apiRootUrl + listUrl + '/items');
         });
@@ -214,7 +230,7 @@ describe('ExpertsInside.SharePoint', function() {
         it('sets httpConfig.data to the stringified item', function() {
           sinon.spy($spRest, 'createPayload');
           var options = {item: {foo: 1}};
-          var httpConfig = $spRest.buildHttpConfig(listUrl, 'create', options);
+          var httpConfig = $spRest.buildHttpConfig(list, 'create', options);
 
           expect($spRest.createPayload).to.have.been.calledWith(options.item);
           expect(httpConfig.data).to.be.equal($spRest.createPayload.returnValues[0]);
@@ -223,7 +239,7 @@ describe('ExpertsInside.SharePoint', function() {
         });
 
         it('sets correct httpConfig.headers', function() {
-          var httpConfig = $spRest.buildHttpConfig(listUrl, 'create', {item: {}});
+          var httpConfig = $spRest.buildHttpConfig(list, 'create', {item: {}});
 
           expect(httpConfig.headers).to.be.eql({
             'Accept': 'application/json;odata=verbose',
@@ -233,7 +249,7 @@ describe('ExpertsInside.SharePoint', function() {
         });
 
         it('removes $expand from query properties', function() {
-          var httpConfig = $spRest.buildHttpConfig(listUrl, 'create', {query: { $expand: 'Foo/Id' }, item: {}});
+          var httpConfig = $spRest.buildHttpConfig(list, 'create', {query: { $expand: 'Foo/Id' }, item: {}});
 
           expect(httpConfig.url).to.not.contain('$expand');
         });
@@ -253,16 +269,16 @@ describe('ExpertsInside.SharePoint', function() {
         });
 
         it('throws when *options*.item is not set', function() {
-          expect(function() { $spRest.buildHttpConfig(listUrl, 'update'); })
+          expect(function() { $spRest.buildHttpConfig(list, 'update'); })
             .to.throw(Error, '[$spRest:options:update]');
         });
         it('throws when *options*.item.__metadata is not set', function() {
-          expect(function() { $spRest.buildHttpConfig(listUrl, 'update', {item: {}}); })
+          expect(function() { $spRest.buildHttpConfig(list, 'update', {item: {}}); })
             .to.throw(Error, '[$spRest:options:update]');
         });
 
         it('sets correct httpConfig.headers', function() {
-          var httpConfig = $spRest.buildHttpConfig(listUrl, 'update', {item: item});
+          var httpConfig = $spRest.buildHttpConfig(list, 'update', {item: item});
 
           expect(httpConfig.headers).to.be.eql({
             'Accept': 'application/json;odata=verbose',
@@ -274,7 +290,7 @@ describe('ExpertsInside.SharePoint', function() {
         });
 
         it('sets the "If-Match" property in httpConfig.header to "*" when options.force is true', function() {
-          var httpConfig = $spRest.buildHttpConfig(listUrl, 'update', {item: item, force: true});
+          var httpConfig = $spRest.buildHttpConfig(list, 'update', {item: item, force: true});
 
           expect(httpConfig.headers).to.have.property('If-Match', '*');
         });
@@ -282,7 +298,7 @@ describe('ExpertsInside.SharePoint', function() {
         it('sets httpConfig.data to the stringified item', function() {
           sinon.spy($spRest, 'createPayload');
           var options = {item: item};
-          var httpConfig = $spRest.buildHttpConfig(listUrl, 'update', options);
+          var httpConfig = $spRest.buildHttpConfig(list, 'update', options);
 
           expect($spRest.createPayload).to.have.been.calledWith(options.item);
           expect(httpConfig.data).to.be.equal($spRest.createPayload.returnValues[0]);
@@ -292,7 +308,7 @@ describe('ExpertsInside.SharePoint', function() {
 
         it('sets httpConfig.url to the url of the item', function() {
           var options = {item: item};
-          var httpConfig = $spRest.buildHttpConfig(listUrl, 'update', options);
+          var httpConfig = $spRest.buildHttpConfig(list, 'update', options);
 
           expect(httpConfig.url).to.be.equal(item.__metadata.uri);
         });
@@ -312,16 +328,16 @@ describe('ExpertsInside.SharePoint', function() {
         });
 
         it('throws when *options*.item is not set', function() {
-          expect(function() { $spRest.buildHttpConfig(listUrl, 'delete'); })
+          expect(function() { $spRest.buildHttpConfig(list, 'delete'); })
             .to.throw(Error, '[$spRest:options:delete]');
         });
         it('throws when *options*.item.__metadata is not set', function() {
-          expect(function() { $spRest.buildHttpConfig(listUrl, 'delete', {item: {}}); })
+          expect(function() { $spRest.buildHttpConfig(list, 'delete', {item: {}}); })
             .to.throw(Error, '[$spRest:options:delete]');
         });
 
         it('sets correct httpConfig.headers', function() {
-          var httpConfig = $spRest.buildHttpConfig(listUrl, 'delete', {item: item});
+          var httpConfig = $spRest.buildHttpConfig(list, 'delete', {item: item});
 
           expect(httpConfig.headers).to.be.eql({
             'Accept': 'application/json;odata=verbose',
@@ -333,7 +349,7 @@ describe('ExpertsInside.SharePoint', function() {
 
         it('sets httpConfig.url to the url of the item', function() {
           var options = {item: item};
-          var httpConfig = $spRest.buildHttpConfig(listUrl, 'delete', options);
+          var httpConfig = $spRest.buildHttpConfig(list, 'delete', options);
 
           expect(httpConfig.url).to.be.equal(item.__metadata.uri);
         });

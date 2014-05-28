@@ -97,11 +97,14 @@ angular.module('ExpertsInside.SharePoint')
         }
         return angular.toJson(payload);
       },
-      buildHttpConfig: function(listUrl, action, options) {
-        var baseUrl = listUrl + '/items';
+      buildHttpConfig: function(list, action, options) {
+        var baseUrl = list.$$relativeUrl + '/items';
         var httpConfig = {
           url: baseUrl
         };
+        if (list.$$inHostWeb) {
+          httpConfig.hostWebUrl = ShareCoffee.Commons.getHostWebUrl();
+        }
         action = angular.isString(action) ? action.toLowerCase() : '';
         options = angular.isDefined(options) ? options : {};
         var query = angular.isDefined(options.query) ? $spRest.normalizeParams(options.query) : {};
