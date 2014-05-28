@@ -90,8 +90,8 @@ angular.module('ExpertsInside.SharePoint')
       },
       createPayload: function(item) {
         var payload = angular.extend({}, item);
-        if (angular.isDefined(item.$settings) && angular.isDefined(item.$settings.readOnlyFields)) {
-          angular.forEach(item.$settings.readOnlyFields, function(readOnlyField) {
+        if (angular.isDefined(item.$$readOnlyFields)) {
+          angular.forEach(item.$$readOnlyFields, function(readOnlyField) {
             delete payload[readOnlyField];
           });
         }
@@ -143,13 +143,12 @@ angular.module('ExpertsInside.SharePoint')
           }
 
           query = {}; // does nothing or breaks things, so we ignore it
+          httpConfig.url += '(' + options.item.Id + ')';
           httpConfig.payload = $spRest.createPayload(options.item);
           httpConfig.eTag = !options.force && angular.isDefined(options.item.__metadata) ?
             options.item.__metadata.etag : null;
 
           httpConfig = ShareCoffee.REST.build.update.for.angularJS(httpConfig);
-
-          httpConfig.url = options.item.__metadata.uri; // ShareCoffe doesnt work with absolute urls atm
           break;
         case 'delete':
           if (angular.isUndefined(options.item)) {
@@ -159,8 +158,8 @@ angular.module('ExpertsInside.SharePoint')
             throw $spRestMinErr('options:delete', 'options.item must have __metadata');
           }
 
+          httpConfig.url += '(' + options.item.Id + ')';
           httpConfig = ShareCoffee.REST.build.delete.for.angularJS(httpConfig);
-          httpConfig.url = options.item.__metadata.uri; // ShareCoffe doesnt work with absolute urls atm
           break;
         }
 

@@ -141,9 +141,7 @@ describe('ExpertsInside.SharePoint', function() {
         var item = {
           foo: 1,
           bar: 2,
-          $settings: {
-            readOnlyFields: ['bar']
-          }
+          $$readOnlyFields: ['bar']
         };
 
         expect($spRest.createPayload(item)).to.be.eql('{"foo":1}');
