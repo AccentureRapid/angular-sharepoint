@@ -97,7 +97,24 @@ module.exports = function(grunt) {
           'dist/angular-sharepoint.min.js': ['dist/angular-sharepoint.js']
         }
       }
+    },
+
+    bump: {
+      options: {
+        files: ['package.json', 'bower.json', 'dist/bower.json'],
+        updateConfigs: [],
+        commit: true,
+        commitMessage: 'Release v%VERSION%',
+        commitFiles: ['package.json', 'bower.json'],
+        createTag: true,
+        tagName: 'v%VERSION%',
+        tagMessage: 'Version %VERSION%',
+        push: false,
+        pushTo: 'upstream',
+        gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d'
+      }
     }
+
   });
 
   grunt.registerTask('test', [
@@ -125,4 +142,6 @@ module.exports = function(grunt) {
     'concat:dist',
     'uglify:dist'
   ]);
+
+  grunt.registerTask('release', ['build', 'bump']);
 };
