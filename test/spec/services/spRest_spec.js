@@ -169,13 +169,13 @@ describe('ExpertsInside.SharePoint', function() {
         expect(httpConfig.url).to.be.equal(listUrl + '/items?$select=Id,Title');
       });
 
-      it('sets hostWebUrl on the httpConfig when List is in host web', function() {
+      it('when List is in host web, adds @target parameter to url', function() {
         list.$$inHostWeb = true;
         sinon.stub(ShareCoffee.Commons, 'getHostWebUrl').returns('http://host.web');
 
-        var httpConfig = $spRest.buildHttpConfig(list);
+        var httpConfig = $spRest.buildHttpConfig(list, 'query');
 
-        expect(httpConfig.hostWebUrl).to.be.equal('http://host.web');
+        expect(httpConfig.url).to.be.contain('@target');
 
         ShareCoffee.Commons.getHostWebUrl.restore();
       });

@@ -105,6 +105,7 @@ angular.module('ExpertsInside.SharePoint')
         if (list.$$inHostWeb) {
           httpConfig.hostWebUrl = ShareCoffee.Commons.getHostWebUrl();
         }
+
         action = angular.isString(action) ? action.toLowerCase() : '';
         options = angular.isDefined(options) ? options : {};
         var query = angular.isDefined(options.query) ? $spRest.normalizeParams(options.query) : {};
@@ -115,14 +116,11 @@ angular.module('ExpertsInside.SharePoint')
             throw $spRestMinErr('options:get', 'options must have an id');
           }
 
-          httpConfig = ShareCoffee.REST.build.read.for.angularJS({
-            url: baseUrl + '(' + options.id + ')'
-          });
+          httpConfig.url += '(' + options.id + ')';
+          httpConfig = ShareCoffee.REST.build.read.for.angularJS(httpConfig);
           break;
         case 'query':
-          httpConfig = ShareCoffee.REST.build.read.for.angularJS({
-            url: baseUrl
-          });
+          httpConfig = ShareCoffee.REST.build.read.for.angularJS(httpConfig);
           break;
         case 'create':
           if (angular.isUndefined(options.item)) {
@@ -133,10 +131,8 @@ angular.module('ExpertsInside.SharePoint')
             delete query.$expand;
           }
 
-          httpConfig = ShareCoffee.REST.build.create.for.angularJS({
-            url: baseUrl,
-            payload: $spRest.createPayload(options.item)
-          });
+          httpConfig.payload = $spRest.createPayload(options.item);
+          httpConfig = ShareCoffee.REST.build.create.for.angularJS(httpConfig);
           break;
         case 'update':
           if (angular.isUndefined(options.item)) {
@@ -147,14 +143,12 @@ angular.module('ExpertsInside.SharePoint')
           }
 
           query = {}; // does nothing or breaks things, so we ignore it
-          var eTag = !options.force && angular.isDefined(options.item.__metadata) ?
+          httpConfig.payload = $spRest.createPayload(options.item);
+          httpConfig.eTag = !options.force && angular.isDefined(options.item.__metadata) ?
             options.item.__metadata.etag : null;
 
-          httpConfig = ShareCoffee.REST.build.update.for.angularJS({
-            url: baseUrl,
-            payload: $spRest.createPayload(options.item),
-            eTag: eTag
-          });
+          httpConfig = ShareCoffee.REST.build.update.for.angularJS(httpConfig);
+
           httpConfig.url = options.item.__metadata.uri; // ShareCoffe doesnt work with absolute urls atm
           break;
         case 'delete':
@@ -165,9 +159,7 @@ angular.module('ExpertsInside.SharePoint')
             throw $spRestMinErr('options:delete', 'options.item must have __metadata');
           }
 
-          httpConfig = ShareCoffee.REST.build.delete.for.angularJS({
-            url: baseUrl
-          });
+          httpConfig = ShareCoffee.REST.build.delete.for.angularJS(httpConfig);
           httpConfig.url = options.item.__metadata.uri; // ShareCoffe doesnt work with absolute urls atm
           break;
         }
