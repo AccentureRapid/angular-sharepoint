@@ -12,7 +12,7 @@
  *
  * @param {string} title The title of the SharePoint List (case-sensitive).
  *
- * @param {Object=} options Hash with custom options for this List. The following options are
+ * @param {Object=} listOptions Hash with custom options for this List. The following options are
  *   supported:
  *
  *   - **`readOnlyFields`** - {Array.{string}=} - Array of field names that will be exlcuded
@@ -93,12 +93,12 @@ angular.module('ExpertsInside.SharePoint')
     'use strict';
     var $spListMinErr = angular.$$minErr('$spList');
 
-    function listFactory(title, options) {
+    function listFactory(title, listOptions) {
       if (!angular.isString(title) || title === '') {
         throw $spListMinErr('badargs', 'title must be a nen-empty string.');
       }
-      if(!angular.isObject(options)) {
-        options = {};
+      if(!angular.isObject(listOptions)) {
+        listOptions = {};
       }
 
       var listItemType = $spConvert.capitalize(title
@@ -217,7 +217,7 @@ angular.module('ExpertsInside.SharePoint')
       List.query = function(query, options) {
         var result = (angular.isDefined(options) && options.singleResult) ? {} : [];
         var httpConfig = $spRest.buildHttpConfig(List.$$relativeUrl, 'query', {
-          query: angular.extend({}, List.prototype.$$query, query)
+          query: angular.extend({}, List.prototype.$$queryDefaults, query)
         });
 
         return List.$$decorateResult(result, httpConfig);
@@ -247,7 +247,7 @@ angular.module('ExpertsInside.SharePoint')
         };
         var httpConfig = $spRest.buildHttpConfig(List.$$relativeUrl, 'create', {
           item: item,
-          query: angular.extend({}, item.$$query, query)
+          query: angular.extend({}, item.$$queryDefaults, query)
         });
 
         return List.$$decorateResult(item, httpConfig);
@@ -314,12 +314,27 @@ angular.module('ExpertsInside.SharePoint')
         return List.$$decorateResult(item, httpConfig);
       };
 
+      /**
+       * Named queries hash
+       */
       List.queries = { };
+
+      /**
+       *
+       * @description Add a named query to the queries hash
+       *
+       * @param {Object} name name of the query, used as the function name
+       * @param {Function} createQuery callback invoked with the arguments passed to
+       *   the created named query that creates the final query object
+       * @param {Object=} options Additional query options passed to List.query
+       *
+       * @return {Array} The query result
+       */
       List.addNamedQuery = function(name, createQuery, options) {
         List.queries[name] = function() {
           var query = angular.extend(
             {},
-            List.prototype.$$query,
+            List.prototype.$$queryDefaults,
             createQuery.apply(List, arguments)
           );
           return List.query(query, options);
@@ -350,8 +365,8 @@ angular.module('ExpertsInside.SharePoint')
           'OData__UIVersionString',
           'ParentList',
           'RoleAssignments'
-        ], options.readOnlyFields),
-        $$query: angular.extend({}, options.query),
+        ], listOptions.readOnlyFields),
+        $$queryDefaults: angular.extend({}, listOptions.query),
         $save: function(options) {
           return List.save(this, options).$promise;
         },

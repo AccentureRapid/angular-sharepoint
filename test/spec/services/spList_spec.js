@@ -182,7 +182,7 @@ describe('ExpertsInside.SharePoint', function() {
         }
       });
 
-      expect(TestItem.prototype.$$query).to.be.eql({
+      expect(TestItem.prototype.$$queryDefaults).to.be.eql({
         select: ['Id', 'Title']
       });
     });
