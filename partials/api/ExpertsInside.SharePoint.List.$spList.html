@@ -1,30 +1,32 @@
 <h1><code ng:non-bindable="">$spList</code>
-<div><span class="hint">service in module <code ng:non-bindable="">ExpertsInside.SharePoint</code>
+<div><span class="hint">service in module <code ng:non-bindable="">ExpertsInside.SharePoint.List</code>
 </span>
 </div>
 </h1>
 <div><h2 id="description">Description</h2>
-<div class="description"><div class="expertsinside-sharepoint-splist-page"><p>A factory which creates a list item resource object that lets you interact with
+<div class="description"><div class="expertsinside-sharepoint-list-splist-page"><p>A factory which creates a list item resource object that lets you interact with
 SharePoint List Items via the SharePoint REST API.</p>
 <p>The returned list item object has action methods which provide high-level behaviors without
 the need to interact with the low level $http service.</p>
 </div></div>
 <h2 id="dependencies">Dependencies</h2>
-<ul class="dependencies"><li><code ng:non-bindable=""><a href="#/api/ExpertsInside.SharePoint.$spRest">$spRest</a></code>
+<ul class="dependencies"><li><code ng:non-bindable=""><a href="#/api/ExpertsInside.SharePoint.Core.$spRest">$spRest</a></code>
+</li>
+<li><code ng:non-bindable=""><a href="#/api/ExpertsInside.SharePoint.Core.$spConvert">$spConvert</a></code>
 </li>
 </ul>
 <h2 id="usage">Usage</h2>
-<div class="usage"><pre class="prettyprint linenums">$spList(name[, options]);</pre>
-<h4 id="usage_parameters">Parameters</h4><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>name</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="expertsinside-sharepoint-splist-page"><p>The name of the SharePoint List (case-sensitive).</p>
-</div></td></tr><tr><td>options <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-splist-page"><p>Hash with custom options for this List. The following options are
+<div class="usage"><pre class="prettyprint linenums">$spList(title[, listOptions]);</pre>
+<h4 id="usage_parameters">Parameters</h4><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>title</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="expertsinside-sharepoint-list-splist-page"><p>The title of the SharePoint List (case-sensitive).</p>
+</div></td></tr><tr><td>listOptions <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-page"><p>Hash with custom options for this List. The following options are
 supported:</p>
 <ul>
 <li><strong><code>readOnlyFields</code></strong> - {Array.{string}=} - Array of field names that will be exlcuded
 from the request when saving an item back to SharePoint</li>
-<li><strong><code>queryDefaults</code></strong> - {Object=} - Default query parameter used by each action. Can be
+<li><strong><code>query</code></strong> - {Object=} - Default query parameter used by each action. Can be
 overridden per action. See <a href="#/api/ExpertsInside.SharePoint.$spList">query</a> for details.</li>
 </ul>
-</div></td></tr></tbody></table><h4 id="usage_returns">Returns</h4><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-splist-page"><p>A list item &quot;class&quot; object with methods for the default set of resource actions.</p>
+</div></td></tr></tbody></table><h4 id="usage_returns">Returns</h4><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-page"><p>A list item &quot;class&quot; object with methods for the default set of resource actions.</p>
 <h3 id="usage_list-item-class">List Item class</h3>
 <p>All query parameters accept an object with the REST API query string parameters. Prefixing them with $ is optional.
   - <strong><code>$select</code></strong>
@@ -61,10 +63,10 @@ instance of the list item class.</li>
 </ul>
 </div></td></tr></table></div>
 <h2 id="example">Example</h2>
-<div class="example"><div class="expertsinside-sharepoint-splist-page"><h3 id="example_todo-list">Todo List</h3>
+<div class="example"><div class="expertsinside-sharepoint-list-splist-page"><h3 id="example_todo-list">Todo List</h3>
 <h4 id="example_todo-list_defining-the-todo-class">Defining the Todo class</h4>
 <pre><code class="lang-js">     var Todo = $spList(&#39;Todo&#39;, {
-       queryDefaults: [&#39;Id&#39;, &#39;Title&#39;, &#39;Completed&#39;]
+       query: [&#39;Id&#39;, &#39;Title&#39;, &#39;Completed&#39;]
      );</code></pre>
 <h4 id="example_todo-list_queries">Queries</h4>
 <pre><code class="lang-js">     // We can retrieve all list items from the server.

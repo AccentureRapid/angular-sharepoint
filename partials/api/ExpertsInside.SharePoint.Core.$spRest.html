@@ -1,0 +1,75 @@
+<h1><code ng:non-bindable="">$spRest</code>
+<div><span class="hint">service in module <code ng:non-bindable="">ExpertsInside.SharePoint.Core</code>
+</span>
+</div>
+</h1>
+<div><h2 id="description">Description</h2>
+<div class="description"><div class="expertsinside-sharepoint-core-sprest-page"><p>Utility functions when interacting with the SharePoint REST API</p>
+</div></div>
+<h2 id="dependencies">Dependencies</h2>
+<ul class="dependencies"><li><code ng:non-bindable=""><a href="#/api/ng.$log">$log</a></code>
+</li>
+</ul>
+<div class="member method"><h2 id="methods">Methods</h2>
+<ul class="methods"><li><h3 id="methods_appendqueryparameters">appendQueryParameters(url, params)</h3>
+<div class="appendqueryparameters"><div class="expertsinside-sharepoint-core-sprest-appendqueryparameters-page"><p>Builds a query string from the query parameters
+and appends it to the url</p>
+</div><h5 id="methods_appendqueryparameters_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>url</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="expertsinside-sharepoint-core-sprest-appendqueryparameters-page"><p>url</p>
+</div></td></tr><tr><td>params</td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-core-sprest-appendqueryparameters-page"><p>query parameters</p>
+</div></td></tr></tbody></table><h5 id="methods_appendqueryparameters_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="expertsinside-sharepoint-core-sprest-appendqueryparameters-page"><p>url with query string</p>
+</div></td></tr></table><h4 id="methods_appendqueryparameters_example">Example</h4>
+<div class="example"><div class="expertsinside-sharepoint-core-sprest-appendqueryparameters-page"><pre><code class="lang-js">var params= {
+  $select: [&#39;Id&#39;, &#39;Title&#39;]
+};
+url = $spRest.appendQueryParameters(&#39;http://my.app&#39;, params);
+// url =&gt; &quot;http://my.app?$select=&#39;Id,Title&#39;&quot;</code></pre>
+</div></div>
+</div>
+</li>
+<li><h3 id="methods_buildquerystring">buildQueryString(params)</h3>
+<div class="buildquerystring"><div class="expertsinside-sharepoint-core-sprest-buildquerystring-page"><p>Create a query string from query parameters that
+SharePoint accepts</p>
+</div><h5 id="methods_buildquerystring_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>params</td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-core-sprest-buildquerystring-page"><p>query parameters</p>
+</div></td></tr></tbody></table><h5 id="methods_buildquerystring_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="expertsinside-sharepoint-core-sprest-buildquerystring-page"><p>query string</p>
+</div></td></tr></table><h4 id="methods_buildquerystring_example">Example</h4>
+<div class="example"><div class="expertsinside-sharepoint-core-sprest-buildquerystring-page"><pre><code class="lang-js">var params= {
+  foo: [1,2,3]
+  bar: &quot;baz&quot;
+};
+var qs = $spRest.buildQueryString(params);
+// qs =&gt; &#39;foo=&quot;1,2,3&quot;&amp;bar=&quot;baz&quot;&#39;</code></pre>
+</div></div>
+</div>
+</li>
+<li><h3 id="methods_normalizeparams">normalizeParams(params, whitelist)</h3>
+<div class="normalizeparams"><div class="expertsinside-sharepoint-core-sprest-normalizeparams-page"><p>Normalizes the query parameters by prefixing them with
+prefixing them with $ (when missing) and removing all invalid
+query parameters when a whitelist is given.</p>
+</div><h5 id="methods_normalizeparams_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>params</td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-core-sprest-normalizeparams-page"><p>query parameters</p>
+</div></td></tr><tr><td>whitelist</td><td><a href="" class="label type-hint type-hint-array">Array.&lt;string&gt;</a></td><td><div class="expertsinside-sharepoint-core-sprest-normalizeparams-page"><p>allowed query parameters</p>
+</div></td></tr></tbody></table><h5 id="methods_normalizeparams_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-core-sprest-normalizeparams-page"><p>normalized query parameters</p>
+</div></td></tr></table><h4 id="methods_normalizeparams_example">Example</h4>
+<div class="example"><div class="expertsinside-sharepoint-core-sprest-normalizeparams-page"><pre><code class="lang-js">var params = {
+  select: [&#39;Id&#39;, &#39;Title&#39;]
+  invalid: &quot;foo&quot;
+};
+var whitelist = [&#39;$select&#39;]
+params = $spRest.normalizeParams(params);
+// params =&gt; { $select: [&#39;Id&#39;, &#39;Title&#39;] }</code></pre>
+</div></div>
+</div>
+</li>
+<li><h3 id="methods_transformresponse">transformResponse(json)</h3>
+<div class="transformresponse"><div class="expertsinside-sharepoint-core-sprest-transformresponse-page"><p>Parse the JSON body and remove the <code>d</code> and <code>d.results</code> wrapper from the REST response</p>
+</div><h5 id="methods_transformresponse_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>json</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="expertsinside-sharepoint-core-sprest-transformresponse-page"><p>JSON body of the response</p>
+</div></td></tr></tbody></table><h5 id="methods_transformresponse_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object|Array</a></td><td><div class="expertsinside-sharepoint-core-sprest-transformresponse-page"><p>transformed response</p>
+</div></td></tr></table><h4 id="methods_transformresponse_example">Example</h4>
+<div class="example"><div class="expertsinside-sharepoint-core-sprest-transformresponse-page"><pre><code class="lang-js">var json=&#39;{&quot;d&quot;:{&quot;results&quot;:[{&quot;foo&quot;:&quot;bar&quot;}]}}&#39;;
+var response = $spRest.transformResponse(json);
+// response =&gt; [{ foo: &quot;bar&quot; }]</code></pre>
+</div></div>
+</div>
+</li>
+</ul>
+</div>
+</div>
