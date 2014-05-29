@@ -1,8 +1,28 @@
+/**
+ * @ngdoc service
+ * @name ExpertsInside.SharePoint.Core.$spRest
+ * @requires $log
+ *
+ * @description
+ * Utility functions when interacting with the SharePoint REST API
+ *
+ */
 angular.module('ExpertsInside.SharePoint.Core')
   .factory('$spRest', function($log) {
     'use strict';
 
     var $spRestMinErr = angular.$$minErr('$spRest');
+
+    /**
+     * @name unique
+     * @private
+     *
+     * Copy the array without duplicates
+     *
+     * @param {array} arr input array
+     *
+     * @returns {array} input array without duplicates
+     */
     var unique = function(arr) {
       return arr.reduce(function(r, x) {
         if (r.indexOf(x) < 0) { r.push(x); }
@@ -10,8 +30,24 @@ angular.module('ExpertsInside.SharePoint.Core')
       }, []);
     };
 
+    /**
+     * @name validParamKeys
+     * @private
+     *
+     * Query string parameter keys allowed by SharePoint REST API
+     */
     var validParamKeys = ['$select', '$filter', '$orderby', '$top', '$skip', '$expand', '$sort'];
 
+    /**
+     * @name getKeysSorted
+     * @private
+     *
+     * Get all keys from the object and sort them
+     *
+     * @param {Object} obj input object
+     *
+     * @returns {Array} Sorted object keys
+     */
     function getKeysSorted(obj) {
       var keys = [];
       if (angular.isUndefined(obj) || obj === null) {
@@ -27,6 +63,25 @@ angular.module('ExpertsInside.SharePoint.Core')
     }
 
     var $spRest = {
+
+      /**
+       * @ngdoc function
+       * @name ExpertsInside.SharePoint.Core.$spRest#transformResponse
+       * @methodOf ExpertsInside.SharePoint.Core.$spRest
+       *
+       * @description Parse the JSON body and remove the `d` and `d.results` wrapper from the REST response
+       *
+       * @param {string} json JSON body of the response
+       *
+       * @returns {Object|Array} transformed response
+       *
+       * @example
+       * ```js
+           var json='{"d":{"results":[{"foo":"bar"}]}}';
+           var response = $spRest.transformResponse(json);
+           // response => [{ foo: "bar" }]
+       * ```
+       */
       transformResponse: function (json) {
         var response = {};
         if (angular.isDefined(json) && json !== null && json !== '') {
@@ -40,6 +95,29 @@ angular.module('ExpertsInside.SharePoint.Core')
         }
         return response;
       },
+
+      /**
+       * @ngdoc function
+       * @name ExpertsInside.SharePoint.Core.$spRest#buildQueryString
+       * @methodOf ExpertsInside.SharePoint.Core.$spRest
+       *
+       * @description Create a query string from query parameters that
+       *   SharePoint accepts
+       *
+       * @param {Object} params query parameters
+       *
+       * @returns {string} query string
+       *
+       * @example
+       * ```js
+           var params= {
+             foo: [1,2,3]
+             bar: "baz"
+           };
+           var qs = $spRest.buildQueryString(params);
+           // qs => 'foo="1,2,3"&bar="baz"'
+       * ```
+       */
       buildQueryString: function(params) {
         var parts = [];
         var keys = getKeysSorted(params);
@@ -56,6 +134,30 @@ angular.module('ExpertsInside.SharePoint.Core')
 
         return queryString;
       },
+
+      /**
+       * @ngdoc function
+       * @name ExpertsInside.SharePoint.Core.$spRest#normalizeParams
+       * @methodOf ExpertsInside.SharePoint.Core.$spRest
+       *
+       * @description Normalizes the query parameters by prefixing them with
+       *   prefixing them with $ (when missing) and removing all invalid
+       *   query parameters
+       *
+       * @param {Object} params query parameters
+       *
+       * @returns {Object} normalized query parameters
+       *
+       * @example
+       * ```js
+           var params= {
+             select: ['Id', 'Title']
+             invalid: "foo"
+           };
+           params = $spRest.normalizeParams(params);
+           // params => { $select: ['Id', 'Title'] }
+       * ```
+       */
       normalizeParams: function(params) {
         params = angular.extend({}, params); //make a copy
         if (angular.isDefined(params)) {
@@ -79,7 +181,30 @@ angular.module('ExpertsInside.SharePoint.Core')
 
         return params;
       },
-      appendQueryString: function(url, params) {
+
+      /**
+       * @ngdoc function
+       * @name ExpertsInside.SharePoint.Core.$spRest#appendQueryParameters
+       * @methodOf ExpertsInside.SharePoint.Core.$spRest
+       *
+       * @description Builds a query string from the query parameters
+       *   and appends it to the url
+       *
+       * @param {string} url url
+       * @param {Object} params query parameters
+       *
+       * @returns {string} url with query string
+       *
+       * @example
+       * ```js
+           var params= {
+             $select: ['Id', 'Title']
+           };
+           url = $spRest.appendQueryParameters('http://my.app', params);
+           // url => "http://my.app?$select='Id,Title'"
+       * ```
+       */
+      appendQueryParameters: function(url, params) {
         var queryString = $spRest.buildQueryString(params);
 
         if (queryString !== '') {
@@ -97,6 +222,19 @@ angular.module('ExpertsInside.SharePoint.Core')
         }
         return angular.toJson(payload);
       },
+
+      /**
+       * @ngdoc function
+       * @name ExpertsInside.SharePoint.Core.$spRest#buildHttpConfig
+       * @methodOf ExpertsInside.SharePoint.Core.$spRest
+       *
+       * @description Builds the http config for the list CRUD actions
+       *
+       * @param {Object} list List constructor
+       * @param {string} action CRUD action
+       *
+       * @returns {Object} http config
+       */
       buildHttpConfig: function(list, action, options) {
         var baseUrl = list.$$relativeUrl + '/items';
         var httpConfig = {
@@ -163,7 +301,7 @@ angular.module('ExpertsInside.SharePoint.Core')
           break;
         }
 
-        httpConfig.url = $spRest.appendQueryString(httpConfig.url, query);
+        httpConfig.url = $spRest.appendQueryParameters(httpConfig.url, query);
         httpConfig.transformResponse = $spRest.transformResponse;
 
         return httpConfig;

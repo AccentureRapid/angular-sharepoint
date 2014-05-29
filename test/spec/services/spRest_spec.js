@@ -101,20 +101,20 @@ describe('ExpertsInside.SharePoint', function() {
       });
     });
 
-    describe('.appendQueryString(url, params)', function() {
+    describe('.appendQueryParameters(url, params)', function() {
       var url;
       beforeEach(function() { url = 'http://my.app'; });
 
       it('returns the original *url* when *params* leads to an empty query string', function () {
-        expect($spRest.appendQueryString(url, {})).to.be.eql(url);
+        expect($spRest.appendQueryParameters(url, {})).to.be.eql(url);
       });
 
       it('adds the query string to the url', function () {
-        expect($spRest.appendQueryString(url, {$select: 'foo'})).to.be.eql(url + '?$select=foo');
+        expect($spRest.appendQueryParameters(url, {$select: 'foo'})).to.be.eql(url + '?$select=foo');
       });
 
       it('correctly appends the query string to an url which already has one', function () {
-        expect($spRest.appendQueryString(url + '?bar', {$select: 'foo'})).to.be.eql(url + '?bar&$select=foo');
+        expect($spRest.appendQueryParameters(url + '?bar', {$select: 'foo'})).to.be.eql(url + '?bar&$select=foo');
       });
     });
 
