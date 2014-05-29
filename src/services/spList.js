@@ -113,18 +113,19 @@ angular.module('ExpertsInside.SharePoint.List')
 
       // Constructor function for List dynamically generated List class
       var List = (function() {
-        // jshint evil:true
+        // jshint evil:true, validthis:true
+        function __List__(data) {
+          this.__metadata = {
+            type: listItemType
+          };
+          angular.extend(this, data);
+        }
         var script =
         " (function() {                     " +
-        "   function {{List}}(data) {       " +
-        "     this.__metadata = {           " +
-        "       type: '" + listItemType + "'" +
-        "     };                            " +
-        "     angular.extend(this, data);   " +
-        "   }                               " +
-        "   return {{List}};                " +
+            __List__.toString()               +
+        "   return __List__;                " +
         " })();                             ";
-        return eval(script.replace(/{{List}}/g, className));
+        return eval(script.replace(/__List__/g, className));
       })();
 
       List.$title = title;
