@@ -1,4 +1,4 @@
-angular.module('ExpertsInside.SharePoint')
+angular.module('ExpertsInside.SharePoint.Core')
   .factory('$spConvert', function() {
     'use strict';
 

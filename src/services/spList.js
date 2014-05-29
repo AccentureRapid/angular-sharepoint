@@ -88,7 +88,7 @@
     var fooTodo = Todo.queries.byTitle('Foo');
  * ```
  */
-angular.module('ExpertsInside.SharePoint')
+angular.module('ExpertsInside.SharePoint.List')
   .factory('$spList', function($spRest, $http, $spConvert) {
     'use strict';
     var $spListMinErr = angular.$$minErr('$spList');

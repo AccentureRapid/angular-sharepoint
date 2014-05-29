@@ -7,7 +7,7 @@
  * @description Query the Search via REST API
  *
  */
-angular.module('ExpertsInside.SharePoint')
+angular.module('ExpertsInside.SharePoint.Search')
   .factory('$spSearch', function($http, $spRest, $spConvert) {
     'use strict';
     var $spSearchMinErr = angular.$$minErr('$spSearch');

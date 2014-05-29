@@ -8,7 +8,7 @@
  *
  * @return {Object} $spPageContextInfo Copy of the global '_spPageContextInfo' object
  */
-angular.module('ExpertsInside.SharePoint')
+angular.module('ExpertsInside.SharePoint.Core')
   .factory('$spPageContextInfo', function($rootScope, $window) {
     'use strict';
 

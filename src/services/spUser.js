@@ -7,7 +7,7 @@
  * @description Load user information via UserProfiles REST API
  *
  */
-angular.module('ExpertsInside.SharePoint')
+angular.module('ExpertsInside.SharePoint.User')
   .factory('$spUser', function($http, $spRest, $spConvert) {
     'use strict';
     var $spUserMinErr = angular.$$minErr('$spUser');

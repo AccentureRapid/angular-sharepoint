@@ -3,15 +3,49 @@ describe('ExpertsInside.SharePoint', function() {
     beforeEach(inject(function($window) {
       $window.ShareCoffee = undefined;
     }));
-    it('throws an Error when module is run', inject(function($injector, $log) {
-      sinon.spy($log, "error");
-      var runBlocks = angular.module('ExpertsInside.SharePoint')._runBlocks;
+    it('the Core module logs a warning when loaded', inject(function($injector, $log) {
+      sinon.spy($log, "warn");
+      var runBlocks = angular.module('ExpertsInside.SharePoint.Core')._runBlocks;
 
       $injector.invoke(runBlocks[0]);
 
-      expect($log.error).to.have.been.called;
+      expect($log.warn).to.have.been.calledWithMatch(/ShareCoffee\.js/);
 
-      $log.error.restore();
+      $log.warn.restore();
+    }));
+  });
+
+  describe('when ShareCoffe.Search is not available', function() {
+    beforeEach(inject(function($window) {
+      $window.ShareCoffee = {};
+    }));
+
+    it('the Search module logs a warning when loaded', inject(function($injector, $log) {
+      sinon.spy($log, "warn");
+      var runBlocks = angular.module('ExpertsInside.SharePoint.Search')._runBlocks;
+
+      $injector.invoke(runBlocks[0]);
+
+      expect($log.warn).to.have.been.calledWithMatch(/ShareCoffee\.Search\.js/);
+
+      $log.warn.restore();
+    }));
+  });
+
+  describe('when ShareCoffe.UserProfiles is not available', function() {
+    beforeEach(inject(function($window) {
+      $window.ShareCoffee = {};
+    }));
+
+    it('the User module logs a warning when loaded', inject(function($injector, $log) {
+      sinon.spy($log, "warn");
+      var runBlocks = angular.module('ExpertsInside.SharePoint.User')._runBlocks;
+
+      $injector.invoke(runBlocks[0]);
+
+      expect($log.warn).to.have.been.calledWithMatch(/ShareCoffee\.UserProfiles\.js/);
+
+      $log.warn.restore();
     }));
   });
 });
