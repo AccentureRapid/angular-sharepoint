@@ -11,7 +11,7 @@ angular.module('ExpertsInside.SharePoint.Core')
   .factory('$spRest', function($log) {
     'use strict';
 
-    var $spRestMinErr = angular.$$minErr('$spRest');
+    // var $spRestMinErr = angular.$$minErr('$spRest');
 
     /**
      * @name unique
@@ -29,14 +29,6 @@ angular.module('ExpertsInside.SharePoint.Core')
         return r;
       }, []);
     };
-
-    /**
-     * @name validParamKeys
-     * @private
-     *
-     * Query string parameter keys allowed by SharePoint REST API
-     */
-    var validParamKeys = ['$select', '$filter', '$orderby', '$top', '$skip', '$expand', '$sort'];
 
     /**
      * @name getKeysSorted
@@ -142,24 +134,27 @@ angular.module('ExpertsInside.SharePoint.Core')
        *
        * @description Normalizes the query parameters by prefixing them with
        *   prefixing them with $ (when missing) and removing all invalid
-       *   query parameters
+       *   query parameters when a whitelist is given.
        *
        * @param {Object} params query parameters
+       * @param {Array.<string>} whitelist allowed query parameters
        *
        * @returns {Object} normalized query parameters
        *
        * @example
        * ```js
-           var params= {
+           var params = {
              select: ['Id', 'Title']
              invalid: "foo"
            };
+           var whitelist = ['$select']
            params = $spRest.normalizeParams(params);
            // params => { $select: ['Id', 'Title'] }
        * ```
        */
-      normalizeParams: function(params) {
+      normalizeParams: function(params, whitelist) {
         params = angular.extend({}, params); //make a copy
+
         if (angular.isDefined(params)) {
           angular.forEach(params, function(value, key) {
             if(key.indexOf('$') !== 0) {
@@ -167,8 +162,9 @@ angular.module('ExpertsInside.SharePoint.Core')
               key = '$' + key;
               params[key] = value;
             }
-            if (validParamKeys.indexOf(key) === -1) {
-              $log.warn('Invalid param key: ' + key);
+
+            if (angular.isDefined(whitelist) && whitelist.indexOf(key) === -1) {
+              $log.warn('Invalid param key detected: ' + key);
               delete params[key];
             }
           });
@@ -212,99 +208,6 @@ angular.module('ExpertsInside.SharePoint.Core')
         }
 
         return url;
-      },
-      createPayload: function(item) {
-        var payload = angular.extend({}, item);
-        if (angular.isDefined(item.$$readOnlyFields)) {
-          angular.forEach(item.$$readOnlyFields, function(readOnlyField) {
-            delete payload[readOnlyField];
-          });
-        }
-        return angular.toJson(payload);
-      },
-
-      /**
-       * @ngdoc function
-       * @name ExpertsInside.SharePoint.Core.$spRest#buildHttpConfig
-       * @methodOf ExpertsInside.SharePoint.Core.$spRest
-       *
-       * @description Builds the http config for the list CRUD actions
-       *
-       * @param {Object} list List constructor
-       * @param {string} action CRUD action
-       *
-       * @returns {Object} http config
-       */
-      buildHttpConfig: function(list, action, options) {
-        var baseUrl = list.$$relativeUrl + '/items';
-        var httpConfig = {
-          url: baseUrl
-        };
-        if (list.$$inHostWeb) {
-          httpConfig.hostWebUrl = ShareCoffee.Commons.getHostWebUrl();
-        }
-
-        action = angular.isString(action) ? action.toLowerCase() : '';
-        options = angular.isDefined(options) ? options : {};
-        var query = angular.isDefined(options.query) ? $spRest.normalizeParams(options.query) : {};
-
-        switch(action) {
-        case 'get':
-          if (angular.isUndefined(options.id)) {
-            throw $spRestMinErr('options:get', 'options must have an id');
-          }
-
-          httpConfig.url += '(' + options.id + ')';
-          httpConfig = ShareCoffee.REST.build.read.for.angularJS(httpConfig);
-          break;
-        case 'query':
-          httpConfig = ShareCoffee.REST.build.read.for.angularJS(httpConfig);
-          break;
-        case 'create':
-          if (angular.isUndefined(options.item)) {
-            throw $spRestMinErr('options:create', 'options must have an item');
-          }
-
-          if (angular.isDefined(query)) {
-            delete query.$expand;
-          }
-
-          httpConfig.payload = $spRest.createPayload(options.item);
-          httpConfig = ShareCoffee.REST.build.create.for.angularJS(httpConfig);
-          break;
-        case 'update':
-          if (angular.isUndefined(options.item)) {
-            throw $spRestMinErr('options:update', 'options must have an item');
-          }
-          if (angular.isUndefined(options.item.__metadata)) {
-            throw $spRestMinErr('options:update', 'options.item must have __metadata');
-          }
-
-          query = {}; // does nothing or breaks things, so we ignore it
-          httpConfig.url += '(' + options.item.Id + ')';
-          httpConfig.payload = $spRest.createPayload(options.item);
-          httpConfig.eTag = !options.force && angular.isDefined(options.item.__metadata) ?
-            options.item.__metadata.etag : null;
-
-          httpConfig = ShareCoffee.REST.build.update.for.angularJS(httpConfig);
-          break;
-        case 'delete':
-          if (angular.isUndefined(options.item)) {
-            throw $spRestMinErr('options:delete', 'options must have an item');
-          }
-          if (angular.isUndefined(options.item.__metadata)) {
-            throw $spRestMinErr('options:delete', 'options.item must have __metadata');
-          }
-
-          httpConfig.url += '(' + options.item.Id + ')';
-          httpConfig = ShareCoffee.REST.build.delete.for.angularJS(httpConfig);
-          break;
-        }
-
-        httpConfig.url = $spRest.appendQueryParameters(httpConfig.url, query);
-        httpConfig.transformResponse = $spRest.transformResponse;
-
-        return httpConfig;
       }
     };
 

@@ -137,6 +137,200 @@ describe('ExpertsInside.SharePoint', function() {
       });
     });
 
+    describe('.buildHttpConfig(action, options)', function() {
+      it('sets transformResponse on the httpConfig', function() {
+        expect(TestItem.$$buildHttpConfig().transformResponse).to.be.equal($spRest.transformResponse);
+      });
+
+      it('creates a query string from *options*.query and adds it to the url', function() {
+        var httpConfig = TestItem.$$buildHttpConfig('query', {query: {select: ['Id', 'Title']}});
+
+        expect(httpConfig.url).to.be.contain(TestItem.$$relativeUrl + '/items?$select=Id,Title');
+      });
+
+      it('when List is in host web, adds @target parameter to url', function() {
+        TestItem.$$inHostWeb = true;
+        sinon.stub(ShareCoffee.Commons, 'getHostWebUrl').returns('http://host.web');
+
+        var httpConfig = TestItem.$$buildHttpConfig('query');
+
+        expect(httpConfig.url).to.be.contain('@target');
+
+        ShareCoffee.Commons.getHostWebUrl.restore();
+      });
+
+      describe('when *action* is "get"', function() {
+        it('sets httpConfig.url to the url of the item', function() {
+          var httpConfig = TestItem.$$buildHttpConfig('get', {id: 1});
+
+          expect(httpConfig.url).to.be.equal(apiRootUrl + TestItem.$$relativeUrl + '/items(1)');
+        });
+
+        it('throws when *options*.id is not set', function() {
+          expect(function() { TestItem.$$buildHttpConfig('get'); }).to.throw(Error, '[$spList:options:get]');
+        });
+
+        it('sets correct httpConfig.headers', function() {
+          var httpConfig = TestItem.$$buildHttpConfig('get', {id: 1});
+
+          expect(httpConfig.headers).to.be.eql({
+            'Accept': 'application/json;odata=verbose'
+          });
+        });
+      });
+
+      describe('when *action* is "query"', function() {
+        it('sets httpConfig.url to the items root url', function() {
+          var httpConfig = TestItem.$$buildHttpConfig('query');
+
+          expect(httpConfig.url).to.be.equal(apiRootUrl + TestItem.$$relativeUrl + '/items');
+        });
+
+        it('sets correct httpConfig.headers', function() {
+          var httpConfig = TestItem.$$buildHttpConfig('query');
+
+          expect(httpConfig.headers).to.be.eql({
+            'Accept': 'application/json;odata=verbose'
+          });
+        });
+      });
+
+      describe('when *action* is "create"', function() {
+        it('throws when *options*.item is not set', function() {
+          expect(function() { TestItem.$$buildHttpConfig('create'); }).to.throw(Error, '[$spList:options:create]');
+        });
+
+        it('sets httpConfig.url to the items root url', function() {
+          var httpConfig = TestItem.$$buildHttpConfig('create', {item: new TestItem()});
+
+          expect(httpConfig.url).to.be.equal(apiRootUrl + TestItem.$$relativeUrl + '/items');
+        });
+
+        it('sets httpConfig.data to the stringified item', function() {
+          var options = {item: new TestItem({foo: 1})};
+          var httpConfig = TestItem.$$buildHttpConfig('create', options);
+
+          expect(httpConfig.data).to.be.equal('{"__metadata":{"type":"SP.Data.TestListItem"},"foo":1}');
+        });
+
+        it('sets correct httpConfig.headers', function() {
+          var httpConfig = TestItem.$$buildHttpConfig('create', {item: new TestItem()});
+
+          expect(httpConfig.headers).to.be.eql({
+            'Accept': 'application/json;odata=verbose',
+            'Content-Type': 'application/json;odata=verbose',
+            'X-RequestDigest': requestDigest
+          });
+        });
+
+        it('removes $expand from query properties', function() {
+          var httpConfig = TestItem.$$buildHttpConfig('create', {query: { $expand: 'Foo/Id' }, item: new TestItem()});
+
+          expect(httpConfig.url).to.not.contain('$expand');
+        });
+      });
+
+      describe('when *action* is "update"', function() {
+        var item;
+
+        beforeEach(function() {
+          item = new TestItem({
+            Id: 1,
+            __metadata: {
+              type: 'SP.Data.TestListItem',
+              etag: '1',
+              uri: apiRootUrl + TestItem.$$relativeUrl + '/items(1)'
+            }
+          });
+        });
+
+        it('throws when *options*.item is not set', function() {
+          expect(function() { TestItem.$$buildHttpConfig('update'); })
+            .to.throw(Error, '[$spList:options:update]');
+        });
+        // TODO
+        // it('throws when *options*.item is not a valid list item', function() {
+        //   expect(function() { TestItem.$$buildHttpConfig('update', {item: {}}); })
+        //     .to.throw(Error, '[$spList:options:update]');
+        // });
+
+        it('sets correct httpConfig.headers', function() {
+          var httpConfig = TestItem.$$buildHttpConfig('update', {item: item});
+
+          expect(httpConfig.headers).to.be.eql({
+            'Accept': 'application/json;odata=verbose',
+            'Content-Type': 'application/json;odata=verbose',
+            'X-RequestDigest': requestDigest,
+            'If-Match': item.__metadata.etag,
+            'X-HTTP-Method': 'MERGE'
+          });
+        });
+
+        it('sets the "If-Match" property in httpConfig.header to "*" when options.force is true', function() {
+          var httpConfig = TestItem.$$buildHttpConfig('update', {item: item, force: true});
+
+          expect(httpConfig.headers).to.have.property('If-Match', '*');
+        });
+
+        it('sets httpConfig.data to the stringified item', function() {
+          var options = {item: item};
+          var httpConfig = TestItem.$$buildHttpConfig('update', options);
+
+          expect(httpConfig.data).to.be.equal(
+            '{"__metadata":{"type":"SP.Data.TestListItem","etag":"1","uri":"https://test.sharepoint.com/sites/test/app/_api/web/lists/getByTitle(\'Test\')/items(1)"},"Id":1}'
+          );
+        });
+
+        it('sets httpConfig.url to the url of the item', function() {
+          var options = {item: item};
+          var httpConfig = TestItem.$$buildHttpConfig('update', options);
+
+          expect(httpConfig.url).to.be.equal(item.__metadata.uri);
+        });
+      });
+
+      describe('when *action* is "delete"', function() {
+        var item;
+        beforeEach(function() {
+          item = {
+            Id: 1,
+            __metadata: {
+              type: 'SP.Data.TestListItem',
+              etag: '1',
+              uri: apiRootUrl + TestItem.$$relativeUrl + '/items(1)'
+            }
+          };
+        });
+
+        it('throws when *options*.item is not set', function() {
+          expect(function() { TestItem.$$buildHttpConfig('delete'); })
+            .to.throw(Error, '[$spList:options:delete]');
+        });
+        it('throws when *options*.item.__metadata is not set', function() {
+          expect(function() { TestItem.$$buildHttpConfig('delete', {item: {}}); })
+            .to.throw(Error, '[$spList:options:delete]');
+        });
+
+        it('sets correct httpConfig.headers', function() {
+          var httpConfig = TestItem.$$buildHttpConfig('delete', {item: item});
+
+          expect(httpConfig.headers).to.be.eql({
+            'Accept': 'application/json;odata=verbose',
+            'Content-Type': 'application/json;odata=verbose',
+            'X-RequestDigest': requestDigest,
+            'If-Match': '*'
+          });
+        });
+
+        it('sets httpConfig.url to the url of the item', function() {
+          var options = {item: item};
+          var httpConfig = TestItem.$$buildHttpConfig('delete', options);
+
+          expect(httpConfig.url).to.be.equal(item.__metadata.uri);
+        });
+      });
+    });
+
     it('creates some sane defaults for #$$readOnlyFields', function() {
       expect(TestItem.prototype.$$readOnlyFields).to.be.eql([
         'AttachmentFiles',
@@ -238,39 +432,37 @@ describe('ExpertsInside.SharePoint', function() {
         });
 
         it('creates a valid get request and returns the result', function() {
-          sinon.spy($spRest, 'buildHttpConfig');
+          sinon.spy(TestItem, '$$buildHttpConfig');
           sinon.spy(TestItem, '$$decorateResult');
 
           var query = { select: ['Id', 'Title'] };
           var testItem = TestItem.get(1, query);
 
-          expect($spRest.buildHttpConfig).to.have.been.calledWith(
-            TestItem,
+          expect(TestItem.$$buildHttpConfig).to.have.been.calledWith(
             'get', {
               id: 1,
               query: query
             });
           expect(TestItem.$$decorateResult).to.have.been.calledWith(
             { Id: 1 },
-            $spRest.buildHttpConfig.firstCall.returnValue
+            TestItem.$$buildHttpConfig.firstCall.returnValue
           );
           expect(testItem).to.be.equal(TestItem.$$decorateResult.firstCall.returnValue);
 
-          $spRest.buildHttpConfig.restore();
+          TestItem.$$buildHttpConfig.restore();
           TestItem.$$decorateResult.restore();
         });
       });
 
       describe('.query(query, options)', function() {
         it('creates a valid query request and returns the result', function() {
-          sinon.spy($spRest, 'buildHttpConfig');
+          sinon.spy(TestItem, '$$buildHttpConfig');
           sinon.spy(TestItem, '$$decorateResult');
           var query = { expand: ['Foo'] };
 
           var testItems = TestItem.query(query);
 
-          expect($spRest.buildHttpConfig).to.have.been.calledWith(
-            TestItem,
+          expect(TestItem.$$buildHttpConfig).to.have.been.calledWith(
             'query', {
               query: {
                 select: ['Id', 'Title'],
@@ -279,11 +471,11 @@ describe('ExpertsInside.SharePoint', function() {
             });
           expect(TestItem.$$decorateResult).to.have.been.calledWithMatch(
             { },
-            $spRest.buildHttpConfig.firstCall.returnValue
+            TestItem.$$buildHttpConfig.firstCall.returnValue
           );
           expect(testItems).to.be.equal(TestItem.$$decorateResult.firstCall.returnValue);
 
-          $spRest.buildHttpConfig.restore();
+          TestItem.$$buildHttpConfig.restore();
           TestItem.$$decorateResult.restore();
         });
 
@@ -311,15 +503,14 @@ describe('ExpertsInside.SharePoint', function() {
         });
 
         it('creates a valid create request and returns the result', function() {
-          sinon.spy($spRest, 'buildHttpConfig');
+          sinon.spy(TestItem, '$$buildHttpConfig');
           sinon.spy(TestItem, '$$decorateResult');
           var testItem = new TestItem({foo: 'bar'});
           var query = {expand: 'Foo'};
 
           var result = TestItem.create(testItem, query);
 
-          expect($spRest.buildHttpConfig).to.have.been.calledWith(
-            TestItem,
+          expect(TestItem.$$buildHttpConfig).to.have.been.calledWith(
             'create', {
               item: testItem,
               query: {
@@ -329,11 +520,11 @@ describe('ExpertsInside.SharePoint', function() {
             });
           expect(TestItem.$$decorateResult).to.have.been.calledWith(
             testItem,
-            $spRest.buildHttpConfig.firstCall.returnValue
+            TestItem.$$buildHttpConfig.firstCall.returnValue
           );
           expect(result).to.be.equal(TestItem.$$decorateResult.firstCall.returnValue);
 
-          $spRest.buildHttpConfig.restore();
+          TestItem.$$buildHttpConfig.restore();
           TestItem.$$decorateResult.restore();
         });
       });
@@ -344,7 +535,7 @@ describe('ExpertsInside.SharePoint', function() {
         });
 
         it('creates a valid update request and returns the result', function() {
-          sinon.spy($spRest, 'buildHttpConfig');
+          sinon.spy(TestItem, '$$buildHttpConfig');
           sinon.spy(TestItem, '$$decorateResult');
           var testItem = new TestItem({
             Id: 1,
@@ -356,19 +547,18 @@ describe('ExpertsInside.SharePoint', function() {
           var options = { force: true };
           var result = TestItem.update(testItem, options);
 
-          expect($spRest.buildHttpConfig).to.have.been.calledWith(
-            TestItem,
+          expect(TestItem.$$buildHttpConfig).to.have.been.calledWith(
             'update', {
               item: testItem,
               force: true
             });
           expect(TestItem.$$decorateResult).to.have.been.calledWith(
             testItem,
-            $spRest.buildHttpConfig.firstCall.returnValue
+            TestItem.$$buildHttpConfig.firstCall.returnValue
           );
           expect(result).to.be.equal(TestItem.$$decorateResult.firstCall.returnValue);
 
-          $spRest.buildHttpConfig.restore();
+          TestItem.$$buildHttpConfig.restore();
           TestItem.$$decorateResult.restore();
         });
       });
@@ -410,7 +600,7 @@ describe('ExpertsInside.SharePoint', function() {
         });
 
         it('creates a valid delete request and returns the result', function() {
-          sinon.spy($spRest, 'buildHttpConfig');
+          sinon.spy(TestItem, '$$buildHttpConfig');
           sinon.spy(TestItem, '$$decorateResult');
           var testItem = new TestItem({
             Id: 1,
@@ -421,19 +611,52 @@ describe('ExpertsInside.SharePoint', function() {
           });
           var result = TestItem.delete(testItem);
 
-          expect($spRest.buildHttpConfig).to.have.been.calledWith(
-            TestItem,
+          expect(TestItem.$$buildHttpConfig).to.have.been.calledWith(
             'delete', {
               item: testItem
             });
           expect(TestItem.$$decorateResult).to.have.been.calledWith(
             testItem,
-            $spRest.buildHttpConfig.firstCall.returnValue
+            TestItem.$$buildHttpConfig.firstCall.returnValue
           );
           expect(result).to.be.equal(TestItem.$$decorateResult.firstCall.returnValue);
 
-          $spRest.buildHttpConfig.restore();
+          TestItem.$$buildHttpConfig.restore();
           TestItem.$$decorateResult.restore();
+        });
+      });
+
+      describe('.toJson(item)', function() {
+        it('creates JSON from item', function() {
+          var item = new TestItem({
+            foo: 1
+          });
+          delete item.__metadata;
+
+          expect(TestItem.toJson(item)).to.be.eql('{"foo":1}');
+        });
+
+        it('removes properties starting with $ from the payload', function() {
+          var item = new TestItem({
+            foo: 1,
+            $bar: 2
+          });
+          delete item.__metadata;
+
+          expect(TestItem.toJson(item)).to.be.eql('{"foo":1}');
+          expect(item).to.have.property('$bar');
+        });
+
+        it('removes read only properties from the payload', function() {
+          var item = new TestItem({
+            foo: 1,
+            bar: 2,
+            $$readOnlyFields: ['bar']
+          });
+          delete item.__metadata;
+
+          expect(TestItem.toJson(item)).to.be.eql('{"foo":1}');
+          expect(item).to.have.property('bar');
         });
       });
 
