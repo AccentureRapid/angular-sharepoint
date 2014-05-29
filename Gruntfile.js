@@ -143,5 +143,5 @@ module.exports = function(grunt) {
     'uglify:dist'
   ]);
 
-  grunt.registerTask('release', ['build', 'bump']);
+  grunt.registerTask('release', ['test', 'build', 'bump']);
 };
