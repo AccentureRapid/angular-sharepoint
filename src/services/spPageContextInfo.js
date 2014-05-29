@@ -1,12 +1,21 @@
 /**
  * @ngdoc object
- * @name ExpertsInside.SharePoint.$spPageContextInfo
- * @requires $window, $rootScope
+ * @name ExpertsInside.SharePoint.Core.$spPageContextInfo
+ * @requires $window
+ * @requires $rootScope
  *
  * @description
- * Wraps the global '_spPageContextInfo' object in an angular service
+ * A reference to the documents `_spPageContextInfo` object. While `_spPageContextInfo`
+ * is globally available in JavaScript, it causes testability problems, because
+ * it is a global variable. When referring to it thorugh the `$spPageContextInfo` service,
+ * it may be overridden, removed or mocked for testing.
  *
- * @return {Object} $spPageContextInfo Copy of the global '_spPageContextInfo' object
+ * @example
+ * ```js
+     function Ctrl($scope, $spPageContextInfo) {
+        $scope.userName = $spPageContextInfo.userLoginName
+      }
+ * ```
  */
 angular.module('ExpertsInside.SharePoint.Core')
   .factory('$spPageContextInfo', function($rootScope, $window) {
