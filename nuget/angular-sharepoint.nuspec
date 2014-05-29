@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>angular-sharepoint</id>
+    <title>angular-sharepoint</title>
+    <version>0.2.1</version>
+    <authors>Kevin Mees</authors>
+    <owners>Kevin Mees</owners>
+    <projectUrl>http://ExpertsInside.github.io/angular-sharepoint/</projectUrl>
+    <licenseUrl>https://github.com/ExpertsInside/angular-sharepoint/blob/master/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>SharePoint REST API wrapper for AngularJS</description>
+    <tags>SharePoint AngularJS REST</tags>
+    <dependencies>
+      <dependency id="AngularJS.Core" version="(1.2.10,2)" />
+      <dependency id="ShareCoffee" version="[0.0.13,)" />
+      <dependency id="ShareCoffee.Search" version="" />
+      <dependency id="ShareCoffee.UserProfiles" version="" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="dist\**.*" target="content\Scripts\angular-sharepoint" exclude="dist\bower.json" />
+  </files>
+</package>

@@ -1,0 +1,1 @@
+nuget\nuget.exe pack nuget/angular-sharepoint.nuspec -OutputDirectory nuget -BasePath %CD%
