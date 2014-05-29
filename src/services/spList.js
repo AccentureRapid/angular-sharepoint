@@ -1,8 +1,8 @@
 /**
  * @ngdoc service
- * @name ExpertsInside.SharePoint.$spList
- * @requires ExpertsInside.SharePoint.$spRest
- * @requires ExpertsInside.SharePoint.$spConvert
+ * @name ExpertsInside.SharePoint.List.$spList
+ * @requires ExpertsInside.SharePoint.Core.$spRest
+ * @requires ExpertsInside.SharePoint.Core.$spConvert
  *
  * @description A factory which creates a list item resource object that lets you interact with
  *   SharePoint List Items via the SharePoint REST API.
@@ -200,9 +200,6 @@ angular.module('ExpertsInside.SharePoint.List')
       };
 
       /**
-       * @ngdoc function
-       * @name ExpertsInside.SharePoint.Core.$spList#buildHttpConfig
-       * @methodOf ExpertsInside.SharePoint.Core.$spList
        *
        * @description Builds the http config for the list CRUD actions
        *
@@ -445,7 +442,6 @@ angular.module('ExpertsInside.SharePoint.List')
       };
 
       /**
-       * @ngdoc function
        *
        * @description Create a copy of the item, remove read-only fields
        *   and stringify it.
