@@ -2,7 +2,7 @@ describe('ExpertsInside.SharePoint', function() {
   describe('Service: $spConvert', function() {
     var $spConvert;
 
-    beforeEach(module('ExpertsInside.SharePoint'));
+    beforeEach(module('ExpertsInside.SharePoint.Core'));
     beforeEach(inject(function(_$spConvert_) {
       $spConvert = _$spConvert_;
     }));

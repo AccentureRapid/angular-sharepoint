@@ -3,7 +3,7 @@ describe('ExpertsInside.SharePoint', function() {
     var $spPageContextInfo;
     var _spPageContextInfo;
 
-    beforeEach(module('ExpertsInside.SharePoint'));
+    beforeEach(module('ExpertsInside.SharePoint.Core'));
     beforeEach(inject(function($window) {
       _spPageContextInfo = $window._spPageContextInfo = {
         foo: 'bar'
