@@ -41,10 +41,12 @@ module.exports = function(grunt) {
       options: {
         html5Mode: false,
         title: false,
-        startPage: '/guide/00_installation'
+        startPage: '/guide/00_installation',
+        dest: 'dist-docs'
       },
       api: {
         src: [
+          'docs/api/index.ngdoc',
           'src/sharepoint.js',
           'src/**/*.js',
         ],
@@ -62,7 +64,7 @@ module.exports = function(grunt) {
       docs: {
         options: {
           port: 9002,
-          base: 'docs',
+          base: 'dist-docs',
           open: true,
           keepalive: true
         }

@@ -6,5 +6,5 @@ components
 npm-debug.log
 logs/
 dev.sh
-docs/
+dist-docs/
 nuget/*.nupkg
