@@ -1,0 +1,53 @@
+@ngdoc overview
+@name Using $spList
+@description
+
+# Using `$spList`
+
+`$spList` let's you interact with the SharePoint List REST API in a object oriented,
+`Active Record`'ish way. The `$spList` service dynamically creates a JavaScript class
+(i.e constructor function) with static CRUD operations and instances of that class
+represent the list items
+
+## Creating the class
+Let's start out by creating a `Todo` class that wraps a List with the same title
+in the app web.
+
+```js
+var Todo = $spList('Todo');
+```
+
+Lists from the host web are also supported.
+
+```js
+var Todo = $spList('Todo', {
+  inHostWeb: true
+});
+```
+
+## Simple example
+Exposing the created class as a service, injecting it in a controller, querying the
+list for items that are not (yet) completed and exposing them to the view via `$scope`.
+
+
+```js
+var app = angular.module('myApp', ['ExpertsInside.SharePoint.List']);
+
+app.factory('Todo', function($spList) {
+  return $spList('Todo');
+});
+
+app.controller('MyCtrl', function($scope, $log, Todo) {
+  $scope.todos = Todo.query({
+    select: ['Id', 'Title', 'Completed']
+    filter: 'Completed eq 0'
+  });
+
+  // Doing something after the items are loaded or when an error occured
+  $scope.todos.$promise.then(function(todos) {
+    $log.debug('Todos loaded', todos);
+  }, function(err) {
+    $log.error('Error loading todos', err);
+  });
+});
+```

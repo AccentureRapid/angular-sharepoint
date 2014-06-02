@@ -1,0 +1,63 @@
+@ngdoc overview
+@name Installation
+@description
+
+# Installation
+
+
+## Installing via [Bower](https://github.com/twitter/bower)
+
+You can install the `angular-sharepoint` package using Bower. After
+installing Bower on your machine, simply run on your command line:
+
+```
+$ bower install angular-sharepoint
+```
+
+This will install a package in your configured components folder. You can watch the
+bower package repository [here](https://github.com/ExpertsInside/bower-angular-sharepoint)
+for releases.
+
+
+## Installing via [NuGet](https://nuget.org)
+
+The `angular-sharepoint` is also available via NuGet. Simply run the following
+command on your Package Manager Console inside Visual Studio:
+
+```
+Install-Package angular-sharepoint
+```
+
+or search for `angular-sharepoint` in the NuGet Package Manager.
+This will install the NuGet package in the `Scripts/` folder of your project.
+
+
+## Installing with Git
+
+There are two ways to install `angular-sharepoint` via git.
+You can get the compiled files directly from the bower repository via:
+
+```
+$ git clone git://github.com/ExpertsInside/bower-angular-sharepoint.git
+```
+
+All releases are tagged, so for installing a specific version run
+
+```
+$ git checkout vX.X.X
+```
+
+where `X.X.X` stands for the version.
+
+If you want to compile the sources yourself, you can clone the source repository:
+
+```
+$ git clone git://github.com/ExpertsInside/angular-sharepoint.git
+```
+
+Note that, when installing via Git, the dependencies, namely [AngularJS](http://angularjs.org]
+and [ShareCoffee](http://sharecoffee.github.io) are *not* installed automatically
+and you have to do it yourself.
+
+For instructions on how to get the build and test tools up and running, see the
+[Contribution Guide](#/guide/99_contributing)

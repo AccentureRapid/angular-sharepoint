@@ -1,0 +1,90 @@
+@ngdoc overview
+@name Getting Started
+@description
+
+# Getting Started
+
+## Setup HTML
+To get started, embed `angular-sharepoint` in your HTML document *after* AngularJS is embedded.
+You also need to include [ShareCoffee](http://sharecoffee.github.io) because `angular-sharepoint`
+depends on it. Your HTML should look like this:
+
+<pre>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>i18n app</title>
+
+    <script src="path/to/ShareCoffee.js"></script>
+    <!-- additional ShareCoffee plugins when needed, see below -->
+
+    <script src="path/to/angular.js"></script>
+    <script src="path/to/angular-sharepoint.js"></script>
+    <script src="app.js"></script>
+  </head>
+
+  <body ng-app="myApp">
+
+  </body>
+</html>
+</pre>
+
+## Dependency Declaration
+
+Once included, you need to declare `angular-sharepoint` as a dependency of
+your AngularJS app. There are currently five modules available:
+
+  * `ExpertsInside.SharePoint.Core`: The core module, containing only utility
+    and helper services like `$spRest` and `$spPageContextInfo` used by the
+    other modules. You probably will never need this on its own.
+
+  * `ExpertsInside.SharePoint.List`: The list module, containg the `$spList` service
+    which wraps the SharePoint List REST API.
+
+  * `ExpertsInside.SharePoint.Search`: The search module, containing the `$spSearch` service
+    which wraps the SharePoint Search REST API.
+    <br>**depends on** [ShareCoffee.Search](http://github.com/ShareCoffee/ShareCoffee.Search)
+
+  * `ExpertsInside.SharePoint.User`: The user module, containg the `$spUser` service
+    which wraps the SharePoint User Profiles REST API.
+    <br>**depends on** [ShareCoffee.UserProfiles](http://github.com/ShareCoffee/ShareCoffee.UserProfiles)
+
+  * `ExpertsInside.SharePoint`: The complete package, containing everything above.
+
+After picking the module you want, you need to tell AngularJS that it should load the
+module when declaring your own module:
+
+```js
+// Include everything
+var app = angular.module('myApp', ['ExpertsInside.SharePoint']);
+```
+
+or
+
+```js
+// Only need the list and user service
+var app = angular.module('myApp', ['ExpertsInside.SharePoint.List', 'ExpertsInside.SharePoint.User']);
+```
+
+When declaring the `ExpertsInside.SharePoint.Search` or `ExpertsInside.SharePoint.User` module as
+a dependency you also need to respectively install and reference the
+[ShareCoffee.UserProfiles](http://github.com/ShareCoffee/ShareCoffee.UserProfiles) or
+[ShareCoffee.Search](http://github.com/ShareCoffee/ShareCoffee.Search) plugin in your HTML.
+
+<pre>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>i18n app</title>
+
+    <script src="path/to/ShareCoffee.js"></script>
+    <script src="path/to/ShareCoffee.Search.js"></script>
+    <script src="path/to/ShareCoffee.UserProfiles.js"></script>
+
+    <!-- rest ommitted, see above -->
+  </head>
+</html>
+</pre>
+
+If you forget to include the needed plugings, the module depending on it will log
+a warning to the console when it is loaded.

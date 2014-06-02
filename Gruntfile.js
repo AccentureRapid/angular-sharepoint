@@ -10,7 +10,7 @@ module.exports = function(grunt) {
         tasks: ['test']
       },
       docs: {
-        files: ['src/**/*.js'],
+        files: ['src/**/*.*'],
         tasks: ['ngdocs']
       }
     },
@@ -40,14 +40,21 @@ module.exports = function(grunt) {
     ngdocs: {
       options: {
         html5Mode: false,
-        startPage: '/api/ExpertsInside.SharePoint'
+        title: false,
+        startPage: '/guide/00_installation'
       },
       api: {
         src: [
           'src/sharepoint.js',
-          'src/**/*.js'
+          'src/**/*.js',
         ],
         title: 'API Reference'
+      },
+      guide: {
+        src: [
+          'src/guide/**/*.ngdoc'
+        ],
+        title: 'Guide'
       }
     },
 
@@ -143,5 +150,4 @@ module.exports = function(grunt) {
     'uglify:dist'
   ]);
 
-  grunt.registerTask('release', ['test', 'build', 'bump']);
 };
