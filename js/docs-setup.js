@@ -1,6 +1,7 @@
 NG_DOCS={
   "sections": {
-    "api": "API Reference"
+    "api": "API Reference",
+    "guide": "Guide"
   },
   "pages": [
     {
@@ -56,13 +57,59 @@ NG_DOCS={
       "moduleName": "ExpertsInside.SharePoint.List",
       "shortDescription": "A factory which creates a list item resource object that lets you interact with",
       "keywords": "$expand $filter $http $orderby $select $skip $sort $spconvert $splist $sprest $top accept accepting action actions addnamedquery api array based behaviors bytitle call caution changes check class completed concurrent core create creates custom default defined defining delete deletes details empty eq error etag excluded existing exlcuded expertsinside factory field filter foo footodo force function hash high-level instance interact item items js level list listoptions low methods names object optional options overridden overwrites parameter parameters passed place prefixing properties provide queries query readonlyfields request resource rest retrieve returned returns save saving server service set sharepoint single singleresult string supported supports throws title todo todos true uncompleted uncompletedtodos update updates var"
+    },
+    {
+      "section": "guide",
+      "id": "index",
+      "shortName": "Guide",
+      "type": "overview",
+      "moduleName": "Guide",
+      "shortDescription": "angular-sharepoint Guide",
+      "keywords": "angular-sharepoint guide overview"
+    },
+    {
+      "section": "guide",
+      "id": "00_installation",
+      "shortName": "Installation",
+      "type": "overview",
+      "moduleName": "Installation",
+      "shortDescription": "Installation",
+      "keywords": "angular-sharepoint automatically bower build checkout clone command compile compiled components configured console dependencies directly files folder git github guide inside install install-package installation installed installing instructions io machine manager note nuget org overview package project releases repository running scripts search simply source sources specific stands studio tagged test tools version visual vx watch ways"
+    },
+    {
+      "section": "guide",
+      "id": "01_getting-started",
+      "shortName": "Getting Started",
+      "type": "overview",
+      "moduleName": "Getting Started",
+      "shortDescription": "Getting Started",
+      "keywords": "$splist $sppagecontextinfo $sprest $spsearch $spuser additional angular angular-sharepoint angularjs api app charset complete console containg core currently declaration declare declaring dependency depending depends document embed embedded expertsinside forget github guide helper html include included install io js list load loaded log module modules myapp needed ng-app ommitted overview package path picking plugin plugings plugins profiles reference rest search service services setup sharecoffee sharepoint src started user userprofiles utf-8 utility var warning wraps"
+    },
+    {
+      "section": "guide",
+      "id": "10_using-spList",
+      "shortName": "Using $spList",
+      "type": "overview",
+      "moduleName": "Using $spList",
+      "shortDescription": "Using $spList",
+      "keywords": "$log $promise $scope $splist active angular api app class completed controller created creates creating crud debug dynamically eq err error example expertsinside exposing factory filter function guide host inhostweb injecting instances interact ish items javascript js list lists loaded loading module myapp myctrl object occured operations oriented overview query querying record represent rest return select service sharepoint simple start static supported title todo todos true var view web wraps"
+    },
+    {
+      "section": "guide",
+      "id": "99_contributing",
+      "shortName": "Contributing",
+      "type": "overview",
+      "moduleName": "Contributing",
+      "shortDescription": "Contributing",
+      "keywords": "contributing dependencies dev guide installing overview"
     }
   ],
   "apis": {
-    "api": true
+    "api": true,
+    "guide": false
   },
   "html5Mode": false,
-  "startPage": "/api/ExpertsInside.SharePoint",
+  "startPage": "/guide/00_installation",
   "scripts": [
     "angular.min.js"
   ]
