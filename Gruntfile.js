@@ -134,6 +134,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('dev', function() {
     grunt.config.set(['jshint', 'options', 'force'], true);
+    grunt.config.set(['karma', 'options', 'force'], true);
 
     grunt.task.run([
       'test',
