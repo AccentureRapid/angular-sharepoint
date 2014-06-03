@@ -1,7 +1,6 @@
 /**
  * @ngdoc service
  * @name ExpertsInside.SharePoint.Core.$spRest
- * @requires $log
  *
  * @description
  * Utility functions when interacting with the SharePoint REST API

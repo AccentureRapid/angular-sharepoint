@@ -1,8 +1,8 @@
 /**
  * @ngdoc service
- * @name ExpertsInside.SharePoint.$spSearch
- * @requires ExpertsInside.SharePoint.$spRest
- * @requires ExpertsInside.SharePoint.$spConvert
+ * @name ExpertsInside.SharePoint.Search.$spSearch
+ * @requires ExpertsInside.SharePoint.Core.$spRest
+ * @requires ExpertsInside.SharePoint.Core.$spConvert
  *
  * @description Query the Search via REST API
  *

@@ -1,8 +1,8 @@
 /**
  * @ngdoc service
- * @name ExpertsInside.SharePoint.$spUser
- * @requires ExpertsInside.SharePoint.$spRest
- * @requires ExpertsInside.SharePoint.$spConvert
+ * @name ExpertsInside.SharePoint.User.$spUser
+ * @requires ExpertsInside.SharePoint.Core.$spRest
+ * @requires ExpertsInside.SharePoint.Core.$spConvert
  *
  * @description Load user information via UserProfiles REST API
  *
