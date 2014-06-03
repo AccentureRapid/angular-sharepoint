@@ -42,7 +42,8 @@ module.exports = function(grunt) {
         html5Mode: false,
         title: false,
         startPage: '/guide/00_installation',
-        dest: 'dist-docs'
+        dest: 'dist-docs',
+        styles: ['docs/styles/custom.css']
       },
       api: {
         src: [
