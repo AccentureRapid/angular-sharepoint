@@ -9,12 +9,6 @@ is globally available in JavaScript, it causes testability problems, because
 it is a global variable. When referring to it thorugh the <code>$spPageContextInfo</code> service,
 it may be overridden, removed or mocked for testing.</p>
 </div></div>
-<h2 id="dependencies">Dependencies</h2>
-<ul class="dependencies"><li><code ng:non-bindable=""><a href="#/api/ng.$window">$window</a></code>
-</li>
-<li><code ng:non-bindable=""><a href="#/api/ng.$rootScope">$rootScope</a></code>
-</li>
-</ul>
 <h2 id="example">Example</h2>
 <div class="example"><div class="expertsinside-sharepoint-core-sppagecontextinfo-page"><pre><code class="lang-js">function Ctrl($scope, $spPageContextInfo) {
    $scope.userName = $spPageContextInfo.userLoginName
