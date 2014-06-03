@@ -42,7 +42,8 @@ module.exports = function(grunt) {
         html5Mode: false,
         title: false,
         startPage: '/guide/00_installation',
-        dest: 'dist-docs'
+        dest: 'dist-docs',
+        styles: ['docs/styles/custom.css']
       },
       api: {
         src: [
@@ -133,6 +134,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('dev', function() {
     grunt.config.set(['jshint', 'options', 'force'], true);
+    grunt.config.set(['karma', 'options', 'force'], true);
 
     grunt.task.run([
       'test',

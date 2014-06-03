@@ -1,8 +1,8 @@
 /**
  * @ngdoc service
- * @name ExpertsInside.SharePoint.$spSearch
- * @requires ExpertsInside.SharePoint.$spRest
- * @requires ExpertsInside.SharePoint.$spConvert
+ * @name ExpertsInside.SharePoint.Search.$spSearch
+ * @requires ExpertsInside.SharePoint.Core.$spRest
+ * @requires ExpertsInside.SharePoint.Core.$spConvert
  *
  * @description Query the Search via REST API
  *
@@ -13,7 +13,7 @@ angular.module('ExpertsInside.SharePoint.Search')
     var $spSearchMinErr = angular.$$minErr('$spSearch');
 
     var search = {
-      $createQueryProperties: function(searchType, properties) {
+      $$createQueryProperties: function(searchType, properties) {
         var queryProperties;
         switch(searchType) {
         case 'postquery':
@@ -64,7 +64,7 @@ angular.module('ExpertsInside.SharePoint.Search')
         var searchType = properties.searchType;
         delete properties.searchType;
 
-        var queryProperties = search.$createQueryProperties(searchType, properties);
+        var queryProperties = search.$$createQueryProperties(searchType, properties);
         var httpConfig = ShareCoffee.REST.build.read.for.angularJS(queryProperties);
         httpConfig.transformResponse = $spRest.transformResponse;
 

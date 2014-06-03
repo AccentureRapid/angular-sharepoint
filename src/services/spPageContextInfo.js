@@ -1,8 +1,6 @@
 /**
  * @ngdoc object
  * @name ExpertsInside.SharePoint.Core.$spPageContextInfo
- * @requires $window
- * @requires $rootScope
  *
  * @description
  * A reference to the documents `_spPageContextInfo` object. While `_spPageContextInfo`
