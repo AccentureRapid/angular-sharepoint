@@ -1,3 +1,11 @@
+/**
+ * @ngdoc object
+ * @name ExpertsInside.SharePoint.Core.$spConvert
+ *
+ * @description The `$spConvert` service exposes functions
+ *  that convert (arrays of) EDM datatypes to javascript
+ *  values or objects and the search results containing them.
+ */
 angular.module('ExpertsInside.SharePoint.Core')
   .factory('$spConvert', function() {
     'use strict';
