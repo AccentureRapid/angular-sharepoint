@@ -2,22 +2,15 @@
 
 /**
  * @ngdoc overview
- * @name ExpertsInside.SharePoint
+ * @name ExpertsInside.SharePoint.Core
  *
  * @description
  *
- * # ExpertsInside.SharePoint
+ * # ExpertsInside.SharePoint.Core
  *
- * The `ExpertsInside.SharePoint` module provides a high level abstraction for
- * the SharePoint 2013 REST API.
- *
- *
- * ## $spList
- *
- * Interaction with SharePoint Lists similiar to $ngResource.
- * See {@link ExpertsInside.SharePoint.$spList `$spList`} for usage.
+ * The ExpertsInside.SharePoint.Core module contains utility services
+ * used by the other modules.
  */
-
 angular.module('ExpertsInside.SharePoint.Core', ['ng'])
   .run(function($window, $log) {
     if (angular.isUndefined($window.ShareCoffee)) {
@@ -26,8 +19,36 @@ angular.module('ExpertsInside.SharePoint.Core', ['ng'])
     }
   });
 
+/**
+ * @ngdoc overview
+ * @name ExpertsInside.SharePoint.List
+ * @requires ExpertsInside.SharePoint.Core
+ *
+ * @description
+ *
+ * # ExpertsInside.SharePoint.List
+ *
+ * The ExpertsInside.SharePoint.List module contains the
+ * {@link ExpertsInside.SharePoint.List.$spList `$spList`} service,
+ * a wrapper for the List REST API
+ */
 angular.module('ExpertsInside.SharePoint.List', ['ExpertsInside.SharePoint.Core']);
 
+/**
+ * @ngdoc overview
+ * @name ExpertsInside.SharePoint.Search
+ * @requires ExpertsInside.SharePoint.Core
+ *
+ * @description
+ *
+ * # ExpertsInside.SharePoint.Search
+ *
+ * The ExpertsInside.SharePoint.Search module contains the
+ * {@link ExpertsInside.SharePoint.Search.$spSearch `$spSearch`} service,
+ * a wrapper for the Search REST API.
+ *
+ * Include **ShareCoffee.Search.js** when using this module !
+ */
 angular.module('ExpertsInside.SharePoint.Search', ['ExpertsInside.SharePoint.Core'])
   .run(function($window, $log) {
     if (angular.isUndefined($window.ShareCoffee) || angular.isUndefined($window.ShareCoffee.Search)) {
@@ -36,6 +57,21 @@ angular.module('ExpertsInside.SharePoint.Search', ['ExpertsInside.SharePoint.Cor
     }
   });
 
+/**
+ * @ngdoc overview
+ * @name ExpertsInside.SharePoint.User
+ * @requires ExpertsInside.SharePoint.Core
+ *
+ * @description
+ *
+ * # ExpertsInside.SharePoint.User
+ *
+ * The ExpertsInside.SharePoint.User module contains the
+ * {@link ExpertsInside.SharePoint.User.$spUser `$spUser`} service,
+ * a wrapper for the User Profiles REST API
+ *
+ * Include **ShareCoffee.UserProfiles.js** when using this module !
+ */
 angular.module('ExpertsInside.SharePoint.User', ['ExpertsInside.SharePoint.Core'])
   .run(function($window, $log) {
     if (angular.isUndefined($window.ShareCoffee) || angular.isUndefined($window.ShareCoffee.UserProfiles)) {
@@ -44,6 +80,22 @@ angular.module('ExpertsInside.SharePoint.User', ['ExpertsInside.SharePoint.Core'
     }
   });
 
+
+/**
+ * @ngdoc overview
+ * @name ExpertsInside.SharePoint
+ * @requires ExpertsInside.SharePoint.Core
+ * @requires ExpertsInside.SharePoint.List
+ * @requires ExpertsInside.SharePoint.Search
+ * @requires ExpertsInside.SharePoint.User
+ *
+ * @description
+ *
+ * # ExpertsInside.SharePoint
+ *
+ * The complete `angular-sharepoint` experience.
+ *
+ */
 angular.module('ExpertsInside.SharePoint', [
   'ExpertsInside.SharePoint.Core',
   'ExpertsInside.SharePoint.List',
