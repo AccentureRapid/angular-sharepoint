@@ -200,8 +200,8 @@ angular.module('ExpertsInside.SharePoint.List')
       };
 
       /**
-       *
        * @description Builds the http config for the list CRUD actions
+       * @private
        *
        * @param {Object} list List constructor
        * @param {string} action CRUD action
