@@ -48,4 +48,20 @@ describe('ExpertsInside.SharePoint', function() {
       $log.warn.restore();
     }));
   });
+
+  describe('when SP.ClientContext is not available', function() {
+    beforeEach(inject(function($window) {
+      $window.SP = {};
+    }));
+    it('the JSOM module logs a warning when loaded', inject(function($injector, $log) {
+      sinon.spy($log, "warn");
+      var runBlocks = angular.module('ExpertsInside.SharePoint.JSOM')._runBlocks;
+
+      $injector.invoke(runBlocks[0]);
+
+      expect($log.warn).to.have.been.calledWithMatch(/SharePoint Javascript Runtime/);
+
+      $log.warn.restore();
+    }));
+  });
 });
