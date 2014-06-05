@@ -10,7 +10,10 @@ module.exports = function(grunt) {
         tasks: ['test']
       },
       docs: {
-        files: ['src/**/*.*'],
+        files: [
+          'src/**/*.*',
+          'docs/**/*.*'
+        ],
         tasks: ['ngdocs']
       }
     },
@@ -55,7 +58,7 @@ module.exports = function(grunt) {
       },
       guide: {
         src: [
-          'src/guide/**/*.ngdoc'
+          'docs/guide/**/*.ngdoc'
         ],
         title: 'Guide'
       }
