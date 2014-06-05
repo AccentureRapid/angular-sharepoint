@@ -15,8 +15,8 @@ angular.module('ExpertsInside.SharePoint.Search')
     var search = {
 
       /**
-       * Wrap given properties in a query properties object based on search type
        * @private
+       * Wrap given properties in a query properties object based on search type
        */
       $$createQueryProperties: function(searchType, properties) {
         var queryProperties;
@@ -36,8 +36,8 @@ angular.module('ExpertsInside.SharePoint.Search')
       },
 
       /**
-       * Decorate the result with $promise and $resolved
        * @private
+       * Decorate the result with $promise and $resolved
        */
       $decorateResult: function(result, httpConfig) {
         if (angular.isUndefined(result.$resolved)) {
@@ -68,6 +68,10 @@ angular.module('ExpertsInside.SharePoint.Search')
       },
 
       /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.Search.$spSearch#query
+       * @methodOf ExpertsInside.SharePoint.Search.$spSearch
+       *
        * @description Perform a search query based on given properties
        *
        * @param {Object} properties query properties
@@ -90,6 +94,10 @@ angular.module('ExpertsInside.SharePoint.Search')
       },
 
       /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.Search.$spSearch#postquery
+       * @methodOf ExpertsInside.SharePoint.Search.$spSearch
+       *
        * @description Perform a search postquery based on given properties
        *
        * @param {Object} properties query properties
@@ -102,6 +110,10 @@ angular.module('ExpertsInside.SharePoint.Search')
       },
 
       /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.Search.$spSearch#suggest
+       * @methodOf ExpertsInside.SharePoint.Search.$spSearch
+       *
        * @description Perform a search suggest based on given properties
        *
        * @param {Object} properties query properties
