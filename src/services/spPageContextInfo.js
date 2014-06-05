@@ -8,6 +8,9 @@
  * it is a global variable. When referring to it thorugh the `$spPageContextInfo` service,
  * it may be overridden, removed or mocked for testing.
  *
+ * See {@link http://tjendarta.wordpress.com/2013/07/16/_sppagecontextinfo-properties-value/ _spPageContextInfo Properties}
+ * for more information.
+ *
  * @example
  * ```js
      function Ctrl($scope, $spPageContextInfo) {
