@@ -86,7 +86,8 @@ module.exports = function(grunt) {
 
     clean: {
       dist: [
-        'dist/*.{js,map}'
+        'dist/*.{js,map}',
+        'dist-docs/*'
       ],
       tmp: ['.tmp']
     },
