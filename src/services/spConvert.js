@@ -18,6 +18,18 @@ angular.module('ExpertsInside.SharePoint.Core')
 
     var $spConvertMinErr = angular.$$minErr('$spConvert');
     var $spConvert = {
+      /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.Core.$spConvert#spKeyValue
+       * @methodOf ExpertsInside.SharePoint.Core.$spConvert
+       *
+       * @description Convert a SP.KeyValue object to a their native
+       *   Javascript value.
+       *
+       * @param {Object} keyValue SP.KeyValue instance
+       *
+       * @return {*} converted value
+       */
       spKeyValue: function(keyValue) {
         assertType("SP.KeyValue", keyValue);
         var value = keyValue.Value;
@@ -38,6 +50,18 @@ angular.module('ExpertsInside.SharePoint.Core')
         }
       },
 
+      /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.Core.$spConvert#spKeyValueArray
+       * @methodOf ExpertsInside.SharePoint.Core.$spConvert
+       *
+       * @description Convert an array of SP.KeyValue objects to an array
+       *   of native Javascript values.
+       *
+       * @param {Array.<SP.KeyValue>} keyValues Array of SP.KeyValue objects
+       *
+       * @return {Array} Array of converted values
+       */
       spKeyValueArray: function(keyValues) {
         var result = {};
 
@@ -50,6 +74,18 @@ angular.module('ExpertsInside.SharePoint.Core')
         return result;
       },
 
+      /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.Core.$spConvert#spSimpleDateRow
+       * @methodOf ExpertsInside.SharePoint.Core.$spConvert
+       *
+       * @description Convert an SP.SimpleDateRow object to an array
+       *   of native Javascript values.
+       *
+       * @param {Object} row SP.SimpleDataRow object
+       *
+       * @return {Array} Array of cell values
+       */
       spSimpleDataRow: function(row) {
         assertType("SP.SimpleDataRow", row);
         var cells = row.Cells.results || [];
@@ -57,6 +93,18 @@ angular.module('ExpertsInside.SharePoint.Core')
         return $spConvert.spKeyValueArray(cells);
       },
 
+      /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.Core.$spConvert#spSimpleDateTable
+       * @methodOf ExpertsInside.SharePoint.Core.$spConvert
+       *
+       * @description Convert an SP.SimpleDateTable object to an array (rows)
+       *   of arrays (cells).
+       *
+       * @param {Object} row SP.SimpleDataTable object
+       *
+       * @return {Array.<Array>} Array of arrays of converted values
+       */
       spSimpleDataTable: function(table) {
         assertType("SP.SimpleDataTable", table);
         var result = [];
@@ -70,6 +118,22 @@ angular.module('ExpertsInside.SharePoint.Core')
         return result;
       },
 
+      /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.Core.$spConvert#searchResult
+       * @methodOf ExpertsInside.SharePoint.Core.$spConvert
+       *
+       * @description Convert a complete Microsoft.Office.Server.Search.REST.SearchResult
+       *   to a  more usable data structure.
+       *
+       *    - camelCase all properties
+       *    - convert arrays of SP.KeyValue objects
+       *    - convert SP.SimpleDataTable objects
+       *
+       * @param {Object} searchResult REST Search result
+       *
+       * @return {Object} Converted search result
+       */
       searchResult: function(searchResult) {
         assertType("Microsoft.Office.Server.Search.REST.SearchResult", searchResult);
         var primaryQueryResult = searchResult.PrimaryQueryResult;
@@ -91,11 +155,37 @@ angular.module('ExpertsInside.SharePoint.Core')
         return result;
       },
 
+      /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.Core.$spConvert#suggestResult
+       * @methodOf ExpertsInside.SharePoint.Core.$spConvert
+       *
+       * @description **NYI**
+       *
+       * @param {Object} suggestResult REST Search Suggest result
+       *
+       * @return {Object} REST Search Suggest result
+       */
       suggestResult: function(suggestResult) {
         // TODO implement
         return suggestResult;
       },
 
+      /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.Core.$spConvert#userResult
+       * @methodOf ExpertsInside.SharePoint.Core.$spConvert
+       *
+       * @description Convert a SP.UserProfiles.PersonProperties object
+       *   to a more usable data structure.
+       *
+       *    - camelCase all properties
+       *    - convert arrays of SP.KeyValue objects
+       *
+       * @param {Object} userResult REST User Profiles result
+       *
+       * @return {Object} Converted user profile
+       */
       userResult: function(userResult) {
         assertType("SP.UserProfiles.PersonProperties", userResult);
 
@@ -114,6 +204,17 @@ angular.module('ExpertsInside.SharePoint.Core')
         return result;
       },
 
+      /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.Core.$spConvert#capitalize
+       * @methodOf ExpertsInside.SharePoint.Core.$spConvert
+       *
+       * @description Capitalize a string
+       *
+       * @param {string} str string
+       *
+       * @return {string} capitalied string
+       */
       capitalize: function(str) {
         if (angular.isUndefined(str) || str === null) {
           return null;

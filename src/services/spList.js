@@ -18,75 +18,17 @@
  *   - **`readOnlyFields`** - {Array.{string}=} - Array of field names that will be exlcuded
  *   from the request when saving an item back to SharePoint
  *   - **`query`** - {Object=} - Default query parameter used by each action. Can be
- *   overridden per action. See {@link ExpertsInside.SharePoint.$spList query} for details.
+ *   overridden per action. Prefixing them with `$` is optional. Valid keys:
+ *       - **`$select`**
+ *       - **`$filter`**
+ *       - **`$orderby`**
+ *       - **`$top`**
+ *       - **`$skip`**
+ *       - **`$expand`**
+ *       - **`$sort`**
  *
- * @return {Object} A list item "class" object with methods for the default set of resource actions.
- *
- * # List Item class
- *
- * All query parameters accept an object with the REST API query string parameters. Prefixing them with $ is optional.
- *   - **`$select`**
- *   - **`$filter`**
- *   - **`$orderby`**
- *   - **`$top`**
- *   - **`$skip`**
- *   - **`$expand`**
- *   - **`$sort`**
- *
- * ## Methods
- *
- *   - **`get`** - {function(id, query)} - Get a single list item by id.
- *   - **`query`** - {function(query, options)} - Query the list for list items and returns the list
- *     of query results.
- *     `options` supports the following properties:
- *       - **`singleResult`** - {boolean} - Returns and empty object instead of an array. Throws an
- *         error when more than one item is returned by the query.
- *   - **`create`** - {function(item, query)} - Creates a new list item. Throws an error when item is
- *     not an instance of the list item class.
- *   - **`update`** - {function(item, options)} - Updates an existing list item. Throws an error when
- *     item is not an instance of the list item class. Supported options are:
- *       - **`query`** - {Object} - Query parameters for the REST call
- *       - **`force`** - {boolean} - If true, the etag (version) of the item is excluded from the
- *         request and the server does not check for concurrent changes to the item but just 
- *         overwrites it. Use with caution.
- *   - **`save`** - {function(item, options)} - Either creates or updates the item based on its state.
- *     `options` are passed down to `update` and and `options.query` are passed down to `create`.
- *   - **`delete`** - {function(item)} - Deletes the list item. Throws an error when item is not an
- *     instance of the list item class.
- *
- * @example
- *
- * # Todo List
- *
- * ## Defining the Todo class
- * ```js
-     var Todo = $spList('Todo', {
-       query: ['Id', 'Title', 'Completed']
-     );
- * ```
- *
- * ## Queries
- *
- * ```js
-     // We can retrieve all list items from the server.
-     var todos = Todo.query();
-
-    // Or retrieve only the uncompleted todos.
-    var todos = Todo.query({
-      filter: 'Completed eq 0'
-    });
-
-    // Queries that are used in more than one place or those accepting a parameter can be defined 
-    // as a function on the class
-    Todo.addNamedQuery('uncompleted', function() {
-      filter: "Completed eq 0"
-    });
-    var uncompletedTodos = Todo.queries.uncompleted();
-    Todo.addNamedQuery('byTitle', function(title) {
-      filter: "Title eq " + title
-    });
-    var fooTodo = Todo.queries.byTitle('Foo');
- * ```
+ * @return {Object} A dynamically created  class constructor for list items.
+ *   See {@link ExpertsInside.SharePoint.List.$spList+ListItem $spList+ListItem} for details.
  */
 angular.module('ExpertsInside.SharePoint.List')
   .factory('$spList', function($spRest, $http, $spConvert) {
@@ -112,6 +54,16 @@ angular.module('ExpertsInside.SharePoint.List')
       var listItemType = 'SP.Data.' + normalizedTitle + 'ListItem';
 
       // Constructor function for List dynamically generated List class
+      /**
+       * @ngdoc service
+       * @name ExpertsInside.SharePoint.List.$spList+ListItem
+       *
+       * @description The dynamically created List Item class, created by
+       *   {@link ExpertsInside.SharePoint.List.$spList $spList}. 
+       *
+       *   Note that all methods prefixed with a `$` are *instance* (or prototype) methods.
+       *   Ngdoc doesn't seem to have out-of-box support for those.
+       */
       var List = (function() {
         // jshint evil:true, validthis:true
         function __List__(data) {
@@ -129,33 +81,33 @@ angular.module('ExpertsInside.SharePoint.List')
       })();
 
       /**
-       * Title of the list
        * @private
+       * Title of the list
        */
       List.$$title = title;
 
       /**
-       * Allowed query parameters
        * @private
+       * Allowed query parameters
        */
       List.$$queryParameterWhitelist =
         ['$select', '$filter', '$orderby', '$top', '$skip', '$expand', '$sort'];
 
       /**
-       * Web relative list url
        * @private
+       * Web relative list url
        */
       List.$$relativeUrl = "web/lists/getByTitle('" + List.$$title + "')";
 
       /**
-       * Is this List in the host web?
        * @private
+       * Is this List in the host web?
        */
       List.$$inHostWeb = !!listOptions.inHostWeb;
 
       /**
-       * Decorate the result with $promise and $resolved
        * @private
+       * Decorate the result with $promise and $resolved
        */
       List.$$decorateResult = function(result, httpConfig) {
         if (!angular.isArray(result) && !(result instanceof List)) {
@@ -200,8 +152,8 @@ angular.module('ExpertsInside.SharePoint.List')
       };
 
       /**
-       * @description Builds the http config for the list CRUD actions
        * @private
+       * @description Builds the http config for the list CRUD actions
        *
        * @param {Object} list List constructor
        * @param {string} action CRUD action
@@ -286,6 +238,9 @@ angular.module('ExpertsInside.SharePoint.List')
       };
 
       /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.List.$spList+ListItem#get
+       * @methodOf ExpertsInside.SharePoint.List.$spList+ListItem
        *
        * @description Get a single list item by id
        *
@@ -308,6 +263,9 @@ angular.module('ExpertsInside.SharePoint.List')
       };
 
       /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.List.$spList+ListItem#query
+       * @methodOf ExpertsInside.SharePoint.List.$spList+ListItem
        *
        * @description Query for the list for items
        *
@@ -329,8 +287,11 @@ angular.module('ExpertsInside.SharePoint.List')
       };
 
       /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.List.$spList+ListItem#create
+       * @methodOf ExpertsInside.SharePoint.List.$spList+ListItem
        *
-       * @description Save a new list item on the server.
+       * @description Create a new list item on the server.
        *
        * @param {Object=} item Query properties
        * @param {Object=} options Additional query properties.
@@ -354,6 +315,9 @@ angular.module('ExpertsInside.SharePoint.List')
       };
 
       /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.List.$spList+ListItem#update
+       * @methodOf ExpertsInside.SharePoint.List.$spList+ListItem
        *
        * @description Update an existing list item on the server.
        *
@@ -379,6 +343,9 @@ angular.module('ExpertsInside.SharePoint.List')
       };
 
       /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.List.$spList+ListItem#save
+       * @methodOf ExpertsInside.SharePoint.List.$spList+ListItem
        *
        * @description Update or create a list item on the server.
        *
@@ -397,6 +364,9 @@ angular.module('ExpertsInside.SharePoint.List')
       };
 
       /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.List.$spList+ListItem#delete
+       * @methodOf ExpertsInside.SharePoint.List.$spList+ListItem
        *
        * @description Delete a list item on the server.
        *
@@ -414,11 +384,18 @@ angular.module('ExpertsInside.SharePoint.List')
       };
 
       /**
-       * Named queries hash
+       * @ngdoc object
+       * @name ExpertsInside.SharePoint.List.$spList+ListItem#queries
+       * @propertyOf ExpertsInside.SharePoint.List.$spList+ListItem
+       *
+       * @description Object that holds the created named queries
        */
       List.queries = { };
 
       /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.List.$spList+ListItem#addNamedQuery
+       * @methodOf ExpertsInside.SharePoint.List.$spList+ListItem
        *
        * @description Add a named query to the queries hash
        *
@@ -442,13 +419,16 @@ angular.module('ExpertsInside.SharePoint.List')
       };
 
       /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.List.$spList+ListItem#toJson
+       * @methodOf ExpertsInside.SharePoint.List.$spList+ListItem
        *
        * @description Create a copy of the item, remove read-only fields
        *   and stringify it.
        *
        * @param {Object} item list item
        *
-       * @returns {string} json representation
+       * @returns {string} JSON representation
        */
       List.toJson = function(item) {
         var copy = angular.extend({}, item);
@@ -461,6 +441,10 @@ angular.module('ExpertsInside.SharePoint.List')
       };
 
       List.prototype = {
+        /**
+         * @private
+         * Properties stripped from JSON when saving an item to avoid server errors.
+         */
         $$readOnlyFields: angular.extend([
           'AttachmentFiles',
           'Attachments',
@@ -483,16 +467,66 @@ angular.module('ExpertsInside.SharePoint.List')
           'ParentList',
           'RoleAssignments'
         ], listOptions.readOnlyFields),
+        /**
+         * @private
+         * Default query properties
+         */
         $$queryDefaults: angular.extend({}, listOptions.query),
+        /**
+         * @ngdoc method
+         * @name ExpertsInside.SharePoint.List.$spList+ListItem#$save
+         * @methodOf ExpertsInside.SharePoint.List.$spList+ListItem
+         *
+         * @description **Instance method**
+         *
+         * Create or update the list item on the server.
+         *
+         * @param {Object=} options Options passed to List.Item.create or ListItem.update.
+         *
+         * @return {Object} Promise
+         */
         $save: function(options) {
           return List.save(this, options).$promise;
         },
+        /**
+         * @ngdoc method
+         * @name ExpertsInside.SharePoint.List.$spList+ListItem#$delete
+         * @methodOf ExpertsInside.SharePoint.List.$spList+ListItem
+         *
+         * @description **Instance method**
+         *
+         * Delete this list item on the server.
+         *
+         * @return {Object} Promise
+         */
         $delete: function() {
           return List.delete(this).$promise;
         },
+        /**
+         * @ngdoc method
+         * @name ExpertsInside.SharePoint.List.$spList+ListItem#$isNew
+         * @methodOf ExpertsInside.SharePoint.List.$spList+ListItem
+         *
+         * @description **Instance method**
+         *
+         * Check if an item is already persisted on the server
+         *
+         * @return {bool} `true` when already persisted, `false` otherwhise
+         */
         $isNew: function() {
           return angular.isUndefined(this.__metadata) || angular.isUndefined(this.__metadata.id);
         },
+        /**
+         * @ngdoc method
+         * @name ExpertsInside.SharePoint.List.$spList+ListItem#$toJson
+         * @methodOf ExpertsInside.SharePoint.List.$spList+ListItem
+         *
+         * @description **Instance method**
+         *
+         * JSON representation of the item
+         *
+         * @return {string} JSON representation
+         */
         $toJson: function() {
           return List.toJson(this);
         }
