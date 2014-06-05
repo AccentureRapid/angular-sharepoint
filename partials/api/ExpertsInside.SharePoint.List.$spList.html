@@ -24,68 +24,18 @@ supported:</p>
 <li><strong><code>readOnlyFields</code></strong> - {Array.{string}=} - Array of field names that will be exlcuded
 from the request when saving an item back to SharePoint</li>
 <li><strong><code>query</code></strong> - {Object=} - Default query parameter used by each action. Can be
-overridden per action. See <a href="#/api/ExpertsInside.SharePoint.$spList">query</a> for details.</li>
-</ul>
-</div></td></tr></tbody></table><h4 id="usage_returns">Returns</h4><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-page"><p>A list item &quot;class&quot; object with methods for the default set of resource actions.</p>
-<h3 id="usage_list-item-class">List Item class</h3>
-<p>All query parameters accept an object with the REST API query string parameters. Prefixing them with $ is optional.
-  - <strong><code>$select</code></strong>
-  - <strong><code>$filter</code></strong>
-  - <strong><code>$orderby</code></strong>
-  - <strong><code>$top</code></strong>
-  - <strong><code>$skip</code></strong>
-  - <strong><code>$expand</code></strong>
-  - <strong><code>$sort</code></strong></p>
-<h4 id="usage_list-item-class_methods">Methods</h4>
-<ul>
-<li><strong><code>get</code></strong> - {function(id, query)} - Get a single list item by id.</li>
-<li><strong><code>query</code></strong> - {function(query, options)} - Query the list for list items and returns the list
-of query results.
-<code>options</code> supports the following properties:<ul>
-<li><strong><code>singleResult</code></strong> - {boolean} - Returns and empty object instead of an array. Throws an
-error when more than one item is returned by the query.</li>
+overridden per action. Prefixing them with <code>$</code> is optional. Valid keys:<ul>
+<li><strong><code>$select</code></strong></li>
+<li><strong><code>$filter</code></strong></li>
+<li><strong><code>$orderby</code></strong></li>
+<li><strong><code>$top</code></strong></li>
+<li><strong><code>$skip</code></strong></li>
+<li><strong><code>$expand</code></strong></li>
+<li><strong><code>$sort</code></strong></li>
 </ul>
 </li>
-<li><strong><code>create</code></strong> - {function(item, query)} - Creates a new list item. Throws an error when item is
-not an instance of the list item class.</li>
-<li><strong><code>update</code></strong> - {function(item, options)} - Updates an existing list item. Throws an error when
-item is not an instance of the list item class. Supported options are:<ul>
-<li><strong><code>query</code></strong> - {Object} - Query parameters for the REST call</li>
-<li><strong><code>force</code></strong> - {boolean} - If true, the etag (version) of the item is excluded from the
-request and the server does not check for concurrent changes to the item but just 
-overwrites it. Use with caution.</li>
 </ul>
-</li>
-<li><strong><code>save</code></strong> - {function(item, options)} - Either creates or updates the item based on its state.
-<code>options</code> are passed down to <code>update</code> and and <code>options.query</code> are passed down to <code>create</code>.</li>
-<li><strong><code>delete</code></strong> - {function(item)} - Deletes the list item. Throws an error when item is not an
-instance of the list item class.</li>
-</ul>
+</div></td></tr></tbody></table><h4 id="usage_returns">Returns</h4><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-page"><p>A dynamically created  class constructor for list items.
+See <a href="#/api/ExpertsInside.SharePoint.List.$spList+ListItem">$spList+ListItem</a> for details.</p>
 </div></td></tr></table></div>
-<h2 id="example">Example</h2>
-<div class="example"><div class="expertsinside-sharepoint-list-splist-page"><h3 id="example_todo-list">Todo List</h3>
-<h4 id="example_todo-list_defining-the-todo-class">Defining the Todo class</h4>
-<pre><code class="lang-js">     var Todo = $spList(&#39;Todo&#39;, {
-       query: [&#39;Id&#39;, &#39;Title&#39;, &#39;Completed&#39;]
-     );</code></pre>
-<h4 id="example_todo-list_queries">Queries</h4>
-<pre><code class="lang-js">     // We can retrieve all list items from the server.
-     var todos = Todo.query();
-
-    // Or retrieve only the uncompleted todos.
-    var todos = Todo.query({
-      filter: &#39;Completed eq 0&#39;
-    });
-
-    // Queries that are used in more than one place or those accepting a parameter can be defined 
-    // as a function on the class
-    Todo.addNamedQuery(&#39;uncompleted&#39;, function() {
-      filter: &quot;Completed eq 0&quot;
-    });
-    var uncompletedTodos = Todo.queries.uncompleted();
-    Todo.addNamedQuery(&#39;byTitle&#39;, function(title) {
-      filter: &quot;Title eq &quot; + title
-    });
-    var fooTodo = Todo.queries.byTitle(&#39;Foo&#39;);</code></pre>
-</div></div>
 </div>

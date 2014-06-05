@@ -1,0 +1,38 @@
+<h1><code ng:non-bindable="">$spClientContext</code>
+<div><span class="hint">service in module <code ng:non-bindable="">ExpertsInside.SharePoint.JSOM</code>
+</span>
+</div>
+</h1>
+<div><h2 id="description">Description</h2>
+<div class="description"><div class="expertsinside-sharepoint-jsom-spclientcontext-page"><p>The <code>$spClientContext</code> creates a SP.ClientContext
+instance and extends it with methods that return AngularJS
+promises for async opertations.</p>
+</div></div>
+<div class="member method"><h2 id="methods">Methods</h2>
+<ul class="methods"><li><h3 id="methods_create">create()</h3>
+<div class="create"><div class="expertsinside-sharepoint-jsom-spclientcontext-create-page"><p>Creates a SP.ClientContext instance with the
+current AppWeb Url and adds custom methods.</p>
+<ul>
+<li><p><code>$load</code>: Wraps the native SP.ClientContext#load method
+and returns a promise that resolves with the loaded object 
+when executeQueryAsync resolves</p>
+</li>
+<li><p><code>$executeQueryAsync</code>: Wraps the native SP.ClientContext#executeQueryAsync
+method and returns a promise that resolves after the query is executed.</p>
+</li>
+</ul>
+</div><h5 id="methods_create_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-jsom-spclientcontext-create-page"><p>SP.ClientContext instance</p>
+</div></td></tr></table></div>
+</li>
+</ul>
+</div>
+<h2 id="example">Example</h2>
+<div class="example"><div class="expertsinside-sharepoint-jsom-spclientcontext-page"><pre><code class="lang-js">var ctx = $spClientContext.create();
+ctx.$load(ctx.get_web()).then(function(web) {
+  $scope.webTitle = web.get_title();
+});
+ctx.$executeQueryAsync().then(function() {
+  $log.debug(&#39;executeQuery done!&#39;);
+})</code></pre>
+</div></div>
+</div>

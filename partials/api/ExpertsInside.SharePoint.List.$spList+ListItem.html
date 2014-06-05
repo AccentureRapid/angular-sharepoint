@@ -1,0 +1,109 @@
+<h1><code ng:non-bindable="">$spList+ListItem</code>
+<div><span class="hint">service in module <code ng:non-bindable="">ExpertsInside.SharePoint.List</code>
+</span>
+</div>
+</h1>
+<div><h2 id="description">Description</h2>
+<div class="description"><div class="expertsinside-sharepoint-list-splist-listitem-page"><p>The dynamically created List Item class, created by
+<a href="#/api/ExpertsInside.SharePoint.List.$spList">$spList</a>. </p>
+<p>Note that all methods prefixed with a <code>$</code> are <em>instance</em> (or prototype) methods.
+Ngdoc doesn&#39;t seem to have out-of-box support for those.</p>
+</div></div>
+<div class="member method"><h2 id="methods">Methods</h2>
+<ul class="methods"><li><h3 id="methods_$delete">$delete()</h3>
+<div class="$delete"><div class="expertsinside-sharepoint-list-splist-listitem-delete-page"><p><strong>Instance method</strong></p>
+<p>Delete this list item on the server.</p>
+</div><h5 id="methods_$delete_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-delete-page"><p>Promise</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_$isnew">$isNew()</h3>
+<div class="$isnew"><div class="expertsinside-sharepoint-list-splist-listitem-isnew-page"><p><strong>Instance method</strong></p>
+<p>Check if an item is already persisted on the server</p>
+</div><h5 id="methods_$isnew_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-bool">bool</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-isnew-page"><p><code>true</code> when already persisted, <code>false</code> otherwhise</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_$save">$save(options)</h3>
+<div class="$save"><div class="expertsinside-sharepoint-list-splist-listitem-save-page"><p><strong>Instance method</strong></p>
+<p>Create or update the list item on the server.</p>
+</div><h5 id="methods_$save_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>options <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-save-page"><p>Options passed to List.Item.create or ListItem.update.</p>
+</div></td></tr></tbody></table><h5 id="methods_$save_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-save-page"><p>Promise</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_$tojson">$toJson()</h3>
+<div class="$tojson"><div class="expertsinside-sharepoint-list-splist-listitem-tojson-page"><p><strong>Instance method</strong></p>
+<p>JSON representation of the item</p>
+</div><h5 id="methods_$tojson_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-tojson-page"><p>JSON representation</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_addnamedquery">addNamedQuery(name, createQuery, options)</h3>
+<div class="addnamedquery"><div class="expertsinside-sharepoint-list-splist-listitem-addnamedquery-page"><p>Add a named query to the queries hash</p>
+</div><h5 id="methods_addnamedquery_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>name</td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-addnamedquery-page"><p>name of the query, used as the function name</p>
+</div></td></tr><tr><td>createQuery</td><td><a href="" class="label type-hint type-hint-function">Function</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-addnamedquery-page"><p>callback invoked with the arguments passed to
+the created named query that creates the final query object</p>
+</div></td></tr><tr><td>options <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-addnamedquery-page"><p>Additional query options passed to List.query</p>
+</div></td></tr></tbody></table><h5 id="methods_addnamedquery_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-array">Array</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-addnamedquery-page"><p>The query result</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_create">create(item, options)</h3>
+<div class="create"><div class="expertsinside-sharepoint-list-splist-listitem-create-page"><p>Create a new list item on the server.</p>
+</div><h5 id="methods_create_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>item <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-create-page"><p>Query properties</p>
+</div></td></tr><tr><td>options <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-create-page"><p>Additional query properties.</p>
+</div></td></tr></tbody></table><h5 id="methods_create_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-create-page"><p>The decorated list item</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_delete">delete(item)</h3>
+<div class="delete"><div class="expertsinside-sharepoint-list-splist-listitem-delete-page"><p>Delete a list item on the server.</p>
+</div><h5 id="methods_delete_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>item <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-delete-page"><p>the list item</p>
+</div></td></tr></tbody></table><h5 id="methods_delete_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-delete-page"><p>The decorated list item</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_get">get(id, query)</h3>
+<div class="get"><div class="expertsinside-sharepoint-list-splist-listitem-get-page"><p>Get a single list item by id</p>
+</div><h5 id="methods_get_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>id</td><td><a href="" class="label type-hint type-hint-number">Number</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-get-page"><p>Id of the list item</p>
+</div></td></tr><tr><td>query <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-get-page"><p>Additional query properties</p>
+</div></td></tr></tbody></table><h5 id="methods_get_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-get-page"><p>List item instance</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_query">query(query, options)</h3>
+<div class="query"><div class="expertsinside-sharepoint-list-splist-listitem-query-page"><p>Query for the list for items</p>
+</div><h5 id="methods_query_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>query <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-query-page"><p>Query properties</p>
+</div></td></tr><tr><td>options <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-query-page"><p>Additional query options.
+Accepts the following properties:
+- <strong><code>singleResult</code></strong> - {boolean} - Returns and empty object instead of an array. Throws an
+  error when more than one item is returned by the query.</p>
+</div></td></tr></tbody></table><h5 id="methods_query_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-array">Array&lt;Object&gt;</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-query-page"><p>Array of list items</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_save">save(item, options)</h3>
+<div class="save"><div class="expertsinside-sharepoint-list-splist-listitem-save-page"><p>Update or create a list item on the server.</p>
+</div><h5 id="methods_save_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>item <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-save-page"><p>the list item</p>
+</div></td></tr><tr><td>options <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-save-page"><p>Options passed to create or update.</p>
+</div></td></tr></tbody></table><h5 id="methods_save_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-save-page"><p>The decorated list item</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_tojson">toJson(item)</h3>
+<div class="tojson"><div class="expertsinside-sharepoint-list-splist-listitem-tojson-page"><p>Create a copy of the item, remove read-only fields
+and stringify it.</p>
+</div><h5 id="methods_tojson_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>item</td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-tojson-page"><p>list item</p>
+</div></td></tr></tbody></table><h5 id="methods_tojson_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-tojson-page"><p>JSON representation</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_update">update(item, options)</h3>
+<div class="update"><div class="expertsinside-sharepoint-list-splist-listitem-update-page"><p>Update an existing list item on the server.</p>
+</div><h5 id="methods_update_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>item <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-update-page"><p>the list item</p>
+</div></td></tr><tr><td>options <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-update-page"><p>Additional update properties.
+Accepts the following properties:
+- <strong><code>force</code></strong> - {boolean} - Overwrite newer versions on the server.</p>
+</div></td></tr></tbody></table><h5 id="methods_update_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-listitem-update-page"><p>The decorated list item</p>
+</div></td></tr></table></div>
+</li>
+</ul>
+</div>
+<div class="member property"><h2 id="properties">Properties</h2>
+<ul class="properties"><li><h3 id="properties_queries">queries</h3>
+<div class="queries"><div class="expertsinside-sharepoint-list-splist-listitem-queries-page"><p>Object that holds the created named queries</p>
+</div></div>
+</li>
+</ul>
+</div>
+</div>

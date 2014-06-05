@@ -8,4 +8,70 @@
 that convert (arrays of) EDM datatypes to javascript
 values or objects and the search results containing them.</p>
 </div></div>
+<div class="member method"><h2 id="methods">Methods</h2>
+<ul class="methods"><li><h3 id="methods_capitalize">capitalize(str)</h3>
+<div class="capitalize"><div class="expertsinside-sharepoint-core-spconvert-capitalize-page"><p>Capitalize a string</p>
+</div><h5 id="methods_capitalize_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>str</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="expertsinside-sharepoint-core-spconvert-capitalize-page"><p>string</p>
+</div></td></tr></tbody></table><h5 id="methods_capitalize_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="expertsinside-sharepoint-core-spconvert-capitalize-page"><p>capitalied string</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_searchresult">searchResult(searchResult)</h3>
+<div class="searchresult"><div class="expertsinside-sharepoint-core-spconvert-searchresult-page"><p>Convert a complete Microsoft.Office.Server.Search.REST.SearchResult
+to a  more usable data structure.</p>
+<ul>
+<li>camelCase all properties</li>
+<li>convert arrays of SP.KeyValue objects</li>
+<li>convert SP.SimpleDataTable objects</li>
+</ul>
+</div><h5 id="methods_searchresult_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>searchResult</td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-core-spconvert-searchresult-page"><p>REST Search result</p>
+</div></td></tr></tbody></table><h5 id="methods_searchresult_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-core-spconvert-searchresult-page"><p>Converted search result</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_spkeyvalue">spKeyValue(keyValue)</h3>
+<div class="spkeyvalue"><div class="expertsinside-sharepoint-core-spconvert-spkeyvalue-page"><p>Convert a SP.KeyValue object to a their native
+Javascript value.</p>
+</div><h5 id="methods_spkeyvalue_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>keyValue</td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-core-spconvert-spkeyvalue-page"><p>SP.KeyValue instance</p>
+</div></td></tr></tbody></table><h5 id="methods_spkeyvalue_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">*</a></td><td><div class="expertsinside-sharepoint-core-spconvert-spkeyvalue-page"><p>converted value</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_spkeyvaluearray">spKeyValueArray(keyValues)</h3>
+<div class="spkeyvaluearray"><div class="expertsinside-sharepoint-core-spconvert-spkeyvaluearray-page"><p>Convert an array of SP.KeyValue objects to an array
+of native Javascript values.</p>
+</div><h5 id="methods_spkeyvaluearray_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>keyValues</td><td><a href="" class="label type-hint type-hint-array">Array.&lt;SP.KeyValue&gt;</a></td><td><div class="expertsinside-sharepoint-core-spconvert-spkeyvaluearray-page"><p>Array of SP.KeyValue objects</p>
+</div></td></tr></tbody></table><h5 id="methods_spkeyvaluearray_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-array">Array</a></td><td><div class="expertsinside-sharepoint-core-spconvert-spkeyvaluearray-page"><p>Array of converted values</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_spsimpledaterow">spSimpleDateRow(row)</h3>
+<div class="spsimpledaterow"><div class="expertsinside-sharepoint-core-spconvert-spsimpledaterow-page"><p>Convert an SP.SimpleDateRow object to an array
+of native Javascript values.</p>
+</div><h5 id="methods_spsimpledaterow_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>row</td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-core-spconvert-spsimpledaterow-page"><p>SP.SimpleDataRow object</p>
+</div></td></tr></tbody></table><h5 id="methods_spsimpledaterow_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-array">Array</a></td><td><div class="expertsinside-sharepoint-core-spconvert-spsimpledaterow-page"><p>Array of cell values</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_spsimpledatetable">spSimpleDateTable(row)</h3>
+<div class="spsimpledatetable"><div class="expertsinside-sharepoint-core-spconvert-spsimpledatetable-page"><p>Convert an SP.SimpleDateTable object to an array (rows)
+of arrays (cells).</p>
+</div><h5 id="methods_spsimpledatetable_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>row</td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-core-spconvert-spsimpledatetable-page"><p>SP.SimpleDataTable object</p>
+</div></td></tr></tbody></table><h5 id="methods_spsimpledatetable_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-array">Array.&lt;Array&gt;</a></td><td><div class="expertsinside-sharepoint-core-spconvert-spsimpledatetable-page"><p>Array of arrays of converted values</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_suggestresult">suggestResult(suggestResult)</h3>
+<div class="suggestresult"><div class="expertsinside-sharepoint-core-spconvert-suggestresult-page"><p><strong>NYI</strong></p>
+</div><h5 id="methods_suggestresult_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>suggestResult</td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-core-spconvert-suggestresult-page"><p>REST Search Suggest result</p>
+</div></td></tr></tbody></table><h5 id="methods_suggestresult_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-core-spconvert-suggestresult-page"><p>REST Search Suggest result</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_userresult">userResult(userResult)</h3>
+<div class="userresult"><div class="expertsinside-sharepoint-core-spconvert-userresult-page"><p>Convert a SP.UserProfiles.PersonProperties object
+to a more usable data structure.</p>
+<ul>
+<li>camelCase all properties</li>
+<li>convert arrays of SP.KeyValue objects</li>
+</ul>
+</div><h5 id="methods_userresult_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>userResult</td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-core-spconvert-userresult-page"><p>REST User Profiles result</p>
+</div></td></tr></tbody></table><h5 id="methods_userresult_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-core-spconvert-userresult-page"><p>Converted user profile</p>
+</div></td></tr></table></div>
+</li>
+</ul>
+</div>
 </div>

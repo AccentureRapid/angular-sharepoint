@@ -1,0 +1,40 @@
+<h1><code ng:non-bindable=""></code>
+<div><span class="hint"></span>
+</div>
+</h1>
+<div><div class="using-splist-page"><h2 id="using">Using <code>$spList</code></h2>
+<p><code>$spList</code> let&#39;s you interact with the SharePoint List REST API in a object oriented,
+<code>Active Record</code>&#39;ish way. The <code>$spList</code> service dynamically creates a JavaScript class
+(i.e constructor function) with static CRUD operations and instances of that class
+represent the list items</p>
+<h3 id="using_creating-the-class">Creating the class</h3>
+<p>Let&#39;s start out by creating a <code>Todo</code> class that wraps a List with the same title
+in the app web.</p>
+<pre><code class="lang-js">var Todo = $spList(&#39;Todo&#39;);</code></pre>
+<p>Lists from the host web are also supported.</p>
+<pre><code class="lang-js">var Todo = $spList(&#39;Todo&#39;, {
+  inHostWeb: true
+});</code></pre>
+<h3 id="using_simple-example">Simple example</h3>
+<p>Exposing the created class as a service, injecting it in a controller, querying the
+list for items that are not (yet) completed and exposing them to the view via <code>$scope</code>.</p>
+<pre><code class="lang-js">var app = angular.module(&#39;myApp&#39;, [&#39;ExpertsInside.SharePoint.List&#39;]);
+
+app.factory(&#39;Todo&#39;, function($spList) {
+  return $spList(&#39;Todo&#39;);
+});
+
+app.controller(&#39;MyCtrl&#39;, function($scope, $log, Todo) {
+  $scope.todos = Todo.query({
+    select: [&#39;Id&#39;, &#39;Title&#39;, &#39;Completed&#39;]
+    filter: &#39;Completed eq 0&#39;
+  });
+
+  // Doing something after the items are loaded or when an error occured
+  $scope.todos.$promise.then(function(todos) {
+    $log.debug(&#39;Todos loaded&#39;, todos);
+  }, function(err) {
+    $log.error(&#39;Error loading todos&#39;, err);
+  });
+});</code></pre>
+</div></div>

@@ -20,7 +20,7 @@ NG_DOCS={
       "type": "overview",
       "moduleName": "ExpertsInside.SharePoint",
       "shortDescription": "ExpertsInside.SharePoint",
-      "keywords": "angular-sharepoint api complete core experience expertsinside list overview search sharepoint user"
+      "keywords": "angular-sharepoint api complete core experience expertsinside jsom list overview search sharepoint user"
     },
     {
       "section": "api",
@@ -38,7 +38,7 @@ NG_DOCS={
       "type": "object",
       "moduleName": "ExpertsInside.SharePoint.Core",
       "shortDescription": "The $spConvert service exposes functions",
-      "keywords": "$spconvert api convert core datatypes edm expertsinside exposes functions javascript object objects search service sharepoint values"
+      "keywords": "$spconvert api array arrays camelcase capitalied capitalize cell complete convert converted core data datatypes edm expertsinside exposes functions instance javascript keyvalue keyvalues method microsoft native object objects office personproperties profile profiles properties rest result row search searchresult server service sharepoint simpledatarow simpledatatable simpledaterow simpledatetable sp spkeyvalue spkeyvaluearray spsimpledaterow spsimpledatetable str string structure suggestresult usable user userprofiles userresult values"
     },
     {
       "section": "api",
@@ -47,7 +47,7 @@ NG_DOCS={
       "type": "object",
       "moduleName": "ExpertsInside.SharePoint.Core",
       "shortDescription": "A reference to the documents _spPageContextInfo object. While _spPageContextInfo",
-      "keywords": "$scope $sppagecontextinfo _sppagecontextinfo api core ctrl documents expertsinside function global globally javascript js mocked object overridden problems reference referring removed service sharepoint testability testing thorugh userloginname username variable"
+      "keywords": "$scope $sppagecontextinfo _sppagecontextinfo api core ctrl documents expertsinside function global globally http javascript js mocked object overridden problems properties reference referring removed service sharepoint testability testing thorugh userloginname username variable wordpress"
     },
     {
       "section": "api",
@@ -57,6 +57,24 @@ NG_DOCS={
       "moduleName": "ExpertsInside.SharePoint.Core",
       "shortDescription": "Utility functions when interacting with the SharePoint REST API",
       "keywords": "$select $sprest accepts allowed api app appendqueryparameters appends bar baz body buildquerystring builds core create expertsinside foo function functions http interacting invalid js json missing normalized normalizeparams normalizes parameters params parse prefixing qs query remove removing response rest select service sharepoint string title transformed transformresponse url utility var whitelist wrapper"
+    },
+    {
+      "section": "api",
+      "id": "ExpertsInside.SharePoint.JSOM",
+      "shortName": "ExpertsInside.SharePoint.JSOM",
+      "type": "overview",
+      "moduleName": "ExpertsInside.SharePoint.JSOM",
+      "shortDescription": "ExpertsInside.SharePoint.JSOM",
+      "keywords": "$spuser api expertsinside include js jsom module overview profiles rest service sharepoint user userprofiles wrapper"
+    },
+    {
+      "section": "api",
+      "id": "ExpertsInside.SharePoint.JSOM.$spClientContext",
+      "shortName": "ExpertsInside.SharePoint.JSOM.$spClientContext",
+      "type": "object",
+      "moduleName": "ExpertsInside.SharePoint.JSOM",
+      "shortDescription": "The $spClientContext creates a SP.ClientContext",
+      "keywords": "$executequeryasync $load $log $scope $spclientcontext adds angularjs api appweb async clientcontext create creates ctx current custom debug executed executequery executequeryasync expertsinside extends function get_title get_web instance js jsom load loaded method methods native object opertations promise promises query resolves return returns sharepoint sp url var web webtitle wraps"
     },
     {
       "section": "api",
@@ -74,7 +92,16 @@ NG_DOCS={
       "type": "service",
       "moduleName": "ExpertsInside.SharePoint.List",
       "shortDescription": "A factory which creates a list item resource object that lets you interact with",
-      "keywords": "$expand $filter $http $orderby $select $skip $sort $spconvert $splist $sprest $top accept accepting action actions addnamedquery api array based behaviors bytitle call caution changes check class completed concurrent core create creates custom default defined defining delete deletes details empty eq error etag excluded existing exlcuded expertsinside factory field filter foo footodo force function hash high-level instance interact item items js level list listoptions low methods names object optional options overridden overwrites parameter parameters passed place prefixing properties provide queries query readonlyfields request resource rest retrieve returned returns save saving server service set sharepoint single singleresult string supported supports throws title todo todos true uncompleted uncompletedtodos update updates var"
+      "keywords": "$expand $filter $http $orderby $select $skip $sort $spconvert $splist $sprest $top action api array behaviors class core created creates custom default details dynamically exlcuded expertsinside factory field hash high-level interact item items level list listoptions low methods names object optional options overridden parameter prefixing provide query readonlyfields request resource rest returned saving service sharepoint supported title valid"
+    },
+    {
+      "section": "api",
+      "id": "ExpertsInside.SharePoint.List.$spList+ListItem",
+      "shortName": "ExpertsInside.SharePoint.List.$spList+ListItem",
+      "type": "service",
+      "moduleName": "ExpertsInside.SharePoint.List",
+      "shortDescription": "The dynamically created List Item class, created by",
+      "keywords": "$delete $isnew $save $splist $tojson accepts add additional addnamedquery api arguments array callback check class copy create created createquery creates decorated delete doesn dynamically empty error existing expertsinside false fields final force function hash holds instance invoked item items json list listitem method methods named newer ngdoc note object options otherwhise out-of-box overwrite passed persisted prefixed promise properties prototype queries query read-only remove representation result returned returns save server service sharepoint single singleresult stringify support throws tojson true update versions"
     },
     {
       "section": "api",
@@ -92,7 +119,7 @@ NG_DOCS={
       "type": "service",
       "moduleName": "ExpertsInside.SharePoint.Search",
       "shortDescription": "Query the Search via REST API",
-      "keywords": "$spconvert $sprest $spsearch api core expertsinside query rest search service sharepoint"
+      "keywords": "$spconvert $sprest $spsearch api based core expertsinside method perform postquery properties query rest result search service sharepoint"
     },
     {
       "section": "api",
@@ -110,7 +137,79 @@ NG_DOCS={
       "type": "service",
       "moduleName": "ExpertsInside.SharePoint.User",
       "shortDescription": "Load user information via UserProfiles REST API",
-      "keywords": "$spconvert $sprest $spuser api core expertsinside load rest service sharepoint user userprofiles"
+      "keywords": "$spconvert $sprest $spuser account accountname api core current expertsinside load method profile properties rest service sharepoint signed user userprofiles"
+    },
+    {
+      "section": "guide",
+      "id": "index",
+      "shortName": "Guide",
+      "type": "overview",
+      "moduleName": "Guide",
+      "shortDescription": "angular-sharepoint Guide",
+      "keywords": "angular-sharepoint guide overview"
+    },
+    {
+      "section": "guide",
+      "id": "00_installation",
+      "shortName": "Installation",
+      "type": "overview",
+      "moduleName": "Installation",
+      "shortDescription": "Installation",
+      "keywords": "angular-sharepoint automatically bower build checkout clone command compile compiled components configured console dependencies directly files folder git github guide inside install install-package installation installed installing instructions io machine manager note nuget org overview package project releases repository running scripts search simply source sources specific stands studio tagged test tools version visual vx watch ways"
+    },
+    {
+      "section": "guide",
+      "id": "01_getting-started",
+      "shortName": "Getting Started",
+      "type": "overview",
+      "moduleName": "Getting Started",
+      "shortDescription": "Getting Started",
+      "keywords": "$splist $sppagecontextinfo $sprest $spsearch $spuser additional angular angular-sharepoint angularjs api app charset complete console containg core currently declaration declare declaring dependency depending depends document embed embedded expertsinside forget github guide helper html include included install io js list load loaded log module modules myapp needed ng-app ommitted overview package path picking plugin plugings plugins profiles reference rest search service services setup sharecoffee sharepoint src started user userprofiles utf-8 utility var warning wraps"
+    },
+    {
+      "section": "guide",
+      "id": "10_using-spList",
+      "shortName": "Using $spList",
+      "type": "overview",
+      "moduleName": "Using $spList",
+      "shortDescription": "Using $spList",
+      "keywords": "$log $promise $scope $splist active angular api app class completed controller created creates creating crud debug dynamically eq err error example expertsinside exposing factory filter function guide host inhostweb injecting instances interact ish items javascript js list lists loaded loading module myapp myctrl object occured operations oriented overview query querying record represent rest return select service sharepoint simple start static supported title todo todos true var view web wraps"
+    },
+    {
+      "section": "guide",
+      "id": "11_using-spUser",
+      "shortName": "Using $spUser",
+      "type": "overview",
+      "moduleName": "Using $spUser",
+      "shortDescription": "Using $spUser",
+      "keywords": "$spuser guide overview todo"
+    },
+    {
+      "section": "guide",
+      "id": "12_using-spSearch",
+      "shortName": "Using $spSearch",
+      "type": "overview",
+      "moduleName": "Using $spSearch",
+      "shortDescription": "Using $spSearch",
+      "keywords": "$spsearch guide overview todo"
+    },
+    {
+      "section": "guide",
+      "id": "13_using-spClientContext",
+      "shortName": "Using $spClientContext",
+      "type": "overview",
+      "moduleName": "Using $spClientContext",
+      "shortDescription": "Using $spClientContext",
+      "keywords": "$spclientcontext guide overview todo"
+    },
+    {
+      "section": "guide",
+      "id": "99_contributing",
+      "shortName": "Contributing",
+      "type": "overview",
+      "moduleName": "Contributing",
+      "shortDescription": "Contributing",
+      "keywords": "contributing guide overview todo"
     }
   ],
   "apis": {
