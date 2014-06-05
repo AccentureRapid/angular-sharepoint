@@ -155,7 +155,8 @@ module.exports = function(grunt) {
     'clean:dist',
     'ngmin:dist',
     'concat:dist',
-    'uglify:dist'
+    'uglify:dist',
+    'ngdocs'
   ]);
 
 };
