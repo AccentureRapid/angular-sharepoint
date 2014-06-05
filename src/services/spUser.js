@@ -13,7 +13,12 @@ angular.module('ExpertsInside.SharePoint.User')
     var $spUserMinErr = angular.$$minErr('$spUser');
 
     var $spUser = {
-      $decorateResult: function(result, httpConfig) {
+
+      /**
+       * @private
+       * Decorate the result with $promise and $resolved
+       */
+      $$decorateResult: function(result, httpConfig) {
         if (angular.isUndefined(result.$resolved)) {
           result.$resolved = false;
         }
@@ -36,6 +41,15 @@ angular.module('ExpertsInside.SharePoint.User')
         return result;
       },
 
+      /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.User.$spUser#current
+       * @methodOf ExpertsInside.SharePoint.User.$spUser
+       *
+       * @description Get the current signed in user.
+       *
+       * @returns {Object} user profile properties
+       */
       current: function() {
         var properties = new ShareCoffee
           .UserProfileProperties(ShareCoffee.Url.GetMyProperties);
@@ -45,9 +59,20 @@ angular.module('ExpertsInside.SharePoint.User')
 
         var result = {};
 
-        return $spUser.$decorateResult(result, httpConfig);
+        return $spUser.$$decorateResult(result, httpConfig);
       },
 
+      /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.User.$spUser#get
+       * @methodOf ExpertsInside.SharePoint.User.$spUser
+       *
+       * @description Get a user by account name
+       *
+       * @param {string} accountName account name
+       *
+       * @returns {Object} user profile properties
+       */
       get: function(accountName) {
         var properties = new ShareCoffee
           .UserProfileProperties(ShareCoffee.Url.GetProperties, accountName);
@@ -57,8 +82,8 @@ angular.module('ExpertsInside.SharePoint.User')
 
         var result = {};
 
-        return $spUser.$decorateResult(result, httpConfig);
-      },
+        return $spUser.$$decorateResult(result, httpConfig);
+      }
     };
 
     return $spUser;

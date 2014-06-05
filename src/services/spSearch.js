@@ -13,6 +13,11 @@ angular.module('ExpertsInside.SharePoint.Search')
     var $spSearchMinErr = angular.$$minErr('$spSearch');
 
     var search = {
+
+      /**
+       * @private
+       * Wrap given properties in a query properties object based on search type
+       */
       $$createQueryProperties: function(searchType, properties) {
         var queryProperties;
         switch(searchType) {
@@ -30,6 +35,10 @@ angular.module('ExpertsInside.SharePoint.Search')
         return angular.extend(queryProperties, properties);
       },
 
+      /**
+       * @private
+       * Decorate the result with $promise and $resolved
+       */
       $decorateResult: function(result, httpConfig) {
         if (angular.isUndefined(result.$resolved)) {
           result.$resolved = false;
@@ -58,6 +67,17 @@ angular.module('ExpertsInside.SharePoint.Search')
         return result;
       },
 
+      /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.Search.$spSearch#query
+       * @methodOf ExpertsInside.SharePoint.Search.$spSearch
+       *
+       * @description Perform a search query based on given properties
+       *
+       * @param {Object} properties query properties
+       *
+       * @returns {Object} search query result
+       */
       query: function(properties) {
         properties = angular.extend({}, properties);
 
@@ -73,11 +93,33 @@ angular.module('ExpertsInside.SharePoint.Search')
         return search.$decorateResult(result, httpConfig);
       },
 
+      /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.Search.$spSearch#postquery
+       * @methodOf ExpertsInside.SharePoint.Search.$spSearch
+       *
+       * @description Perform a search postquery based on given properties
+       *
+       * @param {Object} properties query properties
+       *
+       * @returns {Object} search query result
+       */
       postquery: function(properties) {
         properties = angular.extend(properties, {searchType: 'postquery'});
         return search.query(properties);
       },
 
+      /**
+       * @ngdoc method
+       * @name ExpertsInside.SharePoint.Search.$spSearch#suggest
+       * @methodOf ExpertsInside.SharePoint.Search.$spSearch
+       *
+       * @description Perform a search suggest based on given properties
+       *
+       * @param {Object} properties query properties
+       *
+       * @returns {Object} search query result
+       */
       suggest: function(properties) {
         properties = angular.extend(properties, {searchType: 'suggest'});
         return search.query(properties);
