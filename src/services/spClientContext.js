@@ -3,8 +3,15 @@
  * @name ExpertsInside.SharePoint.JSOM.$spClientContext
  *
  * @description The `$spClientContext` creates a SP.ClientContext
- *  instance and extends it with methods that return AngularJS
+ *  instance and empowers it with methods that return AngularJS
  *  promises for async opertations.
+ *
+ *  - `$load`: Wraps the native SP.ClientContext#load method
+ *    and returns a promise that resolves with the loaded object 
+ *    when executeQueryAsync resolves
+ *
+ *  - `$executeQueryAsync`: Wraps the native SP.ClientContext#executeQueryAsync
+ *    method and returns a promise that resolves after the query is executed.
  *
  * @example
  * ```js
@@ -24,25 +31,11 @@ angular.module('ExpertsInside.SharePoint.JSOM')
 
     var spContext = {
       /**
-       * @ngdoc function
-       * @name ExpertsInside.SharePoint.JSOM.$spClientContext#create
-       * @methodOf ExpertsInside.SharePoint.JSOM.$spClientContext
-       *
-       * @description Creates a SP.ClientContext instance with the
-       *  current AppWeb Url and adds custom methods.
-       *
-       *  - `$load`: Wraps the native SP.ClientContext#load method
-       *    and returns a promise that resolves with the loaded object 
-       *    when executeQueryAsync resolves
-       *
-       *  - `$executeQueryAsync`: Wraps the native SP.ClientContext#executeQueryAsync
-       *    method and returns a promise that resolves after the query is executed.
-       *
-       * @returns {Object} SP.ClientContext instance
+       * @private
+       * Decorate the context with custom methods
        */
-      create: function() {
-        var ctx = new $window.SP.ClientContext(ShareCoffee.Commons.getAppWebUrl());
-
+      $$decorateContext: function(ctx) {
+        ctx.$$empowered = true;
         ctx.$$awaitingLoads = [];
 
         ctx.$load = function() {
@@ -83,6 +76,39 @@ angular.module('ExpertsInside.SharePoint.JSOM')
         };
 
         return ctx;
+      },
+
+      /**
+       * @ngdoc function
+       * @name ExpertsInside.SharePoint.JSOM.$spClientContext#create
+       * @methodOf ExpertsInside.SharePoint.JSOM.$spClientContext
+       *
+       * @description Creates an empowered SP.ClientContext instance with the
+       *  given url.
+       *
+       * @param {string=} url url for the context
+       *
+       * @returns {Object} SP.ClientContext instance
+       */
+      create: function(url) {
+        var ctx = new $window.SP.ClientContext(url);
+
+        return spContext.$$decorateContext(ctx);
+      },
+
+      /**
+       * @ngdoc function
+       * @name ExpertsInside.SharePoint.JSOM.$spClientContext#current
+       * @methodOf ExpertsInside.SharePoint.JSOM.$spClientContext
+       *
+       * @description Returns an empowered version of SP.ClientContext.get_current()
+       *
+       * @returns {Object} SP.ClientContext instance
+       */
+      current: function() {
+        var ctx = new $window.SP.ClientContext.get_current();
+
+        return angular.isDefined(ctx.$$empowered) ? ctx : spContext.$$decorateContext(ctx);
       }
     };
 

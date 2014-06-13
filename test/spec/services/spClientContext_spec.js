@@ -9,6 +9,7 @@ describe('ExpertsInside.SharePoint', function() {
       ClientContextMock = sinon.spy();
       ClientContextMock.prototype.load = sinon.spy();
       ClientContextMock.prototype.executeQueryAsync = sinon.spy();
+      ClientContextMock.get_current = sinon.stub();
 
       $window.SP = {
         ClientContext: ClientContextMock
@@ -26,25 +27,36 @@ describe('ExpertsInside.SharePoint', function() {
 
     describe('.create()', function() {
       it('creates a SharePoint client context for the app', function() {
-        $spClientContext.create();
+        $spClientContext.create(ShareCoffee.Commons.getAppWebUrl());
 
         expect(ClientContextMock).to.have.been.calledWith(appWebUrl);
       });
 
-      it('defines a $load function on the created context', function() {
+      it('empowers the created context', function() {
         var ctx = $spClientContext.create();
 
-        expect(ctx.$load).to.be.a('Function');
-      });
-
-      it('defines a $executeQueryAsync function on the created context', function() {
-        var ctx = $spClientContext.create();
-
-        expect(ctx.$load).to.be.a('Function');
+        expect(ctx.$$empowered).to.be.true;
       });
     });
 
-    describe('the created context', function() {
+    describe('.current()', function() {
+      it('returns the current SP.ClientContext', function() {
+        var current = {};
+        ClientContextMock.get_current.returns(current);
+
+        var ctx = $spClientContext.current();
+
+        expect(ctx).to.have.be.eql(current);
+      });
+
+      it('empowers the current context', function() {
+        var ctx = $spClientContext.current();
+
+        expect(ctx.$$empowered).to.be.true;
+      });
+    });
+
+    describe('the empowered context', function() {
       var ctx;
 
       beforeEach(function() {
