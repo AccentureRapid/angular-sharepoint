@@ -51,7 +51,7 @@ angular.module('ExpertsInside.SharePoint.List', ['ExpertsInside.SharePoint.Core'
  */
 angular.module('ExpertsInside.SharePoint.Search', ['ExpertsInside.SharePoint.Core'])
   .run(function($window, $log) {
-    if (angular.isUndefined($window.ShareCoffee) || angular.isUndefined($window.ShareCoffee.Search)) {
+    if (angular.isUndefined($window.ShareCoffee) || angular.isUndefined($window.ShareCoffee.QueryProperties)) {
       $log.warn("ExpertsInside.SharePoint.Search module depends on ShareCoffee.Search. " +
                  "Please include ShareCoffee.Search.js in your document");
     }
@@ -74,7 +74,7 @@ angular.module('ExpertsInside.SharePoint.Search', ['ExpertsInside.SharePoint.Cor
  */
 angular.module('ExpertsInside.SharePoint.User', ['ExpertsInside.SharePoint.Core'])
   .run(function($window, $log) {
-    if (angular.isUndefined($window.ShareCoffee) || angular.isUndefined($window.ShareCoffee.UserProfiles)) {
+    if (angular.isUndefined($window.ShareCoffee) || angular.isUndefined($window.ShareCoffee.UserProfileProperties)) {
       $log.warn("ExpertsInside.SharePoint.User module depends on ShareCoffee.UserProfiles. " +
                  "Please include ShareCoffee.UserProfiles.js in your document");
     }
