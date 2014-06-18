@@ -431,12 +431,14 @@ angular.module('ExpertsInside.SharePoint.List')
        * @returns {string} JSON representation
        */
       List.toJson = function(item) {
-        var copy = angular.extend({}, item);
-        if (angular.isDefined(item.$$readOnlyFields)) {
-          angular.forEach(item.$$readOnlyFields, function(readOnlyField) {
-            delete copy[readOnlyField];
-          });
-        }
+        var copy = {};
+        var blacklist = angular.extend([], item.$$readOnlyFields);
+
+        angular.forEach(item, function(value, key) {
+          if (key.indexOf('$') !== 0 && blacklist.indexOf(key) === -1) {
+            copy[key] = value;
+          }
+        });
         return angular.toJson(copy);
       };
 
