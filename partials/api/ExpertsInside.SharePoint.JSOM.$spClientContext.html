@@ -5,13 +5,8 @@
 </h1>
 <div><h2 id="description">Description</h2>
 <div class="description"><div class="expertsinside-sharepoint-jsom-spclientcontext-page"><p>The <code>$spClientContext</code> creates a SP.ClientContext
-instance and extends it with methods that return AngularJS
+instance and empowers it with methods that return AngularJS
 promises for async opertations.</p>
-</div></div>
-<div class="member method"><h2 id="methods">Methods</h2>
-<ul class="methods"><li><h3 id="methods_create">create()</h3>
-<div class="create"><div class="expertsinside-sharepoint-jsom-spclientcontext-create-page"><p>Creates a SP.ClientContext instance with the
-current AppWeb Url and adds custom methods.</p>
 <ul>
 <li><p><code>$load</code>: Wraps the native SP.ClientContext#load method
 and returns a promise that resolves with the loaded object 
@@ -21,7 +16,18 @@ when executeQueryAsync resolves</p>
 method and returns a promise that resolves after the query is executed.</p>
 </li>
 </ul>
-</div><h5 id="methods_create_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-jsom-spclientcontext-create-page"><p>SP.ClientContext instance</p>
+</div></div>
+<div class="member method"><h2 id="methods">Methods</h2>
+<ul class="methods"><li><h3 id="methods_create">create(url)</h3>
+<div class="create"><div class="expertsinside-sharepoint-jsom-spclientcontext-create-page"><p>Creates an empowered SP.ClientContext instance with the
+given url.</p>
+</div><h5 id="methods_create_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>url <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="expertsinside-sharepoint-jsom-spclientcontext-create-page"><p>url for the context</p>
+</div></td></tr></tbody></table><h5 id="methods_create_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-jsom-spclientcontext-create-page"><p>SP.ClientContext instance</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_current">current()</h3>
+<div class="current"><div class="expertsinside-sharepoint-jsom-spclientcontext-current-page"><p>Returns an empowered version of SP.ClientContext.get_current()</p>
+</div><h5 id="methods_current_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-jsom-spclientcontext-current-page"><p>SP.ClientContext instance</p>
 </div></td></tr></table></div>
 </li>
 </ul>

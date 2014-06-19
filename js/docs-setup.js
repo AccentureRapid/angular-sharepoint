@@ -74,7 +74,7 @@ NG_DOCS={
       "type": "object",
       "moduleName": "ExpertsInside.SharePoint.JSOM",
       "shortDescription": "The $spClientContext creates a SP.ClientContext",
-      "keywords": "$executequeryasync $load $log $scope $spclientcontext adds angularjs api appweb async clientcontext create creates ctx current custom debug executed executequery executequeryasync expertsinside extends function get_title get_web instance js jsom load loaded method methods native object opertations promise promises query resolves return returns sharepoint sp url var web webtitle wraps"
+      "keywords": "$executequeryasync $load $log $scope $spclientcontext angularjs api async clientcontext context create creates ctx current debug empowered empowers executed executequery executequeryasync expertsinside function get_current get_title get_web instance js jsom load loaded method methods native object opertations promise promises query resolves return returns sharepoint sp url var version web webtitle wraps"
     },
     {
       "section": "api",
@@ -168,6 +168,15 @@ NG_DOCS={
     },
     {
       "section": "guide",
+      "id": "02_conceptional-overview",
+      "shortName": "Conceptional Overview",
+      "type": "overview",
+      "moduleName": "Conceptional Overview",
+      "shortDescription": "Conceptional Overview",
+      "keywords": "$promise $resolved $splist $spuser array async calls conceptional created current data decorated empty error false finished flag function functions guide holds load multiple object objects occures overview perform promise properties query reference resolved result retrieved return returned search simple special task true updated"
+    },
+    {
+      "section": "guide",
       "id": "10_using-spList",
       "shortName": "Using $spList",
       "type": "overview",
@@ -182,7 +191,7 @@ NG_DOCS={
       "type": "overview",
       "moduleName": "Using $spUser",
       "shortDescription": "Using $spUser",
-      "keywords": "$spuser guide overview todo"
+      "keywords": "$promise $resolved $spuser access account beviour call calling current displayname element empty false filled finished fully guide hide john loaded ng-show object overview promise properties property rest returned returns simple specific user userby var view"
     },
     {
       "section": "guide",
@@ -200,7 +209,7 @@ NG_DOCS={
       "type": "overview",
       "moduleName": "Using $spClientContext",
       "shortDescription": "Using $spClientContext",
-      "keywords": "$spclientcontext guide overview todo"
+      "keywords": "$executequeryasync $load $scope $spclientcontext $timeout additions angular async batch behaviour benefits callbacks client clientcontext close code context controller create ctx current cycle digest ensures example executed executequeryasync fooctrl function functions get_current get_title get_web guide http inside instance keeping lead load loaded loads module multiple mymodule native needed object operation overview promise readability readable reference resolved return returned returns sp special testability title trigger url var ways web wraps"
     },
     {
       "section": "guide",

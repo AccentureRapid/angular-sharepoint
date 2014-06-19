@@ -3,7 +3,22 @@
 </div>
 </h1>
 <div><div class="using-spuser-page"><h2 id="using">Using <code>$spUser</code></h2>
-<blockquote>
-<p>Todo</p>
-</blockquote>
+<h3 id="using_getting-the-current-user">Getting the current user</h3>
+<p>Getting the current user is as simple as calling</p>
+<pre><code>var user = $spUser.current();</code></pre>
+<p>This returns an empty object that gets filled with the user properties
+after the REST call is finished. 
+If you need access to the promise for the REST call, you can use the
+<code>$promise</code> of the returned object. </p>
+<pre><code>$spUser.current().$promise.then(function(user) {
+  // ...
+});</code></pre>
+<p>If you need to hide (or show, ...) some view element until the REST call is finished,
+you can use the <code>$resolved</code> property that is <code>false</code> until the user is
+fully loaded.</p>
+<pre><code>&lt;p ng-show=&#39;user.$resolved&#39;&gt;Hello { user.displayName }&lt;/p&gt;</code></pre>
+<h3 id="using_getting-a-userby-account-name">Getting a userby account name</h3>
+<p>You can also get a specific user by account name using</p>
+<pre><code>var user = $spUser.get(&#39;john&#39;);</code></pre>
+<p>The returned object has the same beviour as the object returned by <code>$spUser.current()</code>.</p>
 </div></div>

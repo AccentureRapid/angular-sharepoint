@@ -1,0 +1,20 @@
+<h1><code ng:non-bindable=""></code>
+<div><span class="hint"></span>
+</div>
+</h1>
+<div><div class="conceptional-overview-page"><h2 id="conceptional-overview">Conceptional Overview</h2>
+<h3 id="conceptional-overview_returned-objects-of-async-function-calls">Returned objects of async function calls</h3>
+<p>All functions that perform need to perform an async task to load
+the data, return either an empty object (single result, i.e. <code>$spUser.current()</code>)
+or an empty array (possible multiple results, i.e. <code>$spList.query()</code>).
+When the async task is finished, the returned objects get updated
+with the retrieved data, i.e. search results are added to the empty array.</p>
+<p>The returned objects are also decorated with two special properties,
+<strong><code>$promise</code></strong> and <strong><code>$resolved</code></strong>.</p>
+<ul>
+<li><code>$promise</code> holds a reference to the promise created for the async task
+that gets resolved with the retrieved data or the error, if one occures.</li>
+<li><code>$resolved</code> is a simple flag that is <code>false</code> until the data is retrieved,
+and <code>true</code> afterwards.</li>
+</ul>
+</div></div>

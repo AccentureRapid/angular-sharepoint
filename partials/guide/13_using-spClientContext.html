@@ -3,7 +3,47 @@
 </div>
 </h1>
 <div><div class="using-spclientcontext-page"><h2 id="using">Using <code>$spClientContext</code></h2>
-<blockquote>
-<p>Todo</p>
-</blockquote>
+<h3 id="using_getting-a-client-context">Getting a client context</h3>
+<p>There are two ways to get a client context. The first one is to get a reference
+to the current client context, using <code>$spClientContext.current()</code>. 
+The other way is to use <code>$spClientContext.create(&#39;http://some.web/url&#39;)</code> to
+create a new client context for the given url.
+Both functions return an instance of a <code>SP.ClientContext</code> but with some added
+benefits.</p>
+<h3 id="using_special-behaviour">Special behaviour</h3>
+<p>When getting a client context by one of the above functions, some special behaviour
+is added to the client context.</p>
+<ul>
+<li><code>$executeQueryAsync</code>: This function wraps the native <code>executeQueryAsync</code> function
+that returns a promise for the async operation.</li>
+<li><code>$load</code>: This function wraps the native <code>load</code> function that also returns a promise
+that gets resolved with the loaded object. It is still possible to batch multiple
+loads and each load has its own promise.</li>
+</ul>
+<p>These additions lead to more readable code by keeping the callbacks close to the
+loads and because the returned promise ensures that callbacks are executed inside
+a digest cycle. Also, testability and readability.</p>
+<h3 id="using_example">Example</h3>
+<p>With $spClientContext:</p>
+<pre><code>angular.module(&#39;myModule&#39;).controller(&#39;FooCtrl&#39;, function($scope, $spClientContext) {
+  var ctx = $spClientContext.current();
+
+  ctx.$load(ctx.get_web(), function(web) {
+    $scope.title = web.get_title();
+  });
+
+  ctx.$executeQueryAsync();
+});</code></pre>
+<p>Without $spClientContext:</p>
+<pre><code>angular.module(&#39;myModule&#39;).controller(&#39;FooCtrl&#39;, function($scope, $timeout) {
+  var ctx = SP.ClientContext.get_current();
+  var web = ctx.get_web();
+
+  ctx.load(web);
+  ctx.executeQueryAsync(function() {
+    $timeout(function() { // $timeout is needed to trigger a digest cycle
+      $scope.title = web.get_title();
+    });
+  });
+});</code></pre>
 </div></div>
