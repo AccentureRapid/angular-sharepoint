@@ -3,4 +3,40 @@
 @description
 
 # Using `$spUser`
-> Todo
+
+## Getting the current user
+
+Getting the current user is as simple as calling
+
+```
+var user = $spUser.current();
+```
+
+This returns an empty object that gets filled with the user properties
+after the REST call is finished. 
+If you need access to the promise for the REST call, you can use the
+`$promise` of the returned object. 
+
+```
+$spUser.current().$promise.then(function(user) {
+  // ...
+});
+```
+
+If you need to hide (or show, ...) some view element until the REST call is finished,
+you can use the `$resolved` property that is `false` until the user is
+fully loaded.
+
+```
+<p ng-show='user.$resolved'>Hello { user.displayName }</p>
+```
+
+## Getting a userby account name
+
+You can also get a specific user by account name using
+
+```
+var user = $spUser.get('john');
+```
+
+The returned object has the same beviour as the object returned by `$spUser.current()`.
