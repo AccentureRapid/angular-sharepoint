@@ -1,0 +1,22 @@
+@ngdoc overview
+@name Conceptional Overview
+@description
+
+# Conceptional Overview
+
+## Returned objects of async function calls
+
+All functions that perform need to perform an async task to load
+the data, return either an empty object (single result, i.e. `$spUser.current()`)
+or an empty array (possible multiple results, i.e. `$spList.query()`).
+When the async task is finished, the returned objects get updated
+with the retrieved data, i.e. search results are added to the empty array.
+
+The returned objects are also decorated with two special properties,
+**`$promise`** and **`$resolved`**.
+
+  * `$promise` holds a reference to the promise created for the async task
+    that gets resolved with the retrieved data or the error, if one occures.
+  * `$resolved` is a simple flag that is `false` until the data is retrieved,
+    and `true` afterwards.
+

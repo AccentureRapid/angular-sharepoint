@@ -3,4 +3,59 @@
 @description
 
 # Using `$spClientContext`
-> Todo
+
+## Getting a client context
+
+There are two ways to get a client context. The first one is to get a reference
+to the current client context, using `$spClientContext.current()`. 
+The other way is to use `$spClientContext.create('http://some.web/url')` to
+create a new client context for the given url.
+Both functions return an instance of a `SP.ClientContext` but with some added
+benefits.
+
+## Special behaviour
+
+When getting a client context by one of the above functions, some special behaviour
+is added to the client context.
+
+  * `$executeQueryAsync`: This function wraps the native `executeQueryAsync` function
+    that returns a promise for the async operation.
+  * `$load`: This function wraps the native `load` function that also returns a promise
+    that gets resolved with the loaded object. It is still possible to batch multiple
+    loads and each load has its own promise.
+
+These additions lead to more readable code by keeping the callbacks close to the
+loads and because the returned promise ensures that callbacks are executed inside
+a digest cycle. Also, testability and readability.
+
+## Example
+
+With $spClientContext:
+
+```
+angular.module('myModule').controller('FooCtrl', function($scope, $spClientContext) {
+  var ctx = $spClientContext.current();
+
+  ctx.$load(ctx.get_web(), function(web) {
+    $scope.title = web.get_title();
+  });
+
+  ctx.$executeQueryAsync();
+});
+```
+
+Without $spClientContext:
+
+```
+angular.module('myModule').controller('FooCtrl', function($scope, $timeout) {
+  var ctx = SP.ClientContext.get_current();
+  var web = ctx.get_web();
+
+  ctx.load(web);
+  ctx.executeQueryAsync(function() {
+    $timeout(function() { // $timeout is needed to trigger a digest cycle
+      $scope.title = web.get_title();
+    });
+  });
+});
+```
