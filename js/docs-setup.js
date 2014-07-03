@@ -92,7 +92,7 @@ NG_DOCS={
       "type": "service",
       "moduleName": "ExpertsInside.SharePoint.List",
       "shortDescription": "A factory which creates a list item resource object that lets you interact with",
-      "keywords": "$expand $filter $http $orderby $select $skip $sort $spconvert $splist $sprest $top action api array behaviors class core created creates custom default details dynamically exlcuded expertsinside factory field hash high-level interact item items level list listoptions low methods names object optional options overridden parameter prefixing provide query readonlyfields request resource rest returned saving service sharepoint supported title valid"
+      "keywords": "$expand $filter $http $orderby $select $skip $sort $spconvert $splist $sprest $top accepts action add additional addnamedquery api arguments array behaviors callback class copy core create created createquery creates custom decorated default delete details dynamically empty error existing exlcuded expertsinside factory field fields final force function hash high-level holds instance interact invoked item items json level list listoptions low method methods named names newer object optional options overridden overwrite parameter passed prefixing properties provide queries query read-only readonlyfields remove representation request resource rest result returned returns save saving server service sharepoint single singleresult stringify supported throws title tojson update valid versions"
     },
     {
       "section": "api",
@@ -101,7 +101,7 @@ NG_DOCS={
       "type": "service",
       "moduleName": "ExpertsInside.SharePoint.List",
       "shortDescription": "The dynamically created List Item class, created by",
-      "keywords": "$delete $isnew $save $splist $tojson accepts add additional addnamedquery api arguments array callback check class copy create created createquery creates decorated delete doesn dynamically empty error existing expertsinside false fields final force function hash holds instance invoked item items json list listitem method methods named newer ngdoc note object options otherwhise out-of-box overwrite passed persisted prefixed promise properties prototype queries query read-only remove representation result returned returns save server service sharepoint single singleresult stringify support throws tojson true update versions"
+      "keywords": "$delete $isnew $save $splist $tojson api check class create created delete doesn dynamically expertsinside false item json list listitem method methods ngdoc note options otherwhise out-of-box passed persisted prefixed promise prototype representation server service sharepoint support true update"
     },
     {
       "section": "api",
