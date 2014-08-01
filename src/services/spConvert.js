@@ -146,9 +146,9 @@ angular.module('ExpertsInside.SharePoint.Core')
             queryId: primaryQueryResult.QueryId,
             queryRuleId: primaryQueryResult.QueryRuleId,
             relevantResults: $spConvert.spSimpleDataTable(primaryQueryResult.RelevantResults.Table),
-            customResults: primaryQueryResult.CustomResults !== null ? $spConvert.spSimpleDataTable(primaryQueryResult.CustomResults.Table) : null,
-            refinementResults: primaryQueryResult.RefinementResults !== null ? $spConvert.spSimpleDataTable(primaryQueryResult.RefinementResults.Table) : null,
-            specialTermResults: primaryQueryResult.SpecialTermResults !== null ? $spConvert.spSimpleDataTable(primaryQueryResult.SpecialTermResults.Table) : null
+            customResults: primaryQueryResult.CustomResults,
+            refinementResults: primaryQueryResult.RefinementResults,
+            specialTermResults: primaryQueryResult.SpecialTermResults
           }
         };
 
