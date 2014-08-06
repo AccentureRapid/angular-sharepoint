@@ -196,7 +196,7 @@ angular.module('ExpertsInside.SharePoint.Core')
           isFollowed: userResult.IsFollowed,
           personalUrl: userResult.PersonalUrl,
           pictureUrl: userResult.PictureUrl,
-          profileProperties: $spConvert.spKeyValueArray(userResult.UserProfileProperties),
+          profileProperties: $spConvert.spKeyValueArray(userResult.UserProfileProperties.results),
           title: userResult.Title,
           userUrl: userResult.UserUrl
         };
