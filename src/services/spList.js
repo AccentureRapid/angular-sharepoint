@@ -15,7 +15,7 @@
  * @param {Object=} listOptions Hash with custom options for this List. The following options are
  *   supported:
  *
- *   - **`readOnlyFields`** - {Array.{string}=} - Array of field names that will be exlcuded
+ *   - **`readOnlyFields`** - {Array.{string}=} - Array of field names that will be excluded
  *   from the request when saving an item back to SharePoint
  *   - **`query`** - {Object=} - Default query parameter used by each action. Can be
  *   overridden per action. Prefixing them with `$` is optional. Valid keys:
@@ -26,6 +26,8 @@
  *       - **`$skip`**
  *       - **`$expand`**
  *       - **`$sort`**
+ *   - **`inHostWeb`** - {boolean|string} - Set the host web url for the List. When set to
+ *   `true`, ShareCoffe.Commons.getHostWebUrl() will be used. 
  *
  * @return {Object} A dynamically created  class constructor for list items.
  *   See {@link ExpertsInside.SharePoint.List.$spList+ListItem $spList+ListItem} for details.
@@ -103,7 +105,7 @@ angular.module('ExpertsInside.SharePoint.List')
        * @private
        * Is this List in the host web?
        */
-      List.$$inHostWeb = !!listOptions.inHostWeb;
+      List.$$inHostWeb = listOptions.inHostWeb;
 
       /**
        * @private
@@ -165,7 +167,9 @@ angular.module('ExpertsInside.SharePoint.List')
         var httpConfig = {
           url: baseUrl
         };
-        if (List.$$inHostWeb) {
+        if (angular.isString(List.$$inHostWeb)) {
+          httpConfig.hostWebUrl = List.$$inHostWeb;
+        } else if (List.$$inHostWeb) {
           httpConfig.hostWebUrl = ShareCoffee.Commons.getHostWebUrl();
         }
 

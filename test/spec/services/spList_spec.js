@@ -148,15 +148,23 @@ describe('ExpertsInside.SharePoint', function() {
         expect(httpConfig.url).to.be.contain(TestItem.$$relativeUrl + '/items?$select=Id,Title');
       });
 
-      it('when List is in host web, adds @target parameter to url', function() {
+      it('when *options*.inHostWeb is true, adds default host web url as @target parameter', function() {
         TestItem.$$inHostWeb = true;
         sinon.stub(ShareCoffee.Commons, 'getHostWebUrl').returns('http://host.web');
 
         var httpConfig = TestItem.$$buildHttpConfig('query');
 
-        expect(httpConfig.url).to.be.contain('@target');
+        expect(httpConfig.url).to.contain('@target=\'http://host.web\'');
 
         ShareCoffee.Commons.getHostWebUrl.restore();
+      });
+
+      it('when *options*.inHostWeb is a String, adds the given url  as @target parameter', function() {
+        TestItem.$$inHostWeb = 'http://custom.host.web';
+
+        var httpConfig = TestItem.$$buildHttpConfig('query');
+
+        expect(httpConfig.url).to.contain('@target=\'http://custom.host.web\'');
       });
 
       describe('when *action* is "get"', function() {

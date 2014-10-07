@@ -21,7 +21,7 @@ Lists from the host web are also supported.
 
 ```js
 var Todo = $spList('Todo', {
-  inHostWeb: true
+  inHostWeb: true // or 'http://some.other.hostweb'
 });
 ```
 
