@@ -182,10 +182,10 @@ angular.module('ExpertsInside.SharePoint.List')
           }
 
           httpConfig.url += '(' + options.id + ')';
-          httpConfig = ShareCoffee.REST.build.read.for.angularJS(httpConfig);
+          httpConfig = ShareCoffee.REST.build.read['for'].angularJS(httpConfig);
           break;
         case 'query':
-          httpConfig = ShareCoffee.REST.build.read.for.angularJS(httpConfig);
+          httpConfig = ShareCoffee.REST.build.read['for'].angularJS(httpConfig);
           break;
         case 'create':
           if (angular.isUndefined(options.item)) {
@@ -200,7 +200,7 @@ angular.module('ExpertsInside.SharePoint.List')
           }
 
           httpConfig.payload = options.item.$toJson();
-          httpConfig = ShareCoffee.REST.build.create.for.angularJS(httpConfig);
+          httpConfig = ShareCoffee.REST.build.create['for'].angularJS(httpConfig);
           break;
         case 'update':
           if (angular.isUndefined(options.item)) {
@@ -216,7 +216,7 @@ angular.module('ExpertsInside.SharePoint.List')
           httpConfig.eTag = !options.force && angular.isDefined(options.item.__metadata) ?
             options.item.__metadata.etag : null;
 
-          httpConfig = ShareCoffee.REST.build.update.for.angularJS(httpConfig);
+          httpConfig = ShareCoffee.REST.build.update['for'].angularJS(httpConfig);
           break;
         case 'delete':
           if (angular.isUndefined(options.item)) {
@@ -227,7 +227,7 @@ angular.module('ExpertsInside.SharePoint.List')
           }
 
           httpConfig.url += '(' + options.item.Id + ')';
-          httpConfig = ShareCoffee.REST.build.delete.for.angularJS(httpConfig);
+          httpConfig = ShareCoffee.REST.build['delete']['for'].angularJS(httpConfig);
           break;
         }
 

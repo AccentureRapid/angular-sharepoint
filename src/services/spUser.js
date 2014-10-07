@@ -54,7 +54,7 @@ angular.module('ExpertsInside.SharePoint.User')
         var properties = new ShareCoffee
           .UserProfileProperties(ShareCoffee.Url.GetMyProperties);
 
-        var httpConfig = ShareCoffee.REST.build.read.for.angularJS(properties);
+        var httpConfig = ShareCoffee.REST.build.read.f.angularJS(properties);
         httpConfig.transformResponse = $spRest.transformResponse;
 
         var result = {};
@@ -77,7 +77,7 @@ angular.module('ExpertsInside.SharePoint.User')
         var properties = new ShareCoffee
           .UserProfileProperties(ShareCoffee.Url.GetProperties, accountName);
 
-        var httpConfig = ShareCoffee.REST.build.read.for.angularJS(properties);
+        var httpConfig = ShareCoffee.REST.build.read.f.angularJS(properties);
         httpConfig.transformResponse = $spRest.transformResponse;
 
         var result = {};
