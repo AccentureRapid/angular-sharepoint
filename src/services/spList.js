@@ -15,7 +15,7 @@
  * @param {Object=} listOptions Hash with custom options for this List. The following options are
  *   supported:
  *
- *   - **`readOnlyFields`** - {Array.{string}=} - Array of field names that will be exlcuded
+ *   - **`readOnlyFields`** - {Array.{string}=} - Array of field names that will be excluded
  *   from the request when saving an item back to SharePoint
  *   - **`query`** - {Object=} - Default query parameter used by each action. Can be
  *   overridden per action. Prefixing them with `$` is optional. Valid keys:
@@ -26,6 +26,8 @@
  *       - **`$skip`**
  *       - **`$expand`**
  *       - **`$sort`**
+ *   - **`inHostWeb`** - {boolean|string} - Set the host web url for the List. When set to
+ *   `true`, ShareCoffe.Commons.getHostWebUrl() will be used. 
  *
  * @return {Object} A dynamically created  class constructor for list items.
  *   See {@link ExpertsInside.SharePoint.List.$spList+ListItem $spList+ListItem} for details.
@@ -103,7 +105,7 @@ angular.module('ExpertsInside.SharePoint.List')
        * @private
        * Is this List in the host web?
        */
-      List.$$inHostWeb = !!listOptions.inHostWeb;
+      List.$$inHostWeb = listOptions.inHostWeb;
 
       /**
        * @private
@@ -165,7 +167,9 @@ angular.module('ExpertsInside.SharePoint.List')
         var httpConfig = {
           url: baseUrl
         };
-        if (List.$$inHostWeb) {
+        if (angular.isString(List.$$inHostWeb)) {
+          httpConfig.hostWebUrl = List.$$inHostWeb;
+        } else if (List.$$inHostWeb) {
           httpConfig.hostWebUrl = ShareCoffee.Commons.getHostWebUrl();
         }
 
@@ -182,10 +186,10 @@ angular.module('ExpertsInside.SharePoint.List')
           }
 
           httpConfig.url += '(' + options.id + ')';
-          httpConfig = ShareCoffee.REST.build.read.for.angularJS(httpConfig);
+          httpConfig = ShareCoffee.REST.build.read['for'].angularJS(httpConfig);
           break;
         case 'query':
-          httpConfig = ShareCoffee.REST.build.read.for.angularJS(httpConfig);
+          httpConfig = ShareCoffee.REST.build.read['for'].angularJS(httpConfig);
           break;
         case 'create':
           if (angular.isUndefined(options.item)) {
@@ -200,7 +204,7 @@ angular.module('ExpertsInside.SharePoint.List')
           }
 
           httpConfig.payload = options.item.$toJson();
-          httpConfig = ShareCoffee.REST.build.create.for.angularJS(httpConfig);
+          httpConfig = ShareCoffee.REST.build.create['for'].angularJS(httpConfig);
           break;
         case 'update':
           if (angular.isUndefined(options.item)) {
@@ -216,7 +220,7 @@ angular.module('ExpertsInside.SharePoint.List')
           httpConfig.eTag = !options.force && angular.isDefined(options.item.__metadata) ?
             options.item.__metadata.etag : null;
 
-          httpConfig = ShareCoffee.REST.build.update.for.angularJS(httpConfig);
+          httpConfig = ShareCoffee.REST.build.update['for'].angularJS(httpConfig);
           break;
         case 'delete':
           if (angular.isUndefined(options.item)) {
@@ -227,7 +231,7 @@ angular.module('ExpertsInside.SharePoint.List')
           }
 
           httpConfig.url += '(' + options.item.Id + ')';
-          httpConfig = ShareCoffee.REST.build.delete.for.angularJS(httpConfig);
+          httpConfig = ShareCoffee.REST.build['delete']['for'].angularJS(httpConfig);
           break;
         }
 
@@ -239,8 +243,8 @@ angular.module('ExpertsInside.SharePoint.List')
 
       /**
        * @ngdoc method
-       * @name ExpertsInside.SharePoint.List.$spList+ListItem#get
-       * @methodOf ExpertsInside.SharePoint.List.$spList+ListItem
+       * @name ExpertsInside.SharePoint.List.$spList#get
+       * @methodOf ExpertsInside.SharePoint.List.$spList
        *
        * @description Get a single list item by id
        *
@@ -264,8 +268,8 @@ angular.module('ExpertsInside.SharePoint.List')
 
       /**
        * @ngdoc method
-       * @name ExpertsInside.SharePoint.List.$spList+ListItem#query
-       * @methodOf ExpertsInside.SharePoint.List.$spList+ListItem
+       * @name ExpertsInside.SharePoint.List.$spList#query
+       * @methodOf ExpertsInside.SharePoint.List.$spList
        *
        * @description Query for the list for items
        *
@@ -288,8 +292,8 @@ angular.module('ExpertsInside.SharePoint.List')
 
       /**
        * @ngdoc method
-       * @name ExpertsInside.SharePoint.List.$spList+ListItem#create
-       * @methodOf ExpertsInside.SharePoint.List.$spList+ListItem
+       * @name ExpertsInside.SharePoint.List.$spList#create
+       * @methodOf ExpertsInside.SharePoint.List.$spList
        *
        * @description Create a new list item on the server.
        *
@@ -316,8 +320,8 @@ angular.module('ExpertsInside.SharePoint.List')
 
       /**
        * @ngdoc method
-       * @name ExpertsInside.SharePoint.List.$spList+ListItem#update
-       * @methodOf ExpertsInside.SharePoint.List.$spList+ListItem
+       * @name ExpertsInside.SharePoint.List.$spList#update
+       * @methodOf ExpertsInside.SharePoint.List.$spList
        *
        * @description Update an existing list item on the server.
        *
@@ -344,8 +348,8 @@ angular.module('ExpertsInside.SharePoint.List')
 
       /**
        * @ngdoc method
-       * @name ExpertsInside.SharePoint.List.$spList+ListItem#save
-       * @methodOf ExpertsInside.SharePoint.List.$spList+ListItem
+       * @name ExpertsInside.SharePoint.List.$spList#save
+       * @methodOf ExpertsInside.SharePoint.List.$spList
        *
        * @description Update or create a list item on the server.
        *
@@ -365,8 +369,8 @@ angular.module('ExpertsInside.SharePoint.List')
 
       /**
        * @ngdoc method
-       * @name ExpertsInside.SharePoint.List.$spList+ListItem#delete
-       * @methodOf ExpertsInside.SharePoint.List.$spList+ListItem
+       * @name ExpertsInside.SharePoint.List.$spList#delete
+       * @methodOf ExpertsInside.SharePoint.List.$spList
        *
        * @description Delete a list item on the server.
        *
@@ -385,8 +389,8 @@ angular.module('ExpertsInside.SharePoint.List')
 
       /**
        * @ngdoc object
-       * @name ExpertsInside.SharePoint.List.$spList+ListItem#queries
-       * @propertyOf ExpertsInside.SharePoint.List.$spList+ListItem
+       * @name ExpertsInside.SharePoint.List.$spList#queries
+       * @propertyOf ExpertsInside.SharePoint.List.$spList
        *
        * @description Object that holds the created named queries
        */
@@ -394,8 +398,8 @@ angular.module('ExpertsInside.SharePoint.List')
 
       /**
        * @ngdoc method
-       * @name ExpertsInside.SharePoint.List.$spList+ListItem#addNamedQuery
-       * @methodOf ExpertsInside.SharePoint.List.$spList+ListItem
+       * @name ExpertsInside.SharePoint.List.$spList#addNamedQuery
+       * @methodOf ExpertsInside.SharePoint.List.$spList
        *
        * @description Add a named query to the queries hash
        *
@@ -420,8 +424,8 @@ angular.module('ExpertsInside.SharePoint.List')
 
       /**
        * @ngdoc method
-       * @name ExpertsInside.SharePoint.List.$spList+ListItem#toJson
-       * @methodOf ExpertsInside.SharePoint.List.$spList+ListItem
+       * @name ExpertsInside.SharePoint.List.$spList#toJson
+       * @methodOf ExpertsInside.SharePoint.List.$spList
        *
        * @description Create a copy of the item, remove read-only fields
        *   and stringify it.

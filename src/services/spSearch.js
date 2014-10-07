@@ -85,7 +85,7 @@ angular.module('ExpertsInside.SharePoint.Search')
         delete properties.searchType;
 
         var queryProperties = search.$$createQueryProperties(searchType, properties);
-        var httpConfig = ShareCoffee.REST.build.read.for.angularJS(queryProperties);
+        var httpConfig = ShareCoffee.REST.build.read['for'].angularJS(queryProperties);
         httpConfig.transformResponse = $spRest.transformResponse;
 
         var result = {};
