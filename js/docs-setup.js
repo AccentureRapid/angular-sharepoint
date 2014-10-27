@@ -92,7 +92,7 @@ NG_DOCS={
       "type": "service",
       "moduleName": "ExpertsInside.SharePoint.List",
       "shortDescription": "A factory which creates a list item resource object that lets you interact with",
-      "keywords": "$expand $filter $http $orderby $select $skip $sort $spconvert $splist $sprest $top accepts action add additional addnamedquery api arguments array behaviors callback class copy core create created createquery creates custom decorated default delete details dynamically empty error existing exlcuded expertsinside factory field fields final force function hash high-level holds instance interact invoked item items json level list listoptions low method methods named names newer object optional options overridden overwrite parameter passed prefixing properties provide queries query read-only readonlyfields remove representation request resource rest result returned returns save saving server service sharepoint single singleresult stringify supported throws title tojson update valid versions"
+      "keywords": "$expand $filter $http $orderby $select $skip $sort $spconvert $splist $sprest $top accepts action add additional addnamedquery api arguments array behaviors callback class commons copy core create created createquery creates custom decorated default delete details dynamically empty error excluded existing expertsinside factory field fields final force function gethostweburl hash high-level holds host inhostweb instance interact invoked item items json level list listoptions low method methods named names newer object optional options overridden overwrite parameter passed prefixing properties provide queries query read-only readonlyfields remove representation request resource rest result returned returns save saving server service set sharecoffe sharepoint single singleresult stringify supported throws title tojson true update url valid versions web"
     },
     {
       "section": "api",
@@ -182,7 +182,7 @@ NG_DOCS={
       "type": "overview",
       "moduleName": "Using $spList",
       "shortDescription": "Using $spList",
-      "keywords": "$log $promise $scope $splist active angular api app class completed controller created creates creating crud debug dynamically eq err error example expertsinside exposing factory filter function guide host inhostweb injecting instances interact ish items javascript js list lists loaded loading module myapp myctrl object occured operations oriented overview query querying record represent rest return select service sharepoint simple start static supported title todo todos true var view web wraps"
+      "keywords": "$log $promise $scope $splist active angular api app class completed controller created creates creating crud debug dynamically eq err error example expertsinside exposing factory filter function guide host hostweb http inhostweb injecting instances interact ish items javascript js list lists loaded loading module myapp myctrl object occured operations oriented overview query querying record represent rest return select service sharepoint simple start static supported title todo todos true var view web wraps"
     },
     {
       "section": "guide",
@@ -226,6 +226,7 @@ NG_DOCS={
     "guide": false
   },
   "html5Mode": false,
+  "editExample": true,
   "startPage": "/guide/00_installation",
   "scripts": [
     "angular.min.js"

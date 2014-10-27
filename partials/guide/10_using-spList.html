@@ -13,7 +13,7 @@ in the app web.</p>
 <pre><code class="lang-js">var Todo = $spList(&#39;Todo&#39;);</code></pre>
 <p>Lists from the host web are also supported.</p>
 <pre><code class="lang-js">var Todo = $spList(&#39;Todo&#39;, {
-  inHostWeb: true
+  inHostWeb: true // or &#39;http://some.other.hostweb&#39;
 });</code></pre>
 <h3 id="using_simple-example">Simple example</h3>
 <p>Exposing the created class as a service, injecting it in a controller, querying the

@@ -21,7 +21,7 @@ the need to interact with the low level $http service.</p>
 </div></td></tr><tr><td>listOptions <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-page"><p>Hash with custom options for this List. The following options are
 supported:</p>
 <ul>
-<li><strong><code>readOnlyFields</code></strong> - {Array.{string}=} - Array of field names that will be exlcuded
+<li><strong><code>readOnlyFields</code></strong> - {Array.{string}=} - Array of field names that will be excluded
 from the request when saving an item back to SharePoint</li>
 <li><strong><code>query</code></strong> - {Object=} - Default query parameter used by each action. Can be
 overridden per action. Prefixing them with <code>$</code> is optional. Valid keys:<ul>
@@ -34,6 +34,8 @@ overridden per action. Prefixing them with <code>$</code> is optional. Valid key
 <li><strong><code>$sort</code></strong></li>
 </ul>
 </li>
+<li><strong><code>inHostWeb</code></strong> - {boolean|string} - Set the host web url for the List. When set to
+<code>true</code>, ShareCoffe.Commons.getHostWebUrl() will be used. </li>
 </ul>
 </div></td></tr></tbody></table><h4 id="usage_returns">Returns</h4><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="expertsinside-sharepoint-list-splist-page"><p>A dynamically created  class constructor for list items.
 See <a href="#/api/ExpertsInside.SharePoint.List.$spList+ListItem">$spList+ListItem</a> for details.</p>
