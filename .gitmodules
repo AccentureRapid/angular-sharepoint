@@ -1,3 +1,7 @@
 [submodule "dist"]
 	path = dist
 	url = git@github.com:ExpertsInside/bower-angular-sharepoint.git
+[submodule "gh-pages"]
+	path = gh-pages
+	url = https://github.com/ExpertsInside/angular-sharepoint.git
+	branch = gh-pages

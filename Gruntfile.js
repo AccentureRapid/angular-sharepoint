@@ -45,7 +45,7 @@ module.exports = function(grunt) {
         html5Mode: false,
         title: false,
         startPage: '/guide/00_installation',
-        dest: 'dist-docs',
+        dest: 'gh-pages',
         styles: ['docs/styles/custom.css']
       },
       api: {
@@ -68,7 +68,7 @@ module.exports = function(grunt) {
       docs: {
         options: {
           port: 9002,
-          base: 'dist-docs',
+          base: 'gh-pages',
           open: true,
           keepalive: true
         }
@@ -87,7 +87,7 @@ module.exports = function(grunt) {
     clean: {
       dist: [
         'dist/*.{js,map}',
-        'dist-docs/*'
+        'gh-pages/*'
       ],
       tmp: ['.tmp']
     },
